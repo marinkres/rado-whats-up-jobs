@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import Sidebar from "@/components/Sidebar";
 import { cn } from "@/lib/utils";
+import { MessageCircle } from "lucide-react"; // Import WhatsApp-like icon
 
 const Settings = () => {
   return (
@@ -40,7 +41,10 @@ const Settings = () => {
             </Card>
 
             <Card className="p-6">
-              <h2 className="text-lg font-semibold mb-4">WhatsApp integracija</h2>
+              <div className="flex items-center gap-2 mb-4">
+                <MessageCircle className="h-6 w-6 text-green-600" />
+                <h2 className="text-lg font-semibold">WhatsApp integracija</h2>
+              </div>
               <div className="space-y-4 max-w-lg">
                 <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                   <div>

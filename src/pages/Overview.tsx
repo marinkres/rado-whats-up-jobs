@@ -26,20 +26,13 @@ const Overview = () => {
         <div className="container mx-auto py-8 px-4 sm:px-6">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
             <h1 className="text-3xl font-bold mb-4 sm:mb-0">Pregled</h1>
-            <button
-              onClick={handleLogout}
-              className="px-3 py-1 text-white rounded hover:opacity-90 bg-red-800"
-
-            >
-              Odjava
-            </button>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <Card className="p-6">
               <div className="flex items-center gap-4">
                 <div
-                  className="p-3 rounded-lg"
+                  className="p-3 rounded-3xl"
                   style={{
                     backgroundColor: "#43AA8B",
                   }}
@@ -56,7 +49,7 @@ const Overview = () => {
             <Card className="p-6">
               <div className="flex items-center gap-4">
                 <div
-                  className="p-3 rounded-lg"
+                  className="p-3 rounded-3xl"
                   style={{
                     backgroundColor: "#43AA8B",
                   }}
@@ -73,7 +66,7 @@ const Overview = () => {
             <Card className="p-6">
               <div className="flex items-center gap-4">
                 <div
-                  className="p-3 rounded-lg"
+                  className="p-3 rounded-3xl"
                   style={{
                     backgroundColor: "#43AA8B",
                   }}
@@ -90,7 +83,7 @@ const Overview = () => {
             <Card className="p-6">
               <div className="flex items-center gap-4">
                 <div
-                  className="p-3 rounded-lg"
+                  className="p-3 rounded-3xl"
                   style={{
                     backgroundColor: "#43AA8B",
                   }}

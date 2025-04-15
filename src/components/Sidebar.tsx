@@ -38,8 +38,8 @@ const Sidebar = () => {
         )}
       >
         <div className="p-6">
-          <div className="flex justify-center mb-8">
-            <img src="/rado.png" alt="Rado Logo" className="h-12" />
+          <div className="flex justify-center mb-6">
+            <img src="/rado.png" alt="Rado Logo" className="h-28" />
           </div>
           <nav className="space-y-1">
             {menuItems.map((item) => (
@@ -57,7 +57,7 @@ const Sidebar = () => {
             ))}
           </nav>
         </div>
-        <div className="absolute bottom-8 left-0 right-0 px-6">
+        <div className="absolute bottom-8 left-0 right-0 px-6 space-y-4">
           <div className="bg-gray-50 rounded-lg p-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gray-300" />
@@ -67,6 +67,18 @@ const Sidebar = () => {
               </div>
             </div>
           </div>
+          <button
+            onClick={() => window.location.href = "mailto:support@rado.ai"}
+            className="w-full py-2 bg-[#43AA8B] text-white font-semibold rounded-lg hover:bg-green-600 transition"
+          >
+            Kontaktiraj podršku
+          </button>
+          <button
+            onClick={() => window.location.href = "/"}
+            className="w-full py-2 bg-red-800 text-white font-semibold rounded-lg hover:bg-red-700 transition"
+          >
+            Odjava
+          </button>
         </div>
       </aside>
 
