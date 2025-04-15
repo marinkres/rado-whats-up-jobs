@@ -3,10 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import Sidebar from "@/components/Sidebar";
 
 const Settings = () => {
   return (
     <div className="min-h-screen bg-gray-50">
+      <Sidebar />
       <main className="pl-64">
         <div className="container mx-auto py-8 px-6">
           <h1 className="text-3xl font-bold mb-6">Postavke</h1>

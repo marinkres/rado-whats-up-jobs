@@ -2,10 +2,12 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { BarChart, Users, Building2, Calendar } from "lucide-react";
+import Sidebar from "@/components/Sidebar";
 
 const Overview = () => {
   return (
     <div className="min-h-screen bg-gray-50">
+          <Sidebar />
       <main className="pl-64">
         <div className="container mx-auto py-8 px-6">
           <h1 className="text-3xl font-bold mb-6">Pregled</h1>

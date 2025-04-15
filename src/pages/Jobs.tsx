@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { MapPin, Users, Clock } from "lucide-react";
+import Sidebar from "@/components/Sidebar";
 
 const Jobs = () => {
   const jobs = [
@@ -31,6 +32,7 @@ const Jobs = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Sidebar />
       <main className="pl-64">
         <div className="container mx-auto py-8 px-6">
           <div className="flex items-center justify-between mb-6">
