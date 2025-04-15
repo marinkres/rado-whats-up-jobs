@@ -24,9 +24,9 @@ const Sidebar = () => {
       {/* Mobile toggle button */}
       <button
         onClick={toggleSidebar}
-        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-gray-100 rounded-full shadow-lg"
+        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-[#43AA8B] rounded-full shadow-lg"
       >
-        <Menu className="h-6 w-6 text-gray-600" />
+        <Menu className="h-6 w-6 text-white" />
       </button>
 
       {/* Sidebar */}
@@ -68,16 +68,16 @@ const Sidebar = () => {
             </div>
           </div>
           <button
-            onClick={() => window.location.href = "mailto:support@rado.ai"}
-            className="w-full py-2 bg-[#43AA8B] text-white font-semibold rounded-lg hover:bg-green-600 transition"
-          >
-            Kontaktiraj podršku
-          </button>
-          <button
             onClick={() => window.location.href = "/"}
             className="w-full py-2 bg-red-800 text-white font-semibold rounded-lg hover:bg-red-700 transition"
           >
             Odjava
+          </button>
+          <button
+            onClick={() => window.location.href = "mailto:support@rado.ai"}
+            className="w-full py-2 bg-[#43AA8B] text-white font-semibold rounded-lg hover:bg-green-600 transition"
+          >
+            Kontaktiraj podršku
           </button>
         </div>
       </aside>
