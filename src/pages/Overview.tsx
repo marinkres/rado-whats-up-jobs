@@ -28,12 +28,10 @@ const Overview = () => {
             <h1 className="text-3xl font-bold mb-4 sm:mb-0">Pregled</h1>
             <button
               onClick={handleLogout}
-              className="px-4 py-2 text-white rounded hover:opacity-90"
-              style={{
-                backgroundColor: "#43AA8B",
-              }}
+              className="px-3 py-1 text-white rounded hover:opacity-90 bg-red-800"
+
             >
-              Log Out
+              Odjava
             </button>
           </div>
 
