@@ -28,14 +28,8 @@ export default {
           primary: "#9b87f5",
           secondary: "#F2FCE2",
           accent: "#FDE1D3",
-          text: {
-            light: "#1A1F2C",
-            dark: "#F6F7F9"
-          },
-          background: {
-            light: "#F6F7F9",
-            dark: "#1A1F2C"
-          }
+          text: "#1A1F2C",
+          "bg-light": "#F6F7F9",
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",
@@ -85,12 +79,6 @@ export default {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
-      backgroundColor: {
-        dark: {
-          primary: "#1A1F2C",
-          secondary: "#403E43",
-        }
-      }
     },
   },
   plugins: [require("tailwindcss-animate")],
