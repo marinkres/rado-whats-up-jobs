@@ -220,7 +220,10 @@ const Sidebar = React.forwardRef<
     return (
       <div
         ref={ref}
-        className="group peer hidden md:block text-sidebar-foreground"
+        className="group peer hidden md:block"
+        style={{
+          backgroundColor: "#43AA8B",
+        }}
         data-state={state}
         data-collapsible={state === "collapsed" ? collapsible : ""}
         data-variant={variant}
@@ -365,7 +368,12 @@ const SidebarHeader = React.forwardRef<
       data-sidebar="header"
       className={cn("flex flex-col gap-2 p-2", className)}
       {...props}
-    />
+    >
+      {/* Replace "Rado" text with the rado.png image */}
+      <div className="flex justify-center mb-4">
+        <img src="/rado.png" alt="Rado Logo" className="h-12" />
+      </div>
+    </div>
   )
 })
 SidebarHeader.displayName = "SidebarHeader"

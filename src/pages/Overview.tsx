@@ -4,6 +4,7 @@ import { BarChart, Users, Building2, Calendar } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { cn } from "@/utils/cn"; // Correct path after creating the utility;
 
 const Overview = () => {
   const navigate = useNavigate();
@@ -15,23 +16,37 @@ const Overview = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar />
-      <main className="pl-64">
-        <div className="container mx-auto py-8 px-6">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold">Pregled</h1>
+      <main
+        className={cn(
+          "transition-all duration-300",
+          "md:pl-64", // Add padding when the sidebar is open on desktop
+          "pl-0" // No padding on mobile
+        )}
+      >
+        <div className="container mx-auto py-8 px-4 sm:px-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold mb-4 sm:mb-0">Pregled</h1>
             <button
               onClick={handleLogout}
-              className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600"
+              className="px-4 py-2 text-white rounded hover:opacity-90"
+              style={{
+                backgroundColor: "#43AA8B",
+              }}
             >
               Log Out
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <Card className="p-6">
               <div className="flex items-center gap-4">
-                <div className="bg-purple-100 p-3 rounded-lg">
-                  <Users className="h-6 w-6 text-purple-600" />
+                <div
+                  className="p-3 rounded-lg"
+                  style={{
+                    backgroundColor: "#43AA8B",
+                  }}
+                >
+                  <Users className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Ukupno kandidata</p>
@@ -42,8 +57,13 @@ const Overview = () => {
 
             <Card className="p-6">
               <div className="flex items-center gap-4">
-                <div className="bg-blue-100 p-3 rounded-lg">
-                  <Building2 className="h-6 w-6 text-blue-600" />
+                <div
+                  className="p-3 rounded-lg"
+                  style={{
+                    backgroundColor: "#43AA8B",
+                  }}
+                >
+                  <Building2 className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Aktivni poslovi</p>
@@ -54,8 +74,13 @@ const Overview = () => {
 
             <Card className="p-6">
               <div className="flex items-center gap-4">
-                <div className="bg-green-100 p-3 rounded-lg">
-                  <BarChart className="h-6 w-6 text-green-600" />
+                <div
+                  className="p-3 rounded-lg"
+                  style={{
+                    backgroundColor: "#43AA8B",
+                  }}
+                >
+                  <BarChart className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Stopa zapošljavanja</p>
@@ -66,8 +91,13 @@ const Overview = () => {
 
             <Card className="p-6">
               <div className="flex items-center gap-4">
-                <div className="bg-orange-100 p-3 rounded-lg">
-                  <Calendar className="h-6 w-6 text-orange-600" />
+                <div
+                  className="p-3 rounded-lg"
+                  style={{
+                    backgroundColor: "#43AA8B",
+                  }}
+                >
+                  <Calendar className="h-6 w-6 text-white" />
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Intervjui ovaj tjedan</p>
