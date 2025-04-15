@@ -1,16 +1,19 @@
 
 import { MessageSquare, Grid, Briefcase, Users, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLocation } from "react-router-dom";
 
 const menuItems = [
-  { icon: Grid, label: "Overview", href: "/" },
-  { icon: MessageSquare, label: "Chat", href: "/chat" },
-  { icon: Briefcase, label: "Jobs", href: "/jobs" },
-  { icon: Users, label: "Applications", href: "/applications" },
-  { icon: Settings, label: "Settings", href: "/settings" },
+  { icon: Grid, label: "Pregled", href: "/" },
+  { icon: MessageSquare, label: "Razgovori", href: "/chat" },
+  { icon: Briefcase, label: "Poslovi", href: "/jobs" },
+  { icon: Users, label: "Prijave", href: "/applications" },
+  { icon: Settings, label: "Postavke", href: "/settings" },
 ];
 
 const Sidebar = () => {
+  const location = useLocation();
+  
   return (
     <aside className="w-64 bg-white border-r h-screen fixed left-0 top-0">
       <div className="p-6">
@@ -22,7 +25,7 @@ const Sidebar = () => {
               href={item.href}
               className={cn(
                 "flex items-center gap-3 px-4 py-2 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors",
-                item.label === "Applications" && "bg-gray-100 text-gray-900"
+                location.pathname === item.href && "bg-gray-100 text-gray-900"
               )}
             >
               <item.icon className="h-5 w-5" />

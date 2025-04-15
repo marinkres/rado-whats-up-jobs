@@ -11,7 +11,7 @@ const Index = () => {
       <main className="pl-64">
         <div className="container mx-auto py-8 px-6">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold">Applications</h1>
+            <h1 className="text-3xl font-bold">Prijave</h1>
             <Button variant="outline" className="gap-2">
               <Filter className="h-4 w-4" />
               Filter
@@ -19,11 +19,11 @@ const Index = () => {
           </div>
           
           <div className="flex gap-2 mb-8">
-            {["All", "New", "Contacted", "Interview", "Hired", "Rejected"].map((status) => (
+            {["Sve", "Nove", "Kontaktirani", "Intervju", "Zaposleni", "Odbijeni"].map((status) => (
               <Button
                 key={status}
                 variant="outline"
-                className={status === "All" ? "bg-gray-100" : ""}
+                className={status === "Sve" ? "bg-gray-100" : ""}
               >
                 {status}
               </Button>
