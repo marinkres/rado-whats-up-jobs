@@ -15,7 +15,7 @@ type Application = {
 const applications: Application[] = [
   {
     id: 1,
-    name: "Sandro Michel",
+    name: "Sandra Milica",
     status: "New",
     appliedDate: "Fri, 29. March 2024, 11:15",
     jobTitle: "Demo Job",
@@ -23,7 +23,7 @@ const applications: Application[] = [
   },
   {
     id: 2,
-    name: "Francisco de Latour",
+    name: "Marko Markic",
     status: "Contacted",
     appliedDate: "Mon, 29. Jan 2024, 08:16",
     jobTitle: "Demo Job",
@@ -31,7 +31,7 @@ const applications: Application[] = [
   },
   {
     id: 3,
-    name: "Leonardo Tartufferi",
+    name: "Katja Cetnikic",
     status: "Interview",
     appliedDate: "Sat, 27. Jan 2024, 16:01",
     jobTitle: "CDI - Conseiller de vente",

@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { useLocation } from "react-router-dom";
 
 const menuItems = [
-  { icon: Grid, label: "Pregled", href: "/" },
+  { icon: Grid, label: "Pregled", href: "/overview" },
   { icon: MessageSquare, label: "Razgovori", href: "/chat" },
   { icon: Briefcase, label: "Poslovi", href: "/jobs" },
   { icon: Users, label: "Prijave", href: "/applications" },
@@ -13,6 +13,7 @@ const menuItems = [
 
 const Sidebar = () => {
   const location = useLocation();
+  
   
   return (
     <aside className="w-64 bg-white border-r h-screen fixed left-0 top-0">
@@ -41,9 +42,9 @@ const Sidebar = () => {
             <div>
               <p className="font-medium text-sm">RADO DEMO</p>
               <p className="text-sm text-gray-500">info@rado.ai</p>
-            </div>
-          </div>
-        </div>
+            </div>  
+          </div>   
+        </div>    
       </div>
     </aside>
   );

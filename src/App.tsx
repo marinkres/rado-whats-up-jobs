@@ -9,6 +9,7 @@ import Overview from "./pages/Overview";
 import Chat from "./pages/Chat";
 import Jobs from "./pages/Jobs";
 import Settings from "./pages/Settings";
+import Login from "./pages/Login"; 
 
 const queryClient = new QueryClient();
 
@@ -19,7 +20,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Overview />} />
+          <Route path="/" element={<Login />} /> {/* Login page */}
+          <Route path="/overview" element={<Overview />} /> {/* Overview page */}
           <Route path="/chat" element={<Chat />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/applications" element={<Index />} />
