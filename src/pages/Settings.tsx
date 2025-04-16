@@ -46,8 +46,8 @@ const Settings = () => {
         )}
       >
         <div className="container mx-auto py-8 px-4 sm:px-6">
-          <h1 className="text-3xl font-bold mb-6">Postavke</h1>
-
+          <h1 className="text-4xl font-bold text-gray-800 mb-8 mt-16 sm:mt-0">Postavke</h1>
+          {/* Adjusted `mt-16` to ensure more spacing between the burger menu and the title on mobile */}
           <div className="space-y-6">
             <Card className="p-6">
               <h2 className="text-lg font-semibold mb-4">Profil tvrtke</h2>
