@@ -1,17 +1,37 @@
-import { Button } from "@/components/ui/button";
+import React, { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
-import { BarChart, Users, Building2, Calendar } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { cn } from "@/utils/cn"; // Correct path after creating the utility;
+import { cn } from "@/lib/utils";
+import { MapPin, Briefcase, Users, ClipboardList } from "lucide-react";
 
 const Overview = () => {
-  const navigate = useNavigate();
+  const [locations, setLocations] = useState([]);
+  const [jobListings, setJobListings] = useState([]);
+  const [candidates, setCandidates] = useState([]);
+  const [applications, setApplications] = useState([]);
 
-  const handleLogout = () => {
-    navigate("/"); // Redirect to the login page
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data: locationsData } = await supabase.from("locations").select("*");
+        setLocations(locationsData || []);
+
+        const { data: jobListingsData } = await supabase.from("job_listings").select("*");
+        setJobListings(jobListingsData || []);
+
+        const { data: candidatesData } = await supabase.from("candidates").select("*");
+        setCandidates(candidatesData || []);
+
+        const { data: applicationsData } = await supabase.from("applications").select("*");
+        setApplications(applicationsData || []);
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -24,124 +44,73 @@ const Overview = () => {
         )}
       >
         <div className="container mx-auto py-8 px-4 sm:px-6">
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold mb-4 sm:mb-0">Pregled</h1>
-          </div>
+          <h1 className="text-4xl font-bold text-gray-800 mb-8">Pregled</h1>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <Card className="p-6">
-              <div className="flex items-center gap-4">
-                <div
-                  className="p-3 rounded-3xl"
-                  style={{
-                    backgroundColor: "#43AA8B",
-                  }}
-                >
-                  <Users className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Ukupno kandidata</p>
-                  <p className="text-2xl font-semibold">247</p>
-                </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <Card className="p-6 shadow-lg border border-gray-200 rounded-lg flex flex-col items-center text-center">
+              <div className="p-4 bg-green-100 rounded-full flex items-center justify-center">
+                <MapPin className="h-8 w-8 text-green-600" />
               </div>
+              <h2 className="text-lg font-semibold text-gray-600 mt-4">Ukupno lokacija</h2>
+              <p className="text-4xl font-bold text-green-600 mt-2">{locations.length}</p>
             </Card>
-
-            <Card className="p-6">
-              <div className="flex items-center gap-4">
-                <div
-                  className="p-3 rounded-3xl"
-                  style={{
-                    backgroundColor: "#43AA8B",
-                  }}
-                >
-                  <Building2 className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Aktivni poslovi</p>
-                  <p className="text-2xl font-semibold">12</p>
-                </div>
+            <Card className="p-6 shadow-lg border border-gray-200 rounded-lg flex flex-col items-center text-center">
+              <div className="p-4 bg-green-100 rounded-full flex items-center justify-center">
+                <Briefcase className="h-8 w-8 text-green-600" />
               </div>
+              <h2 className="text-lg font-semibold text-gray-600 mt-4">Ukupno oglasa</h2>
+              <p className="text-4xl font-bold text-green-600 mt-2">{jobListings.length}</p>
             </Card>
-
-            <Card className="p-6">
-              <div className="flex items-center gap-4">
-                <div
-                  className="p-3 rounded-3xl"
-                  style={{
-                    backgroundColor: "#43AA8B",
-                  }}
-                >
-                  <BarChart className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Stopa zapošljavanja</p>
-                  <p className="text-2xl font-semibold">68%</p>
-                </div>
+            <Card className="p-6 shadow-lg border border-gray-200 rounded-lg flex flex-col items-center text-center">
+              <div className="p-4 bg-green-100 rounded-full flex items-center justify-center">
+                <Users className="h-8 w-8 text-green-600" />
               </div>
+              <h2 className="text-lg font-semibold text-gray-600 mt-4">Ukupno kandidata</h2>
+              <p className="text-4xl font-bold text-green-600 mt-2">{candidates.length}</p>
             </Card>
-
-            <Card className="p-6">
-              <div className="flex items-center gap-4">
-                <div
-                  className="p-3 rounded-3xl"
-                  style={{
-                    backgroundColor: "#43AA8B",
-                  }}
-                >
-                  <Calendar className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Intervjui ovaj tjedan</p>
-                  <p className="text-2xl font-semibold">28</p>
-                </div>
+            <Card className="p-6 shadow-lg border border-gray-200 rounded-lg flex flex-col items-center text-center">
+              <div className="p-4 bg-green-100 rounded-full flex items-center justify-center">
+                <ClipboardList className="h-8 w-8 text-green-600" />
               </div>
+              <h2 className="text-lg font-semibold text-gray-600 mt-4">Ukupno prijava</h2>
+              <p className="text-4xl font-bold text-green-600 mt-2">{applications.length}</p>
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="p-6">
-              <h2 className="text-lg font-semibold mb-4">Nedavne aktivnosti</h2>
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-2 h-2 rounded-full bg-green-500" />
-                  <p className="text-sm">Marko Horvat je prihvatio ponudu za posao</p>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-2 h-2 rounded-full bg-blue-500" />
-                  <p className="text-sm">Ana Kovačić zakazala intervju</p>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-2 h-2 rounded-full bg-purple-500" />
-                  <p className="text-sm">Ivan Novak poslao prijavu</p>
-                </div>
-              </div>
+          <div className="space-y-8">
+            <Card className="p-6 shadow-lg border border-gray-200 rounded-lg">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">Nedavne prijave</h2>
+              <ul className="space-y-3">
+                {applications.slice(0, 5).map((application) => (
+                  <li
+                    key={application.id}
+                    className="flex justify-between items-center bg-gray-100 p-3 rounded-lg"
+                  >
+                    <span className="text-sm text-gray-700">Prijava ID: {application.id}</span>
+                    <span className="text-sm font-medium text-gray-500">{application.status}</span>
+                  </li>
+                ))}
+              </ul>
             </Card>
 
-            <Card className="p-6">
-              <h2 className="text-lg font-semibold mb-4">Popularni poslovi</h2>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Konobar</p>
-                    <p className="text-sm text-gray-500">Split</p>
-                  </div>
-                  <Button variant="outline" size="sm">42 prijave</Button>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Kuhar</p>
-                    <p className="text-sm text-gray-500">Zagreb</p>
-                  </div>
-                  <Button variant="outline" size="sm">38 prijava</Button>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">Sobarica</p>
-                    <p className="text-sm text-gray-500">Dubrovnik</p>
-                  </div>
-                  <Button variant="outline" size="sm">27 prijava</Button>
-                </div>
-              </div>
+            <Card className="p-6 shadow-lg border border-gray-200 rounded-lg">
+              <h2 className="text-xl font-semibold text-gray-800 mb-4">Popularni poslovi</h2>
+              <ul className="space-y-3">
+                {jobListings.slice(0, 5).map((job) => {
+                  const jobApplications = applications.filter((app) => app.job_id === job.id);
+                  return (
+                    <li
+                      key={job.id}
+                      className="flex justify-between items-center bg-gray-100 p-3 rounded-lg"
+                    >
+                      <span className="text-sm text-gray-700">{job.title}</span>
+                      <span className="text-sm font-medium text-gray-500">
+                        {jobApplications.length} prijava
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
             </Card>
           </div>
         </div>

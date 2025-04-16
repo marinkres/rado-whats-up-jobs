@@ -11,6 +11,7 @@ import Jobs from "./pages/Jobs";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login"; 
 import Signup from "./pages/Signup"; // Import the React-based signup page
+import NewJob from "./pages/NewJob"; // Import the NewJob page
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/overview" element={<Overview />} /> {/* Overview page */}
           <Route path="/chat" element={<Chat />} />
           <Route path="/jobs" element={<Jobs />} />
+          <Route path="/jobs/new" element={<NewJob />} /> {/* New Job page */}
           <Route path="/applications" element={<Index />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/signup" element={<Signup />} /> {/* Signup page */}

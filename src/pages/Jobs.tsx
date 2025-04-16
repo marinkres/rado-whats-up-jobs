@@ -1,34 +1,44 @@
-import { Button } from "@/components/ui/button";
+import React, { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { MapPin, Users, Clock } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
+import { Trash2 } from "lucide-react";
 
 const Jobs = () => {
-  const jobs = [
-    {
-      title: "Konobar",
-      location: "Split",
-      type: "Sezonski",
-      applicants: 42,
-      posted: "Prije 2 dana"
-    },
-    {
-      title: "Kuhar",
-      location: "Zagreb",
-      type: "Puno radno vrijeme",
-      applicants: 38,
-      posted: "Prije 3 dana"
-    },
-    {
-      title: "Sobarica",
-      location: "Dubrovnik",
-      type: "Sezonski",
-      applicants: 27,
-      posted: "Prije 5 dana"
+  const [jobListings, setJobListings] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        const { data: jobsData, error } = await supabase.from("job_listings").select("*");
+        if (error) throw error;
+        setJobListings(jobsData || []);
+      } catch (error) {
+        console.error("Error fetching jobs:", error.message);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
+  const handleDeleteJob = async (jobId: string) => {
+    if (!window.confirm("Jeste li sigurni da želite obrisati ovaj posao?")) return;
+
+    try {
+      const { error } = await supabase.from("job_listings").delete().eq("id", jobId);
+      if (error) throw error;
+
+      // Remove the deleted job from the state
+      setJobListings((prevJobs) => prevJobs.filter((job) => job.id !== jobId));
+      alert("Posao uspješno obrisan!");
+    } catch (error) {
+      console.error("Error deleting job:", error.message);
+      alert("Došlo je do pogreške prilikom brisanja posla.");
     }
-  ];
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -41,42 +51,38 @@ const Jobs = () => {
         )}
       >
         <div className="container mx-auto py-8 px-4 sm:px-6">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold">Poslovi</h1>
-            <Button>+ Novi oglas</Button>
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-4xl font-bold text-gray-800">Poslovi</h1>
+            <button
+              onClick={() => navigate("/jobs/new")}
+              className="px-4 py-2 bg-[#43AA8B] text-white font-semibold rounded-lg hover:bg-green-600 transition"
+            >
+              Dodaj novi posao
+            </button>
           </div>
 
-          <Card className="p-4 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Input placeholder="Pretraži poslove..." />
-              <Input placeholder="Lokacija" />
-              <Button className="w-full">Pretraži</Button>
-            </div>
-          </Card>
-
-          <div className="space-y-4">
-            {jobs.map((job) => (
-              <Card key={job.title} className="p-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">{job.title}</h3>
-                    <div className="flex gap-4 text-sm text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-4 w-4" />
-                        {job.location}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
-                        {job.applicants} prijava
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        {job.posted}
-                      </div>
-                    </div>
-                  </div>
-                  <Button variant="outline">Pogledaj detalje</Button>
-                </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {jobListings.map((job) => (
+              <Card key={job.id} className="p-6 shadow-lg border border-gray-200 rounded-lg relative">
+                <h2 className="text-xl font-semibold text-gray-800">{job.title}</h2>
+                <p className="text-sm text-gray-600 mt-2">{job.description || "Nema opisa"}</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Status:{" "}
+                  <span
+                    className={cn(
+                      job.active ? "text-green-600" : "text-red-600",
+                      "font-medium"
+                    )}
+                  >
+                    {job.active ? "Aktivan" : "Neaktivan"}
+                  </span>
+                </p>
+                <button
+                  onClick={() => handleDeleteJob(job.id)}
+                  className="absolute top-4 right-4 p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition"
+                >
+                  <Trash2 className="h-5 w-5" />
+                </button>
               </Card>
             ))}
           </div>

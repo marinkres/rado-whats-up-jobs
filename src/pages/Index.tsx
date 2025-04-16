@@ -1,10 +1,32 @@
+import React, { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { Card } from "@/components/ui/card";
 import Sidebar from "@/components/Sidebar";
-import ApplicationsList from "@/components/ApplicationsList";
-import { Button } from "@/components/ui/button";
-import { Filter } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const Index = () => {
+const Applications = () => {
+  const [applications, setApplications] = useState([]);
+
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        const { data: applicationsData, error } = await supabase.from("applications").select(`
+          id,
+          status,
+          message,
+          job_listings (title),
+          candidates (name)
+        `);
+        if (error) throw error;
+        setApplications(applicationsData || []);
+      } catch (error) {
+        console.error("Error fetching applications:", error.message);
+      }
+    };
+
+    fetchApplications();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar />
@@ -16,31 +38,45 @@ const Index = () => {
         )}
       >
         <div className="container mx-auto py-8 px-4 sm:px-6">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold">Prijave</h1>
-            <Button variant="outline" className="gap-2">
-              <Filter className="h-4 w-4" />
-              Filter
-            </Button>
-          </div>
+          <h1 className="text-4xl font-bold text-gray-800 mb-8">Prijave</h1>
 
-          <div className="flex gap-2 mb-8">
-            {["Sve", "Nove", "Kontaktirani", "Intervju", "Zaposleni", "Odbijeni"].map((status) => (
-              <Button
-                key={status}
-                variant="outline"
-                className={status === "Sve" ? "bg-gray-100" : ""}
-              >
-                {status}
-              </Button>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {applications.map((application) => (
+              <Card key={application.id} className="p-6 shadow-lg border border-gray-200 rounded-lg">
+                <h2 className="text-xl font-semibold text-gray-800">
+                  {application.job_listings?.title || "Nepoznati posao"}
+                </h2>
+                <p className="text-sm text-gray-600 mt-2">
+                  Kandidat:{" "}
+                  <span className="font-medium text-gray-800">
+                    {application.candidates?.name || "Nepoznati kandidat"}
+                  </span>
+                </p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Status:{" "}
+                  <span
+                    className={cn(
+                      application.status === "approved"
+                        ? "text-green-600"
+                        : application.status === "rejected"
+                        ? "text-red-600"
+                        : "text-yellow-600",
+                      "font-medium"
+                    )}
+                  >
+                    {application.status}
+                  </span>
+                </p>
+                <p className="text-sm text-gray-500 mt-2">
+                  Poruka: {application.message || "Nema poruke"}
+                </p>
+              </Card>
             ))}
           </div>
-
-          <ApplicationsList />
         </div>
       </main>
     </div>
   );
 };
 
-export default Index;
+export default Applications;
