@@ -10,6 +10,7 @@ import Chat from "./pages/Chat";
 import Jobs from "./pages/Jobs";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login"; 
+import Signup from "./pages/Signup"; // Import the React-based signup page
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/applications" element={<Index />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/signup" element={<Signup />} /> {/* Signup page */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

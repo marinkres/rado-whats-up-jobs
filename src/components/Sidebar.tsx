@@ -1,7 +1,8 @@
 import { MessageSquare, Grid, Briefcase, Users, Settings, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLocation } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 
 const menuItems = [
   { icon: Grid, label: "Pregled", href: "/overview" },
@@ -14,6 +15,29 @@ const menuItems = [
 const Sidebar = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+  const [companyName, setCompanyName] = useState("RADO DEMO");
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUserEmail(session.user.email);
+
+        // Fetch company name from employers table
+        const { data: employer, error } = await supabase
+          .from("employers")
+          .select("company_name")
+          .eq("email", session.user.email)
+          .single();
+
+        if (!error && employer) {
+          setCompanyName(employer.company_name);
+        }
+      }
+    };
+    fetchUserDetails();
+  }, []);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -62,8 +86,8 @@ const Sidebar = () => {
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gray-300" />
               <div>
-                <p className="font-medium text-sm">RADO DEMO</p>
-                <p className="text-sm text-gray-500">info@rado.ai</p>
+                <p className="font-medium text-sm">{companyName}</p>
+                <p className="text-sm text-gray-500">{userEmail || "info@rado.ai"}</p>
               </div>
             </div>
           </div>

@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,6 +9,32 @@ import { cn } from "@/lib/utils";
 import { MessageCircle } from "lucide-react"; // Import WhatsApp-like icon
 
 const Settings = () => {
+  const [userEmail, setUserEmail] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [phone, setPhone] = useState("");
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUserEmail(session.user.email);
+
+        // Fetch employer details
+        const { data: employer, error } = await supabase
+          .from("employers")
+          .select("company_name, phone")
+          .eq("email", session.user.email)
+          .single();
+
+        if (!error && employer) {
+          setCompanyName(employer.company_name);
+          setPhone(employer.phone);
+        }
+      }
+    };
+    fetchUserDetails();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar />
@@ -26,15 +54,15 @@ const Settings = () => {
               <div className="space-y-4 max-w-lg">
                 <div>
                   <label className="block text-sm font-medium mb-1">Naziv tvrtke</label>
-                  <Input defaultValue="Rado Demo" />
+                  <Input value={companyName} readOnly />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Email</label>
-                  <Input defaultValue="info@rado.ai" />
+                  <Input value={userEmail} readOnly />
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Telefon</label>
-                  <Input defaultValue="+385 1 234 5678" />
+                  <Input value={phone} readOnly />
                 </div>
                 <Button>Spremi promjene</Button>
               </div>

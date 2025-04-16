@@ -1,18 +1,23 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/lib/supabase";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === "demo" && password === "demo") {
-      navigate("/overview"); // Redirect to the overview page
+    setError("");
+
+    // Supabase authentication
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      setError(error.message);
     } else {
-      setError("Invalid username or password");
+      navigate("/overview"); // Redirect to the overview page
     }
   };
 
@@ -27,21 +32,22 @@ const Login = () => {
         </h2>
         <p className="text-sm text-center text-gray-600 mb-6">
           Nemate račun?{" "}
-          <a href="/register" className="text-[#43AA8B] hover:underline">
+          <a href="/signup" className="text-[#43AA8B] hover:underline">
             Registrirajte se
           </a>
         </p>
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Korisničko ime
+              Email
             </label>
             <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#43AA8B]"
-              placeholder="Unesite korisničko ime"
+              placeholder="Unesite email"
+              required
             />
           </div>
           <div>
@@ -54,16 +60,8 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#43AA8B]"
               placeholder="Unesite lozinku"
+              required
             />
-          </div>
-          <div className="flex items-center justify-between text-sm text-gray-600">
-            <label className="flex items-center gap-2">
-              <input type="checkbox" className="rounded border-gray-300 text-[#43AA8B] focus:ring-[#43AA8B]" />
-              Zapamti me
-            </label>
-            <a href="/forgot-password" className="text-[#43AA8B] hover:underline">
-              Zaboravljena lozinka?
-            </a>
           </div>
           {error && (
             <p className="text-sm text-red-500 text-center">{error}</p>
