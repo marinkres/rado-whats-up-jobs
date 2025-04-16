@@ -3,6 +3,7 @@ import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "@/components/Sidebar";
 import { cn } from "@/lib/utils";
+import { Toaster, toast } from "react-hot-toast";
 
 const NewJob = () => {
   const [title, setTitle] = useState("");
@@ -47,11 +48,15 @@ const NewJob = () => {
         return;
       }
 
-      alert("Job added successfully!");
+      toast.success("Posao uspješno dodan!");
       navigate("/jobs"); // Redirect to the jobs page
     } catch (error) {
       setErrorMessage("An unexpected error occurred.");
     }
+  };
+
+  const handleCancel = () => {
+    navigate("/jobs"); // Navigate back to the jobs page
   };
 
   return (
@@ -64,6 +69,7 @@ const NewJob = () => {
           "pl-0" // No padding on mobile
         )}
       >
+        <Toaster position="top-right" reverseOrder={false} />
         <div className="container mx-auto py-8 px-4 sm:px-6">
           <h1 className="text-4xl font-bold text-gray-800 mb-8">Dodaj novi posao</h1>
 
@@ -111,12 +117,21 @@ const NewJob = () => {
             {errorMessage && (
               <p className="text-sm text-red-500 text-center">{errorMessage}</p>
             )}
-            <button
-              type="submit"
-              className="w-full py-2 bg-[#43AA8B] text-white font-semibold rounded-lg hover:bg-green-600 transition"
-            >
-              Dodaj posao
-            </button>
+            <div className="flex justify-between">
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+              >
+                Odustani
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-[#43AA8B] text-white font-semibold rounded-lg hover:bg-green-600 transition"
+              >
+                Dodaj posao
+              </button>
+            </div>
           </form>
         </div>
       </main>
