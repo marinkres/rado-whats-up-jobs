@@ -30,9 +30,10 @@ const Overview = () => {
             status,
             created_at,
             message,
+            job_id,
             candidates (name),
-            job_listings (title)
-          `);
+            job_listings (id, title)
+          `); // Ensure `job_id` and `job_listings` are properly joined
         setApplications(applicationsData || []);
       } catch (error) {
         console.error("Error fetching data:", error.message);
@@ -129,7 +130,7 @@ const Overview = () => {
               <h2 className="text-xl font-semibold text-gray-800 mb-4">Popularni poslovi</h2>
               <ul className="space-y-3">
                 {jobListings.slice(0, 5).map((job) => {
-                  const jobApplications = applications.filter((app) => app.job_id === job.id);
+                  const jobApplications = applications.filter((app) => app.job_id === job.id); // Match `job_id` with `job.id`
                   return (
                     <li
                       key={job.id}

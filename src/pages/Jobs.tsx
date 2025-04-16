@@ -10,10 +10,10 @@ import { Toaster, toast } from "react-hot-toast";
 const Jobs = () => {
   const [jobListings, setJobListings] = useState([]);
   const [jobToDelete, setJobToDelete] = useState(null); // Track the job to delete
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Track if the edit modal is open
-  const [editJob, setEditJob] = useState({ id: null, title: "", description: "" }); // Track the job being edited
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false); // Track if the description modal is open
   const [descriptionContent, setDescriptionContent] = useState(""); // Track the description content
+  const [isEditing, setIsEditing] = useState(false); // Track if editing mode is active
+  const [editJob, setEditJob] = useState({ id: null, title: "", description: "", status: "active" }); // Track the job being edited
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,37 +47,55 @@ const Jobs = () => {
     }
   };
 
-  const openEditModal = (job) => {
-    setEditJob({ id: job.id, title: job.title, description: job.description });
-    setIsEditModalOpen(true);
+  const startEditing = (job) => {
+    setEditJob({ id: job.id, title: job.title, description: job.description, status: job.active ? "active" : "paused" });
+    setIsEditing(true);
   };
 
-  const closeEditModal = () => {
-    setEditJob({ id: null, title: "", description: "" });
-    setIsEditModalOpen(false);
+  const cancelEditing = () => {
+    setEditJob({ id: null, title: "", description: "", status: "active" });
+    setIsEditing(false);
   };
 
-  const handleEditJob = async () => {
-    if (!editJob.id) return;
+  const handleSaveJob = async () => {
+    if (!editJob.title) {
+      toast.error("Naslov je obavezan!");
+      return;
+    }
 
     try {
-      const { error } = await supabase
-        .from("job_listings")
-        .update({ title: editJob.title, description: editJob.description })
-        .eq("id", editJob.id);
-      if (error) throw error;
+      if (editJob.id) {
+        // Update existing job
+        const { error } = await supabase
+          .from("job_listings")
+          .update({ title: editJob.title, description: editJob.description, active: editJob.status === "active" })
+          .eq("id", editJob.id);
+        if (error) throw error;
 
-      // Update the job in the state
-      setJobListings((prevJobs) =>
-        prevJobs.map((job) =>
-          job.id === editJob.id ? { ...job, title: editJob.title, description: editJob.description } : job
-        )
-      );
-      toast.success("Posao uspješno ažuriran!");
-      closeEditModal(); // Close the modal
+        // Update the job in the state
+        setJobListings((prevJobs) =>
+          prevJobs.map((job) =>
+            job.id === editJob.id
+              ? { ...job, title: editJob.title, description: editJob.description, active: editJob.status === "active" }
+              : job
+          )
+        );
+        toast.success("Posao uspješno ažuriran!");
+      } else {
+        // Add new job
+        const { data, error } = await supabase
+          .from("job_listings")
+          .insert({ title: editJob.title, description: editJob.description, active: editJob.status === "active" });
+        if (error) throw error;
+
+        setJobListings((prevJobs) => [...prevJobs, ...(data || [])]);
+        toast.success("Posao uspješno dodan!");
+      }
+
+      cancelEditing(); // Exit editing mode
     } catch (error) {
-      console.error("Error updating job:", error.message);
-      toast.error("Došlo je do pogreške prilikom ažuriranja posla.");
+      console.error("Error saving job:", error.message);
+      toast.error("Došlo je do pogreške prilikom spremanja posla.");
     }
   };
 
@@ -105,30 +123,92 @@ const Jobs = () => {
         <div className="container mx-auto py-8 px-4 sm:px-6">
           <h1 className="text-4xl font-bold text-gray-800 mb-8 mt-16 sm:mt-0">Poslovi</h1>
           <div className="flex justify-between items-center mb-8">
-            <button
-              onClick={() => navigate("/jobs/new")}
-              className="px-4 py-2 bg-[#43AA8B] text-white font-semibold rounded-lg hover:bg-green-600 transition"
-            >
-              Dodaj novi posao
-            </button>
+            {!isEditing && (
+              <button
+                onClick={() => setIsEditing(true)} // Start adding a new job
+                className="px-4 py-2 bg-[#43AA8B] text-white font-semibold rounded-lg hover:bg-green-600 transition"
+              >
+                Dodaj novi posao
+              </button>
+            )}
           </div>
 
+          {isEditing && (
+            <div className="bg-white p-6 shadow-lg border border-gray-200 rounded-lg mb-8">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                {editJob.id ? "Uredi posao" : "Dodaj novi posao"}
+              </h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Naslov</label>
+                  <input
+                    type="text"
+                    value={editJob.title}
+                    onChange={(e) => setEditJob({ ...editJob, title: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Opis</label>
+                  <textarea
+                    value={editJob.description}
+                    onChange={(e) => setEditJob({ ...editJob, description: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Status</label>
+                  <select
+                    value={editJob.status}
+                    onChange={(e) => setEditJob({ ...editJob, status: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                  >
+                    <option value="active">Aktivan</option>
+                    <option value="paused">Pauziran</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex justify-end gap-4 mt-6">
+                <button
+                  onClick={cancelEditing} // Cancel editing
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+                >
+                  Odustani
+                </button>
+                <button
+                  onClick={handleSaveJob}
+                  className="px-4 py-2 bg-[#43AA8B] text-white rounded-lg hover:bg-green-600  transition"
+                >
+                  Spremi
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
-              <thead className="bg-gray-100">
+            <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md text-sm">
+              <thead className="bg-gray-100 hidden md:table-header-group">
+                {/* Hide table headers on smaller screens */}
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Naslov</th>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Opis</th>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Status</th>
-                  <th className="px-6 py-3 text-left text-sm font-medium text-gray-600">Datum kreiranja</th>
-                  <th className="px-6 py-3 text-right text-sm font-medium text-gray-600">Akcije</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-600">Naslov</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-600">Opis</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-600">Status</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-600">Datum</th>
+                  <th className="px-4 py-2 text-right font-medium text-gray-600">Akcije</th>
                 </tr>
               </thead>
               <tbody>
                 {jobListings.map((job) => (
-                  <tr key={job.id} className="border-t">
-                    <td className="px-6 py-4 text-sm text-gray-800">{job.title}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                  <tr
+                    key={job.id}
+                    className="border-t md:table-row flex flex-col md:flex-row md:items-center md:justify-between"
+                  >
+                    <td className="px-4 py-2 text-gray-800 md:whitespace-nowrap">
+                      <span className="block md:hidden font-medium text-gray-600">Naslov:</span>
+                      {job.title}
+                    </td>
+                    <td className="px-4 py-2 text-gray-600 md:whitespace-nowrap">
+                      <span className="block md:hidden font-medium text-gray-600">Opis:</span>
                       <button
                         onClick={() => openDescriptionModal(job.description)} // Open the description modal
                         className="text-blue-600 hover:underline"
@@ -136,7 +216,8 @@ const Jobs = () => {
                         Opis
                       </button>
                     </td>
-                    <td className="px-6 py-4 text-sm">
+                    <td className="px-4 py-2 md:whitespace-nowrap">
+                      <span className="block md:hidden font-medium text-gray-600">Status:</span>
                       <span
                         className={cn(
                           job.active ? "text-green-600" : "text-red-600",
@@ -146,12 +227,14 @@ const Jobs = () => {
                         {job.active ? "Aktivan" : "Neaktivan"}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
+                    <td className="px-4 py-2 text-gray-500 md:whitespace-nowrap">
+                      <span className="block md:hidden font-medium text-gray-600">Datum:</span>
                       {new Date(job.created_at).toLocaleDateString("hr-HR")}
                     </td>
-                    <td className="px-6 py-4 text-right flex justify-end gap-2">
+                    <td className="px-4 py-2 text-right flex justify-end gap-2 md:whitespace-nowrap">
+                      <span className="block md:hidden font-medium text-gray-600">Akcije:</span>
                       <button
-                        onClick={() => openEditModal(job)} // Open the edit modal
+                        onClick={() => startEditing(job)} // Start editing the job
                         className="p-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition"
                       >
                         <svg
@@ -203,48 +286,6 @@ const Jobs = () => {
                   className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
                 >
                   Obriši
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Edit Job Modal */}
-        {isEditModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">Uredi posao</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Naslov</label>
-                  <input
-                    type="text"
-                    value={editJob.title}
-                    onChange={(e) => setEditJob({ ...editJob, title: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg p-2"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Opis</label>
-                  <textarea
-                    value={editJob.description}
-                    onChange={(e) => setEditJob({ ...editJob, description: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg p-2"
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end gap-4 mt-6">
-                <button
-                  onClick={closeEditModal} // Close the modal
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
-                >
-                  Odustani
-                </button>
-                <button
-                  onClick={handleEditJob}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                >
-                  Spremi
                 </button>
               </div>
             </div>
