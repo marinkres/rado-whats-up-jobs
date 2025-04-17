@@ -6,6 +6,11 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 module.exports = async (req, res) => {
+  // Check method FIRST!
+  if (req.method !== "POST") {
+    return res.status(405).send("Method Not Allowed");
+  }
+
   // Parse x-www-form-urlencoded body for Vercel
   let bodyObj = req.body;
   if (!bodyObj || Object.keys(bodyObj).length === 0) {
@@ -19,10 +24,6 @@ module.exports = async (req, res) => {
   }
 
   console.log("Twilio webhook hit!", req.method, bodyObj);
-
-  if (req.method !== "POST") {
-    return res.status(405).send("Method Not Allowed");
-  }
 
   const from = bodyObj.From;
   const body = bodyObj.Body;
