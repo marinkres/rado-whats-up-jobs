@@ -1,11 +1,11 @@
-const { createClient } = require("@supabase/supabase-js");
-const querystring = require("querystring");
+import { createClient } from "@supabase/supabase-js";
+import querystring from "querystring";
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   // Check method FIRST!
   if (req.method !== "POST") {
     return res.status(405).send("Method Not Allowed");
@@ -14,7 +14,6 @@ module.exports = async (req, res) => {
   // Parse x-www-form-urlencoded body for Vercel
   let bodyObj = req.body;
   if (!bodyObj || Object.keys(bodyObj).length === 0) {
-    // Read raw body
     const buffers = [];
     for await (const chunk of req) {
       buffers.push(chunk);
@@ -62,4 +61,4 @@ module.exports = async (req, res) => {
   ]);
 
   res.status(200).send("<Response></Response>");
-};
+}
