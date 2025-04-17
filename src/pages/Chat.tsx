@@ -5,17 +5,29 @@ import Sidebar from "@/components/Sidebar";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { supabase } from "@/lib/supabase"; // adjust import if needed
-
-const conversationId = 1; // Replace with actual conversation id logic
-const sender = "employer"; // or "candidate", depending on the user
+import { supabase } from "@/lib/supabase";
+import { useParams } from "react-router-dom";
 
 const Chat = () => {
+  const { conversationId } = useParams(); // expects /chat/:conversationId
   const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState([]);
+  const [sender, setSender] = useState<string | null>(null);
+
+  // Get current user email or id from Supabase auth
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) {
+        setSender(data.user.email || data.user.id);
+      }
+    };
+    getUser();
+  }, []);
 
   // Fetch messages from Supabase
   useEffect(() => {
+    if (!conversationId) return;
     const fetchMessages = async () => {
       const { data, error } = await supabase
         .from("messages")
@@ -25,10 +37,10 @@ const Chat = () => {
       if (!error) setChatHistory(data || []);
     };
     fetchMessages();
-  }, []);
+  }, [conversationId]);
 
   const handleSendMessage = async () => {
-    if (!message.trim()) return;
+    if (!message.trim() || !conversationId || !sender) return;
     setChatHistory((prev) => [
       ...prev,
       { sender, content: message, sent_at: new Date().toISOString() },
