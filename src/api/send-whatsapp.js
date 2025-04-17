@@ -8,8 +8,13 @@ const to = process.env.TWILIO_TARGET_NUMBER;
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
+if (!accountSid || !authToken || !from || !to || !supabaseUrl || !supabaseKey) {
+  console.error("Missing required environment variables for Twilio or Supabase");
+  // Optionally throw or exit
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 const client = twilio(accountSid, authToken);
 
 module.exports = async (req, res) => {
@@ -29,7 +34,6 @@ module.exports = async (req, res) => {
       body: message,
     });
 
-    // Insert message into Supabase
     const { error: dbError } = await supabase
       .from("messages")
       .insert([
