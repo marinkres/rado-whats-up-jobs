@@ -43,9 +43,10 @@ export default async function handler(req, res) {
   // 2. Ako je "PRIJAVA" i kandidat ne postoji, kreiraj ga i traži ime
   if (body.toUpperCase() === "PRIJAVA") {
     if (!candidate) {
+      // Popuni name s praznim stringom (ili "N/A") da zadovolji NOT NULL constraint
       const { data: newCandidate, error: newCandidateError } = await supabase
         .from("candidates")
-        .insert([{ phone: fromNumber, created_at: new Date().toISOString() }])
+        .insert([{ phone: fromNumber, name: "", created_at: new Date().toISOString() }]) // <-- name: ""
         .select();
       if (newCandidateError || !newCandidate || newCandidate.length === 0) {
         console.error("Supabase newCandidateError:", newCandidateError);
