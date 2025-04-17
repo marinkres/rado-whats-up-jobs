@@ -161,14 +161,20 @@ const Chat = () => {
                     {chatHistory.map((chat, index) => (
                       <div
                         key={index}
-                        className={`flex gap-2 ${chat.sender === sender ? "" : "justify-end"}`}
+                        className={`flex gap-2 ${
+                          chat.sender === "employer"
+                            ? "justify-end"
+                            : "justify-start"
+                        }`}
                       >
-                        {chat.sender === sender && (
-                          <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0" />
+                        {chat.sender === "candidate" && (
+                          <div className="w-8 h-8 rounded-full bg-purple-200 flex-shrink-0" />
                         )}
                         <div
                           className={`rounded-lg p-3 max-w-[80%] ${
-                            chat.sender === sender ? "bg-gray-100" : "bg-purple-100"
+                            chat.sender === "employer"
+                              ? "bg-gray-100"
+                              : "bg-purple-100"
                           }`}
                         >
                           <p className="text-sm">{chat.content}</p>
@@ -176,8 +182,8 @@ const Chat = () => {
                             {new Date(chat.sent_at).toLocaleTimeString()}
                           </span>
                         </div>
-                        {chat.sender !== sender && (
-                          <div className="w-8 h-8 rounded-full bg-purple-200 flex-shrink-0" />
+                        {chat.sender === "employer" && (
+                          <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0" />
                         )}
                       </div>
                     ))}
