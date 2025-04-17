@@ -85,22 +85,34 @@ const Chat = () => {
   }, [conversationId]);
 
   const handleSendMessage = async () => {
-    if (!message.trim() || !conversationId || !sender) return;
-    setChatHistory((prev) => [
-      ...prev,
-      { sender, content: message, sent_at: new Date().toISOString() },
-    ]);
+    if (!message.trim() || !conversationId) return;
+    const newMsg = {
+      conversation_id: conversationId,
+      sender: "employer",
+      content: message,
+      sent_at: new Date().toISOString(),
+    };
+    // Prvo spremi poruku u Supabase
+    const { error } = await supabase.from("messages").insert([newMsg]);
+    if (error) {
+      setChatHistory((prev) => [
+        ...prev,
+        { ...newMsg, content: "Failed to save message." },
+      ]);
+      setMessage("");
+      return;
+    }
+    setChatHistory((prev) => [...prev, newMsg]);
+    // Opcionalno: pošalji poruku kandidatu na WhatsApp preko backend API-ja
     try {
       await axios.post("/api/send-whatsapp", {
         message,
         conversation_id: conversationId,
-        sender,
+        sender: "employer",
+        candidate_id: selectedCandidate.id, // šaljemo i id kandidata
       });
-    } catch (error) {
-      setChatHistory((prev) => [
-        ...prev,
-        { sender: "agent", content: "Failed to send message.", sent_at: new Date().toISOString() },
-      ]);
+    } catch (err) {
+      // Možeš prikazati error ili ignorirati
     }
     setMessage("");
   };
