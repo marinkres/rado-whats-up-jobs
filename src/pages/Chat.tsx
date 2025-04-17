@@ -3,8 +3,56 @@ import { Input } from "@/components/ui/input";
 import { Send } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { supabase } from "@/lib/supabase"; // adjust import if needed
+
+const conversationId = 1; // Replace with actual conversation id logic
+const sender = "employer"; // or "candidate", depending on the user
 
 const Chat = () => {
+  const [message, setMessage] = useState("");
+  const [chatHistory, setChatHistory] = useState([]);
+
+  // Fetch messages from Supabase
+  useEffect(() => {
+    const fetchMessages = async () => {
+      const { data, error } = await supabase
+        .from("messages")
+        .select("*")
+        .eq("conversation_id", conversationId)
+        .order("sent_at", { ascending: true });
+      if (!error) setChatHistory(data || []);
+    };
+    fetchMessages();
+  }, []);
+
+  const handleSendMessage = async () => {
+    if (!message.trim()) return;
+    setChatHistory((prev) => [
+      ...prev,
+      { sender, content: message, sent_at: new Date().toISOString() },
+    ]);
+    try {
+      const response = await axios.post("/api/send-whatsapp", {
+        message,
+        conversation_id: conversationId,
+        sender,
+      });
+      const reply = response.data.reply;
+      setChatHistory((prev) => [
+        ...prev,
+        { sender: "agent", content: reply, sent_at: new Date().toISOString() },
+      ]);
+    } catch (error) {
+      setChatHistory((prev) => [
+        ...prev,
+        { sender: "agent", content: "Failed to send message.", sent_at: new Date().toISOString() },
+      ]);
+    }
+    setMessage("");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar />
@@ -39,24 +87,40 @@ const Chat = () => {
             <Card className="col-span-2 p-4">
               <div className="flex flex-col h-[600px]">
                 <div className="flex-1 overflow-auto space-y-4 mb-4">
-                  <div className="flex gap-2">
-                    <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0" />
-                    <div className="bg-gray-100 rounded-lg p-3 max-w-[80%]">
-                      <p className="text-sm">Pozdrav! Zanima me pozicija konobara u Splitu.</p>
+                  {chatHistory.map((chat, index) => (
+                    <div
+                      key={index}
+                      className={`flex gap-2 ${chat.sender === sender ? "" : "justify-end"}`}
+                    >
+                      {chat.sender === sender && (
+                        <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0" />
+                      )}
+                      <div
+                        className={`rounded-lg p-3 max-w-[80%] ${
+                          chat.sender === sender ? "bg-gray-100" : "bg-purple-100"
+                        }`}
+                      >
+                        <p className="text-sm">{chat.content}</p>
+                        <span className="block text-xs text-gray-400">{new Date(chat.sent_at).toLocaleTimeString()}</span>
+                      </div>
+                      {chat.sender !== sender && (
+                        <div className="w-8 h-8 rounded-full bg-purple-200 flex-shrink-0" />
+                      )}
                     </div>
-                  </div>
-
-                  <div className="flex gap-2 justify-end">
-                    <div className="bg-purple-100 rounded-lg p-3 max-w-[80%]">
-                      <p className="text-sm">Naravno! Recite mi malo više o vašem iskustvu.</p>
-                    </div>
-                    <div className="w-8 h-8 rounded-full bg-purple-200 flex-shrink-0" />
-                  </div>
+                  ))}
                 </div>
 
                 <div className="flex gap-2">
-                  <Input placeholder="Napišite poruku..." className="flex-1" />
-                  <button className="p-2 rounded-lg bg-purple-600 text-white">
+                  <Input
+                    placeholder="Napišite poruku..."
+                    className="flex-1"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                  />
+                  <button
+                    className="p-2 rounded-lg bg-purple-600 text-white"
+                    onClick={handleSendMessage}
+                  >
                     <Send className="h-5 w-5" />
                   </button>
                 </div>
