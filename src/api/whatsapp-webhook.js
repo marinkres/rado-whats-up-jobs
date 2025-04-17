@@ -1,18 +1,32 @@
 const { createClient } = require("@supabase/supabase-js");
+const querystring = require("querystring");
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 module.exports = async (req, res) => {
+  // Parse x-www-form-urlencoded body for Vercel
+  let bodyObj = req.body;
+  if (!bodyObj || Object.keys(bodyObj).length === 0) {
+    // Read raw body
+    const buffers = [];
+    for await (const chunk of req) {
+      buffers.push(chunk);
+    }
+    const rawBody = Buffer.concat(buffers).toString();
+    bodyObj = querystring.parse(rawBody);
+  }
+
+  console.log("Twilio webhook hit!", req.method, bodyObj);
+
   if (req.method !== "POST") {
     return res.status(405).send("Method Not Allowed");
   }
 
-  const from = req.body.From;
-  const body = req.body.Body;
+  const from = bodyObj.From;
+  const body = bodyObj.Body;
 
-  // Try to find the conversation for this sender (customize as needed)
   let conversation_id = null;
   const { data: conversations } = await supabase
     .from("conversations")
@@ -24,7 +38,6 @@ module.exports = async (req, res) => {
   if (conversations && conversations.length > 0) {
     conversation_id = conversations[0].id;
   } else {
-    // Optionally create a new conversation if not found
     const { data: newConv, error } = await supabase
       .from("conversations")
       .insert([{ candidate_id: from, created_at: new Date().toISOString() }])
