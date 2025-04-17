@@ -79,11 +79,11 @@ export default async function handler(req, res) {
     return res.status(500).send("Could not resolve conversation");
   }
 
-  // 3. Insert message
+  // 3. Insert message (sender must be "candidate" for WhatsApp incoming)
   const { error: msgError } = await supabase.from("messages").insert([
     {
       conversation_id,
-      sender: from,
+      sender: "candidate",
       content: body,
       sent_at: new Date().toISOString(),
     },
