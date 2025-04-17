@@ -31,8 +31,11 @@ const Chat = () => {
     const fetchCandidates = async () => {
       const { data, error } = await supabase
         .from("candidates")
-        .select("id, first_name, last_name, phone");
-      if (!error && data) setCandidates(data);
+        .select("id, name, phone");
+      if (error) {
+        console.error("Supabase candidates error:", error);
+      }
+      if (data) setCandidates(data);
     };
     fetchCandidates();
   }, []);
@@ -126,12 +129,11 @@ const Chat = () => {
                     onClick={() => setSelectedCandidate(candidate)}
                   >
                     <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600">
-                      {candidate.first_name?.[0]}
-                      {candidate.last_name?.[0]}
+                      {candidate.name?.split(" ").map((n: string) => n[0]).join("")}
                     </div>
                     <div>
                       <p className="font-medium">
-                        {candidate.first_name} {candidate.last_name}
+                        {candidate.name}
                       </p>
                       <p className="text-sm text-gray-500">{candidate.phone}</p>
                     </div>
