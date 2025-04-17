@@ -27,28 +27,22 @@ export default async function handler(req, res) {
     bodyObj = querystring.parse(rawBody);
   }
 
-  console.log("Twilio webhook hit!", req.method, bodyObj);
-
-  const fromNumber = bodyObj.From; // e.g. "whatsapp:+385994793004"
+  const fromNumber = bodyObj.From;
   const body = (bodyObj.Body || "").trim();
 
-  // Ako kandidat šalje "PRIJAVA" (case-insensitive)
+  // 1. Pronađi kandidata po broju
+  let { data: candidates, error: candidateError } = await supabase
+    .from("candidates")
+    .select("*")
+    .eq("phone", fromNumber)
+    .limit(1);
+
+  let candidate_id;
+  let candidate = candidates && candidates.length > 0 ? candidates[0] : null;
+
+  // 2. Ako je "PRIJAVA" i kandidat ne postoji, kreiraj ga i traži ime
   if (body.toUpperCase() === "PRIJAVA") {
-    // 1. Provjeri postoji li kandidat
-    const { data: candidates, error: candidateError } = await supabase
-      .from("candidates")
-      .select("id")
-      .eq("phone", fromNumber)
-      .limit(1);
-
-    let candidate_id;
-    if (candidateError) {
-      console.error("Supabase candidateError:", candidateError);
-      return res.status(500).send("Supabase error (candidate lookup)");
-    }
-
-    if (!candidates || candidates.length === 0) {
-      // 2. Ako ne postoji, stvori kandidata
+    if (!candidate) {
       const { data: newCandidate, error: newCandidateError } = await supabase
         .from("candidates")
         .insert([{ phone: fromNumber, created_at: new Date().toISOString() }])
@@ -57,23 +51,18 @@ export default async function handler(req, res) {
         console.error("Supabase newCandidateError:", newCandidateError);
         return res.status(500).send("Supabase error (candidate insert)");
       }
-      candidate_id = newCandidate[0].id;
-    } else {
-      candidate_id = candidates[0].id;
+      candidate = newCandidate[0];
     }
+    candidate_id = candidate.id;
 
-    // 3. Stvori novi conversation thread
+    // Stvori conversation
     const { data: newConv, error: newConvError } = await supabase
       .from("conversations")
       .insert([{ candidate_id, created_at: new Date().toISOString() }])
       .select();
-    if (newConvError || !newConv || newConv.length === 0) {
-      console.error("Supabase newConvError:", newConvError);
-      return res.status(500).send("Supabase error (conversation insert)");
-    }
-    const conversation_id = newConv[0].id;
+    const conversation_id = newConv && newConv.length > 0 ? newConv[0].id : null;
 
-    // 4. Spremi inicijalnu poruku u messages
+    // Spremi poruku
     await supabase.from("messages").insert([
       {
         conversation_id,
@@ -83,87 +72,115 @@ export default async function handler(req, res) {
       },
     ]);
 
-    // 5. Pošalji automatsku WhatsApp poruku
+    // Pošalji pitanje za ime i prezime
     try {
       await client.messages.create({
         from,
         to: fromNumber,
-        body:
-          "Bok! Ja sam Rado 🤖\nPomoći ću ti da se prijaviš za posao. Prvo mi reci svoje ime i prezime:",
+        body: "Bok! Ja sam Rado 🤖\nPomoći ću ti da se prijaviš za posao. Prvo mi reci svoje ime i prezime:",
       });
     } catch (err) {
       console.error("Twilio auto-reply error:", err);
     }
-
     return res.status(200).send("<Response></Response>");
   }
 
-  // 1. Lookup candidate by WhatsApp number (column "phone")
-  const { data: candidates, error: candidateError } = await supabase
-    .from("candidates")
-    .select("id")
-    .eq("phone", fromNumber)
-    .limit(1);
+  // 3. Ako kandidat postoji, onboarding logika po koracima
+  if (candidate) {
+    candidate_id = candidate.id;
 
-  if (candidateError) {
-    console.error("Supabase candidateError:", candidateError);
-    return res.status(500).send("Supabase error (candidate lookup)");
-  }
-  if (!candidates || candidates.length === 0) {
-    console.error("Candidate not found for WhatsApp number:", fromNumber);
-    return res.status(400).send("Candidate not found");
-  }
-
-  const candidate_id = candidates[0].id;
-
-  // 2. Find or create conversation for this candidate
-  let conversation_id = null;
-  const { data: conversations, error: convError } = await supabase
-    .from("conversations")
-    .select("id")
-    .eq("candidate_id", candidate_id)
-    .order("created_at", { ascending: false })
-    .limit(1);
-
-  if (convError) {
-    console.error("Supabase convError:", convError);
-    return res.status(500).send("Supabase error (conversation lookup)");
-  }
-
-  if (conversations && conversations.length > 0) {
-    conversation_id = conversations[0].id;
-  } else {
-    const { data: newConv, error: newConvError } = await supabase
+    // Pronađi najnoviji conversation
+    let { data: conversations } = await supabase
       .from("conversations")
-      .insert([{ candidate_id, created_at: new Date().toISOString() }])
-      .select();
-    if (newConvError) {
-      console.error("Supabase newConvError:", newConvError);
-      return res.status(500).send("Supabase error (conversation insert)");
+      .select("id")
+      .eq("candidate_id", candidate_id)
+      .order("created_at", { ascending: false })
+      .limit(1);
+    const conversation_id = conversations && conversations.length > 0 ? conversations[0].id : null;
+
+    // Spremi svaku poruku
+    await supabase.from("messages").insert([
+      {
+        conversation_id,
+        sender: "candidate",
+        content: body,
+        sent_at: new Date().toISOString(),
+      },
+    ]);
+
+    // Ako nema ime, upiši ime i traži jezike
+    if (!candidate.name) {
+      await supabase.from("candidates").update({ name: body }).eq("id", candidate_id);
+      try {
+        await client.messages.create({
+          from,
+          to: fromNumber,
+          body: "Super, hvala! Koje jezike govoriš?",
+        });
+      } catch (err) {
+        console.error("Twilio auto-reply error:", err);
+      }
+      return res.status(200).send("<Response></Response>");
     }
-    if (newConv && newConv.length > 0) {
-      conversation_id = newConv[0].id;
+
+    // Ako nema jezike, upiši jezike i traži dostupnost
+    if (!candidate.languages) {
+      await supabase.from("candidates").update({ languages: body }).eq("id", candidate_id);
+      try {
+        await client.messages.create({
+          from,
+          to: fromNumber,
+          body: "Odlično! Kada si dostupan za rad?",
+        });
+      } catch (err) {
+        console.error("Twilio auto-reply error:", err);
+      }
+      return res.status(200).send("<Response></Response>");
     }
+
+    // Ako nema dostupnost, upiši dostupnost i traži iskustvo
+    if (!candidate.availability) {
+      await supabase.from("candidates").update({ availability: body }).eq("id", candidate_id);
+      try {
+        await client.messages.create({
+          from,
+          to: fromNumber,
+          body: "Hvala! Imaš li prethodnog iskustva? Ukratko opiši.",
+        });
+      } catch (err) {
+        console.error("Twilio auto-reply error:", err);
+      }
+      return res.status(200).send("<Response></Response>");
+    }
+
+    // Ako nema iskustvo, upiši iskustvo i završi prijavu
+    if (!candidate.experience) {
+      await supabase.from("candidates").update({ experience: body }).eq("id", candidate_id);
+      try {
+        await client.messages.create({
+          from,
+          to: fromNumber,
+          body: "Hvala na prijavi! Poslodavac će te kontaktirati čim prije. Sretno! 🍀",
+        });
+      } catch (err) {
+        console.error("Twilio auto-reply error:", err);
+      }
+      return res.status(200).send("<Response></Response>");
+    }
+
+    // Ako je sve popunjeno, možeš ignorirati ili poslati generičku poruku
+    try {
+      await client.messages.create({
+        from,
+        to: fromNumber,
+        body: "Tvoja prijava je već zaprimljena. Ako želiš nešto nadopuniti, javi se ovdje.",
+      });
+    } catch (err) {
+      console.error("Twilio auto-reply error:", err);
+    }
+    return res.status(200).send("<Response></Response>");
   }
 
-  if (!conversation_id) {
-    console.error("Could not resolve conversation for candidate:", candidate_id);
-    return res.status(500).send("Could not resolve conversation");
-  }
-
-  // 3. Insert message (sender must be "candidate" for WhatsApp incoming)
-  const { error: msgError } = await supabase.from("messages").insert([
-    {
-      conversation_id,
-      sender: "candidate",
-      content: body,
-      sent_at: new Date().toISOString(),
-    },
-  ]);
-  if (msgError) {
-    console.error("Supabase msgError:", msgError);
-    return res.status(500).send("Supabase error (message insert)");
-  }
-
-  res.status(200).send("<Response></Response>");
+  // Ako kandidat nije pronađen i nije "PRIJAVA"
+  return res.status(200).send("<Response></Response>");
 }
