@@ -111,6 +111,33 @@ export default async function handler(req, res) {
       },
     ]);
 
+    // --- DODANO: Stvori application zapis ---
+    if (prijavaJobId && candidate_id) {
+      const { data: existingApp, error: appSelectError } = await supabase
+        .from("applications")
+        .select("id")
+        .eq("candidate_id", candidate_id)
+        .eq("job_id", prijavaJobId)
+        .limit(1);
+      if (!existingApp || existingApp.length === 0) {
+        const { error: appInsertError } = await supabase
+          .from("applications")
+          .insert([
+            {
+              candidate_id,
+              job_id: prijavaJobId,
+              status: "pending",
+              created_at: new Date().toISOString(),
+              message: "Prijava putem WhatsAppa",
+            },
+          ]);
+        if (appInsertError) {
+          console.error("Supabase application insert error:", appInsertError);
+        }
+      }
+    }
+    // --- KRAJ DODANO ---
+
     // Pošalji izbor jezika kao WhatsApp "gumbove" (interactive message)
     try {
       await client.messages.create({
