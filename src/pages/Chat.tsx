@@ -176,7 +176,7 @@ const Chat = () => {
               {selectedCandidate ? (
                 <div className="flex flex-col h-[600px]">
                   <div className="flex-1 overflow-auto space-y-4 mb-4">
-                    {/* Provjeri je li kandidat popunio sve podatke */}
+                    {/* Prikaži sažetak ako su svi podaci popunjeni */}
                     {selectedCandidate.name && selectedCandidate.languages && selectedCandidate.availability && selectedCandidate.experience ? (
                       <div className="bg-purple-50 rounded-lg p-4 mb-4">
                         <div className="font-semibold mb-2 text-purple-800">Podaci kandidata:</div>
@@ -188,21 +188,50 @@ const Chat = () => {
                         </div>
                       </div>
                     ) : null}
-                    {/* Prikaži ostale poruke (npr. od employer-a) */}
+                    {/* Prikaži samo poruke koje nisu dio onboarding popunjavanja */}
                     {chatHistory
-                      .filter(chat => chat.sender === "employer")
+                      .filter(chat => {
+                        // Sakrij candidate poruke koje su identične s podacima kandidata
+                        if (chat.sender !== "candidate") return true;
+                        if (
+                          chat.content === selectedCandidate.name ||
+                          chat.content === selectedCandidate.languages ||
+                          chat.content === selectedCandidate.availability ||
+                          chat.content === selectedCandidate.experience
+                        ) {
+                          return false;
+                        }
+                        // Sakrij "PRIJAVA" poruku kandidata
+                        if (chat.content.trim().toUpperCase() === "PRIJAVA") return false;
+                        return true;
+                      })
                       .map((chat, index) => (
                         <div
                           key={index}
-                          className="flex gap-2 justify-end"
+                          className={`flex gap-2 ${
+                            chat.sender === "employer"
+                              ? "justify-end"
+                              : "justify-start"
+                          }`}
                         >
-                          <div className="rounded-lg p-3 max-w-[80%] bg-gray-100">
+                          {chat.sender === "candidate" && (
+                            <div className="w-8 h-8 rounded-full bg-purple-200 flex-shrink-0" />
+                          )}
+                          <div
+                            className={`rounded-lg p-3 max-w-[80%] ${
+                              chat.sender === "employer"
+                                ? "bg-gray-100"
+                                : "bg-purple-100"
+                            }`}
+                          >
                             <p className="text-sm">{chat.content}</p>
                             <span className="block text-xs text-gray-400">
                               {new Date(chat.sent_at).toLocaleTimeString()}
                             </span>
                           </div>
-                          <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0" />
+                          {chat.sender === "employer" && (
+                            <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0" />
+                          )}
                         </div>
                     ))}
                   </div>

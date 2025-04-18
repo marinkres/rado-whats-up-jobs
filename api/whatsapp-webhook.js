@@ -170,15 +170,6 @@ export default async function handler(req, res) {
     }
 
     // Ako je sve popunjeno, možeš ignorirati ili poslati generičku poruku
-    try {
-      await client.messages.create({
-        from,
-        to: fromNumber,
-        body: "Tvoja prijava je već zaprimljena. Ako želiš nešto nadopuniti, javi se ovdje.",
-      });
-    } catch (err) {
-      console.error("Twilio auto-reply error:", err);
-    }
     return res.status(200).send("<Response></Response>");
   }
 
