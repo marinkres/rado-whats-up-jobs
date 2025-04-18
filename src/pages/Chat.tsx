@@ -203,6 +203,18 @@ const Chat = () => {
                         }
                         // Sakrij "PRIJAVA" poruku kandidata
                         if (chat.content.trim().toUpperCase() === "PRIJAVA") return false;
+                        // Sakrij odabir jezika ("1", "2", "hr", "en", "hrvatski", "english")
+                        const langInput = chat.content.trim().toLowerCase();
+                        if (
+                          langInput === "1" ||
+                          langInput === "2" ||
+                          langInput === "hr" ||
+                          langInput === "en" ||
+                          langInput === "hrvatski" ||
+                          langInput === "english"
+                        ) {
+                          return false;
+                        }
                         return true;
                       })
                       .map((chat, index) => (

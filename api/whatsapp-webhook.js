@@ -13,7 +13,7 @@ const client = twilio(accountSid, authToken);
 
 const MESSAGES = {
   hr: {
-    welcome: "Bok! Ja sam Rado 🤖\nZa nastavak odaberi jezik:\n1️⃣ Hrvatski\n2️⃣ English",
+    welcome: "Bok! Ja sam Rado 🤖\nZa nastavak odaberi jezik (choose language):\n1️⃣ Hrvatski\n2️⃣ English",
     askName: "Kako se zoveš? (ime i prezime)",
     askLanguages: "Koje jezike govoriš?",
     askAvailability: "Kada si dostupan za rad?",
