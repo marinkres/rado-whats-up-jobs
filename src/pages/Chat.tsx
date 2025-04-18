@@ -100,7 +100,7 @@ const Chat = () => {
     // Poll svakih 3 sekunde za ažuriranje podataka kandidata
     interval = setInterval(fetchCandidate, 3000);
     return () => clearInterval(interval);
-  }, [selectedCandidate?.id]);
+  }, [selectedCandidate?.id, selectedCandidate?.language_choice]); // <-- DODANO: ovisnost o language_choice
 
   const handleSendMessage = async () => {
     if (!message.trim() || !conversationId) return;
