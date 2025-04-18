@@ -78,6 +78,33 @@ export default async function handler(req, res) {
     }
     candidate_id = candidate.id;
 
+    // --- DODANO: Dohvati naziv firme i posla ---
+    let jobTitle = "";
+    let companyName = "";
+    if (prijavaJobId) {
+      // Dohvati naslov posla
+      const { data: job } = await supabase
+        .from("job_listings")
+        .select("title, employer_id")
+        .eq("id", prijavaJobId)
+        .single();
+      if (job) {
+        jobTitle = job.title || "";
+        // Dohvati naziv firme iz employers tablice
+        if (job.employer_id) {
+          const { data: employer } = await supabase
+            .from("employers")
+            .select("company_name")
+            .eq("id", job.employer_id)
+            .single();
+          if (employer) {
+            companyName = employer.company_name || "";
+          }
+        }
+      }
+    }
+    // --- KRAJ DODANO ---
+
     // Provjeri postoji li već conversation za ovog kandidata i taj job_id
     let conversation_id = null;
     if (prijavaJobId) {
@@ -138,12 +165,19 @@ export default async function handler(req, res) {
     }
     // --- KRAJ DODANO ---
 
-    // Pošalji izbor jezika kao WhatsApp "gumbove" (interactive message)
+    // --- DODANO: Prilagodi welcome poruku ---
+    let welcomeMsg = MESSAGES.hr.welcome;
+    if (jobTitle || companyName) {
+      welcomeMsg =
+        `Bok! Ja sam Rado 🤖\nPrijava za posao: ${jobTitle || "-"}${companyName ? ` u tvrtki: ${companyName}` : ""}\n\nZa nastavak odaberi jezik (choose language):\n1️⃣ Hrvatski\n2️⃣ English`;
+    }
+    // --- KRAJ DODANO ---
+
     try {
       await client.messages.create({
         from,
         to: fromNumber,
-        body: MESSAGES.hr.welcome,
+        body: welcomeMsg,
       });
     } catch (err) {
       console.error("Twilio auto-reply error:", err);
