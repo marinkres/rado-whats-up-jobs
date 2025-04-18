@@ -84,6 +84,24 @@ const Chat = () => {
     return () => clearInterval(interval);
   }, [conversationId]);
 
+  // Dohvati najnovije podatke za odabranog kandidata
+  useEffect(() => {
+    if (!selectedCandidate) return;
+    let interval: NodeJS.Timeout;
+    const fetchCandidate = async () => {
+      const { data, error } = await supabase
+        .from("candidates")
+        .select("*")
+        .eq("id", selectedCandidate.id)
+        .single();
+      if (!error && data) setSelectedCandidate(data);
+    };
+    fetchCandidate();
+    // Poll svakih 3 sekunde za ažuriranje podataka kandidata
+    interval = setInterval(fetchCandidate, 3000);
+    return () => clearInterval(interval);
+  }, [selectedCandidate?.id]);
+
   const handleSendMessage = async () => {
     if (!message.trim() || !conversationId) return;
     const newMsg = {
@@ -158,34 +176,34 @@ const Chat = () => {
               {selectedCandidate ? (
                 <div className="flex flex-col h-[600px]">
                   <div className="flex-1 overflow-auto space-y-4 mb-4">
-                    {chatHistory.map((chat, index) => (
-                      <div
-                        key={index}
-                        className={`flex gap-2 ${
-                          chat.sender === "employer"
-                            ? "justify-end"
-                            : "justify-start"
-                        }`}
-                      >
-                        {chat.sender === "candidate" && (
-                          <div className="w-8 h-8 rounded-full bg-purple-200 flex-shrink-0" />
-                        )}
-                        <div
-                          className={`rounded-lg p-3 max-w-[80%] ${
-                            chat.sender === "employer"
-                              ? "bg-gray-100"
-                              : "bg-purple-100"
-                          }`}
-                        >
-                          <p className="text-sm">{chat.content}</p>
-                          <span className="block text-xs text-gray-400">
-                            {new Date(chat.sent_at).toLocaleTimeString()}
-                          </span>
+                    {/* Provjeri je li kandidat popunio sve podatke */}
+                    {selectedCandidate.name && selectedCandidate.languages && selectedCandidate.availability && selectedCandidate.experience ? (
+                      <div className="bg-purple-50 rounded-lg p-4 mb-4">
+                        <div className="font-semibold mb-2 text-purple-800">Podaci kandidata:</div>
+                        <div className="text-sm text-purple-900">
+                          <div><span className="font-medium">Ime i prezime:</span> {selectedCandidate.name}</div>
+                          <div><span className="font-medium">Jezici:</span> {selectedCandidate.languages}</div>
+                          <div><span className="font-medium">Dostupnost:</span> {selectedCandidate.availability}</div>
+                          <div><span className="font-medium">Radno iskustvo:</span> {selectedCandidate.experience}</div>
                         </div>
-                        {chat.sender === "employer" && (
-                          <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0" />
-                        )}
                       </div>
+                    ) : null}
+                    {/* Prikaži ostale poruke (npr. od employer-a) */}
+                    {chatHistory
+                      .filter(chat => chat.sender === "employer")
+                      .map((chat, index) => (
+                        <div
+                          key={index}
+                          className="flex gap-2 justify-end"
+                        >
+                          <div className="rounded-lg p-3 max-w-[80%] bg-gray-100">
+                            <p className="text-sm">{chat.content}</p>
+                            <span className="block text-xs text-gray-400">
+                              {new Date(chat.sent_at).toLocaleTimeString()}
+                            </span>
+                          </div>
+                          <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0" />
+                        </div>
                     ))}
                   </div>
                   <div className="flex gap-2">
