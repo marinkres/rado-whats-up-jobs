@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 import { Toaster, toast } from "react-hot-toast";
+import { QRCodeSVG } from "qrcode.react";
+import html2canvas from "html2canvas";
 
 const Skeleton = ({ className = "" }) => (
   <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
@@ -19,6 +21,8 @@ const Jobs = () => {
   const [isEditing, setIsEditing] = useState(false); // Track if editing mode is active
   const [editJob, setEditJob] = useState({ id: null, title: "", description: "", status: "active", job_link: "" }); // Track the job being edited
   const [loading, setLoading] = useState(true);
+  const [qrModalJob, setQrModalJob] = useState(null); // Track the job for QR modal
+  const qrRef = React.useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -153,6 +157,15 @@ const Jobs = () => {
   const closeDescriptionModal = () => {
     setDescriptionContent("");
     setIsDescriptionModalOpen(false);
+  };
+
+  const handleDownloadQR = async () => {
+    if (!qrRef.current) return;
+    const canvas = await html2canvas(qrRef.current);
+    const link = document.createElement("a");
+    link.download = `qr-job-${qrModalJob.id}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
   };
 
   return (
@@ -337,6 +350,14 @@ const Jobs = () => {
                           Copy Whatsapp link
                         </button>
                         <button
+                          onClick={() => setQrModalJob(job)}
+                          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-semibold"
+                          disabled={!job.active}
+                          style={job.active ? {} : { opacity: 0.5, cursor: "not-allowed" }}
+                        >
+                          QR Code
+                        </button>
+                        <button
                           onClick={() => startEditing(job)}
                           className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition font-semibold"
                         >
@@ -356,6 +377,33 @@ const Jobs = () => {
             </div>
           )}
         </div>
+
+        {/* QR Code Modal */}
+        {qrModalJob && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-xs flex flex-col items-center">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4">QR kod za prijavu</h2>
+              <div ref={qrRef}>
+                <QRCodeSVG value={qrModalJob.job_link} size={192} />
+              </div>
+              <div className="mt-4 text-center text-xs text-gray-500 break-all">{qrModalJob.job_link}</div>
+              <div className="flex gap-2 mt-6">
+                <button
+                  onClick={handleDownloadQR}
+                  className="px-4 py-2 bg-green-300 text-green-900 rounded-lg hover:bg-green-200 transition"
+                >
+                  Download QR
+                </button>
+                <button
+                  onClick={() => setQrModalJob(null)}
+                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition"
+                >
+                  Zatvori
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Delete Confirmation Modal */}
         {jobToDelete && (
