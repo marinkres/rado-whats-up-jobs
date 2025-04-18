@@ -17,7 +17,7 @@ const Jobs = () => {
   const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false); // Track if the description modal is open
   const [descriptionContent, setDescriptionContent] = useState(""); // Track the description content
   const [isEditing, setIsEditing] = useState(false); // Track if editing mode is active
-  const [editJob, setEditJob] = useState({ id: null, title: "", description: "", status: "active" }); // Track the job being edited
+  const [editJob, setEditJob] = useState({ id: null, title: "", description: "", status: "active", job_link: "" }); // Track the job being edited
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -28,7 +28,7 @@ const Jobs = () => {
         // Dohvati samo potrebna polja i limitiraj broj rezultata
         const { data: jobsData, error } = await supabase
           .from("job_listings")
-          .select("id,title,description,created_at,active")
+          .select("id,title,description,created_at,active,job_link")
           .order("created_at", { ascending: false })
           .limit(50); // ili koliko trebaš prikazati
         if (error) throw error;
@@ -61,12 +61,18 @@ const Jobs = () => {
   };
 
   const startEditing = (job) => {
-    setEditJob({ id: job.id, title: job.title, description: job.description, status: job.active ? "active" : "paused" });
+    setEditJob({
+      id: job.id,
+      title: job.title,
+      description: job.description,
+      status: job.active ? "active" : "paused",
+      job_link: job.job_link || "",
+    });
     setIsEditing(true);
   };
 
   const cancelEditing = () => {
-    setEditJob({ id: null, title: "", description: "", status: "active" });
+    setEditJob({ id: null, title: "", description: "", status: "active", job_link: "" });
     setIsEditing(false);
   };
 
@@ -81,7 +87,12 @@ const Jobs = () => {
         // Update existing job
         const { error } = await supabase
           .from("job_listings")
-          .update({ title: editJob.title, description: editJob.description, active: editJob.status === "active" })
+          .update({
+            title: editJob.title,
+            description: editJob.description,
+            active: editJob.status === "active",
+            job_link: editJob.job_link,
+          })
           .eq("id", editJob.id);
         if (error) throw error;
 
@@ -89,7 +100,13 @@ const Jobs = () => {
         setJobListings((prevJobs) =>
           prevJobs.map((job) =>
             job.id === editJob.id
-              ? { ...job, title: editJob.title, description: editJob.description, active: editJob.status === "active" }
+              ? {
+                  ...job,
+                  title: editJob.title,
+                  description: editJob.description,
+                  active: editJob.status === "active",
+                  job_link: editJob.job_link,
+                }
               : job
           )
         );
@@ -98,7 +115,12 @@ const Jobs = () => {
         // Add new job
         const { data, error } = await supabase
           .from("job_listings")
-          .insert({ title: editJob.title, description: editJob.description, active: editJob.status === "active" });
+          .insert({
+            title: editJob.title,
+            description: editJob.description,
+            active: editJob.status === "active",
+            job_link: editJob.job_link,
+          });
         if (error) throw error;
 
         setJobListings((prevJobs) => [...prevJobs, ...(data || [])]);
@@ -179,6 +201,16 @@ const Jobs = () => {
                     <option value="paused">Pauziran</option>
                   </select>
                 </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Job link</label>
+                  <input
+                    type="text"
+                    value={editJob.job_link}
+                    onChange={(e) => setEditJob({ ...editJob, job_link: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg p-2"
+                    placeholder="https://example.com/oglas"
+                  />
+                </div>
               </div>
               <div className="flex justify-end gap-4 mt-6">
                 <button
@@ -231,9 +263,9 @@ const Jobs = () => {
                   {/* Hide table headers on smaller screens */}
                   <tr>
                     <th className="px-4 py-2 text-left font-medium text-gray-600">Naslov</th>
-                    <th className="px-4 py-2 text-left font-medium text-gray-600">Opis</th>
                     <th className="px-4 py-2 text-left font-medium text-gray-600">Status</th>
                     <th className="px-4 py-2 text-left font-medium text-gray-600">Datum</th>
+                    <th className="px-4 py-2 text-left font-medium text-gray-600">Job link</th>
                     <th className="px-4 py-2 text-right font-medium text-gray-600">Akcije</th>
                   </tr>
                 </thead>
@@ -246,15 +278,6 @@ const Jobs = () => {
                       <td className="px-4 py-2 text-gray-800 md:whitespace-nowrap">
                         <span className="block md:hidden font-medium text-gray-600">Naslov:</span>
                         {job.title}
-                      </td>
-                      <td className="px-4 py-2 text-gray-600 md:whitespace-nowrap">
-                        <span className="block md:hidden font-medium text-gray-600">Opis:</span>
-                        <button
-                          onClick={() => openDescriptionModal(job.description)} // Open the description modal
-                          className="text-blue-600 hover:underline"
-                        >
-                          Opis
-                        </button>
                       </td>
                       <td className="px-4 py-2 md:whitespace-nowrap">
                         <span className="block md:hidden font-medium text-gray-600">Status:</span>
@@ -271,26 +294,23 @@ const Jobs = () => {
                         <span className="block md:hidden font-medium text-gray-600">Datum:</span>
                         {new Date(job.created_at).toLocaleDateString("hr-HR")}
                       </td>
+                      <td className="px-4 py-2 text-blue-600 md:whitespace-nowrap break-all">
+                        <span className="block md:hidden font-medium text-gray-600">Job link:</span>
+                        {job.job_link ? (
+                          <a href={job.job_link} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                            {job.job_link}
+                          </a>
+                        ) : (
+                          <span className="text-gray-400">Nema linka</span>
+                        )}
+                      </td>
                       <td className="px-4 py-2 text-right flex justify-end gap-2 md:whitespace-nowrap">
                         <span className="block md:hidden font-medium text-gray-600">Akcije:</span>
                         <button
                           onClick={() => startEditing(job)} // Start editing the job
-                          className="p-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition"
+                          className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition font-semibold"
                         >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-5 w-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M15.232 5.232l3.536 3.536M9 11l6.536-6.536a2 2 0 112.828 2.828L11.828 13.828a2 2 0 01-.828.536l-3 1a1 1 0 01-1.264-1.264l1-3a2 2 0 01.536-.828z"
-                            />
-                          </svg>
+                          Uredi
                         </button>
                         <button
                           onClick={() => setJobToDelete(job)} // Open the delete modal
