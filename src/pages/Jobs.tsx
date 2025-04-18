@@ -211,6 +211,24 @@ const Jobs = () => {
                     placeholder="https://example.com/oglas"
                   />
                 </div>
+                {editJob.id && (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Datum objave</label>
+                    <input
+                      type="text"
+                      value={
+                        (() => {
+                          const job = jobListings.find((j) => j.id === editJob.id);
+                          return job?.created_at
+                            ? new Date(job.created_at).toLocaleDateString("hr-HR")
+                            : "";
+                        })()
+                      }
+                      readOnly
+                      className="w-full border border-gray-300 rounded-lg p-2 bg-gray-100 text-gray-500"
+                    />
+                  </div>
+                )}
               </div>
               <div className="flex justify-end gap-4 mt-6">
                 <button
@@ -260,13 +278,10 @@ const Jobs = () => {
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md text-sm">
                 <thead className="bg-gray-100 hidden md:table-header-group">
-                  {/* Hide table headers on smaller screens */}
                   <tr>
                     <th className="px-4 py-2 text-left font-medium text-gray-600">Naslov</th>
                     <th className="px-4 py-2 text-left font-medium text-gray-600">Status</th>
-                    <th className="px-4 py-2 text-left font-medium text-gray-600">Datum</th>
-                    <th className="px-4 py-2 text-left font-medium text-gray-600">Job link</th>
-                    <th className="px-4 py-2 text-right font-medium text-gray-600">Akcije</th>
+                    <th className="px-4 py-2 text-left font-medium text-gray-600">Akcije</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -290,33 +305,28 @@ const Jobs = () => {
                           {job.active ? "Aktivan" : "Neaktivan"}
                         </span>
                       </td>
-                      <td className="px-4 py-2 text-gray-500 md:whitespace-nowrap">
-                        <span className="block md:hidden font-medium text-gray-600">Datum:</span>
-                        {new Date(job.created_at).toLocaleDateString("hr-HR")}
-                      </td>
-                      <td className="px-4 py-2 text-blue-600 md:whitespace-nowrap break-all">
-                        <span className="block md:hidden font-medium text-gray-600">Job link:</span>
-                        {job.job_link ? (
-                          <a href={job.job_link} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                            {job.job_link}
-                          </a>
-                        ) : (
-                          <span className="text-gray-400">Nema linka</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-2 text-right flex justify-end gap-2 md:whitespace-nowrap">
-                        <span className="block md:hidden font-medium text-gray-600">Akcije:</span>
+                      <td className="px-4 py-2 text-right flex flex-col md:flex-row justify-start gap-2 md:whitespace-nowrap">
                         <button
-                          onClick={() => startEditing(job)} // Start editing the job
+                          onClick={async () => {
+                            const link = `https://wa.me/14155238886?text=PRIJAVA:${job.id}`;
+                            await navigator.clipboard.writeText(link);
+                            toast.success("WhatsApp link kopiran!");
+                          }}
+                          className="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition font-semibold"
+                        >
+                          Copy Whatsapp link
+                        </button>
+                        <button
+                          onClick={() => startEditing(job)}
                           className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition font-semibold"
                         >
                           Uredi
                         </button>
                         <button
-                          onClick={() => setJobToDelete(job)} // Open the delete modal
-                          className="p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition"
+                          onClick={() => setJobToDelete(job)}
+                          className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"
                         >
-                          <Trash2 className="h-5 w-5" />
+                          Obriši
                         </button>
                       </td>
                     </tr>

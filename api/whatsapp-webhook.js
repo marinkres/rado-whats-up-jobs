@@ -59,8 +59,11 @@ export default async function handler(req, res) {
   let candidate_id;
   let candidate = candidates && candidates.length > 0 ? candidates[0] : null;
 
-  // 2. Ako je "PRIJAVA" i kandidat ne postoji, kreiraj ga i pitaj za jezik
-  if (body.toUpperCase() === "PRIJAVA") {
+  // 2. Ako je "PRIJAVA" ili "PRIJAVA:{job_id}" i kandidat ne postoji, kreiraj ga i pitaj za jezik
+  let prijavaJobId = null;
+  let prijavaMatch = body.toUpperCase().match(/^PRIJAVA(?::(\d+))?$/);
+  if (prijavaMatch) {
+    prijavaJobId = prijavaMatch[1] ? prijavaMatch[1] : null;
     if (!candidate) {
       const { data: newCandidate, error: newCandidateError } = await supabase
         .from("candidates")
@@ -74,10 +77,10 @@ export default async function handler(req, res) {
     }
     candidate_id = candidate.id;
 
-    // Stvori conversation
+    // Stvori conversation i veži na posao ako postoji job_id
     const { data: newConv } = await supabase
       .from("conversations")
-      .insert([{ candidate_id, created_at: new Date().toISOString() }])
+      .insert([{ candidate_id, job_id: prijavaJobId, created_at: new Date().toISOString() }])
       .select();
     const conversation_id = newConv && newConv.length > 0 ? newConv[0].id : null;
 
@@ -97,8 +100,6 @@ export default async function handler(req, res) {
         from,
         to: fromNumber,
         body: MESSAGES.hr.welcome,
-        // WhatsApp interactive messages (quick replies) - fallback to text for sandbox
-        // For production, use Twilio's interactive templates
       });
     } catch (err) {
       console.error("Twilio auto-reply error:", err);
