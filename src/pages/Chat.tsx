@@ -7,6 +7,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { supabase } from "@/lib/supabase";
 
+// Skeleton loader component
+const Skeleton = ({ className = "" }) => (
+  <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
+);
+
 const Chat = () => {
   const [candidates, setCandidates] = useState<any[]>([]);
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
@@ -14,6 +19,7 @@ const Chat = () => {
   const [chatHistory, setChatHistory] = useState<any[]>([]);
   const [message, setMessage] = useState("");
   const [sender, setSender] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Dohvati prijavljenog korisnika
   useEffect(() => {
@@ -29,6 +35,7 @@ const Chat = () => {
   // Dohvati sve kandidate iz baze
   useEffect(() => {
     const fetchCandidates = async () => {
+      setLoading(true);
       const { data, error } = await supabase
         .from("candidates")
         .select("id, name, phone");
@@ -36,6 +43,7 @@ const Chat = () => {
         console.error("Supabase candidates error:", error);
       }
       if (data) setCandidates(data);
+      setLoading(false);
     };
     fetchCandidates();
   }, []);
@@ -137,7 +145,6 @@ const Chat = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Sidebar />
       <main
         className={cn(
           "transition-all duration-300",
@@ -150,30 +157,55 @@ const Chat = () => {
             <Card className="p-4">
               <h2 className="text-lg font-semibold mb-4">Kandidati</h2>
               <div className="space-y-2">
-                {candidates.map((candidate) => (
-                  <div
-                    key={candidate.id}
-                    className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-gray-100 ${
-                      selectedCandidate?.id === candidate.id ? "bg-gray-200" : ""
-                    }`}
-                    onClick={() => setSelectedCandidate(candidate)}
-                  >
-                    <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600">
-                      {candidate.name?.split(" ").map((n: string) => n[0]).join("")}
-                    </div>
-                    <div>
-                      <p className="font-medium">
-                        {candidate.name}
-                      </p>
-                      <p className="text-sm text-gray-500">{candidate.phone}</p>
-                    </div>
-                  </div>
-                ))}
+                {loading
+                  ? Array.from({ length: 5 }).map((_, i) => (
+                      <div key={i} className="flex items-center gap-3 p-3">
+                        <Skeleton className="w-10 h-10" />
+                        <div className="flex-1">
+                          <Skeleton className="h-4 w-32 mb-2" />
+                          <Skeleton className="h-3 w-20" />
+                        </div>
+                      </div>
+                    ))
+                  : candidates.map((candidate) => (
+                      <div
+                        key={candidate.id}
+                        className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-gray-100 ${
+                          selectedCandidate?.id === candidate.id ? "bg-gray-200" : ""
+                        }`}
+                        onClick={() => setSelectedCandidate(candidate)}
+                      >
+                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600">
+                          {candidate.name?.split(" ").map((n: string) => n[0]).join("")}
+                        </div>
+                        <div>
+                          <p className="font-medium">
+                            {candidate.name}
+                          </p>
+                          <p className="text-sm text-gray-500">{candidate.phone}</p>
+                        </div>
+                      </div>
+                    ))}
               </div>
             </Card>
 
             <Card className="col-span-2 p-4">
-              {selectedCandidate ? (
+              {loading ? (
+                <div className="flex flex-col h-[600px]">
+                  <div className="flex-1 overflow-auto space-y-4 mb-4">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <div key={i} className="flex gap-2">
+                        <Skeleton className="w-8 h-8" />
+                        <Skeleton className="h-8 w-2/3" />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-10" />
+                  </div>
+                </div>
+              ) : selectedCandidate ? (
                 <div className="flex flex-col h-[600px]">
                   <div className="flex-1 overflow-auto space-y-4 mb-4">
                     {/* Prikaži sažetak ako su svi podaci popunjeni */}

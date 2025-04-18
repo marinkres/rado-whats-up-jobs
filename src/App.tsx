@@ -12,6 +12,7 @@ import Settings from "./pages/Settings";
 import Login from "./pages/Login"; 
 import Signup from "./pages/Signup"; // Import the React-based signup page
 import NewJob from "./pages/NewJob"; // Import the NewJob page
+import Sidebar from "@/components/Sidebar"; // Import the Sidebar component
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,8 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        {/* Sidebar izvan <Routes> */}
+        <Sidebar />
         <Routes>
           <Route path="/" element={<Login />} /> {/* Login page */}
           <Route path="/overview" element={<Overview />} /> {/* Overview page */}

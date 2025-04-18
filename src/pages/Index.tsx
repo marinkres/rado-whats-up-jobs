@@ -30,7 +30,6 @@ const Applications = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Sidebar />
       <main
         className={cn(
           "transition-all duration-300",

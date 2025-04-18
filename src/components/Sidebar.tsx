@@ -1,7 +1,7 @@
 import { MessageSquare, Grid, Briefcase, Users, Settings, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useLocation } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import { useLocation, Link } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 
 const menuItems = [
@@ -15,10 +15,13 @@ const menuItems = [
 const Sidebar = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const [userEmail, setUserEmail] = useState("");
-  const [companyName, setCompanyName] = useState("RADO DEMO");
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [companyName, setCompanyName] = useState<string | null>(null);
+  const fetchedRef = useRef(false);
 
   useEffect(() => {
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
     const fetchUserDetails = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
@@ -67,17 +70,18 @@ const Sidebar = () => {
           </div>
           <nav className="space-y-1">
             {menuItems.map((item) => (
-              <a
+              <Link
                 key={item.label}
-                href={item.href}
+                to={item.href}
                 className={cn(
                   "flex items-center gap-3 px-4 py-2 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors",
                   location.pathname === item.href && "bg-gray-100 text-gray-900"
                 )}
+                onClick={() => setIsOpen(false)}
               >
                 <item.icon className="h-5 w-5" />
                 <span>{item.label}</span>
-              </a>
+              </Link>
             ))}
           </nav>
         </div>
@@ -86,8 +90,12 @@ const Sidebar = () => {
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gray-300" />
               <div>
-                <p className="font-medium text-sm">{companyName}</p>
-                <p className="text-sm text-gray-500">{userEmail || "info@rado.ai"}</p>
+                <p className="font-medium text-sm">
+                  {companyName ?? <span className="animate-pulse text-gray-400">...</span>}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {userEmail ?? <span className="animate-pulse text-gray-300">...</span>}
+                </p>
               </div>
             </div>
           </div>
