@@ -3,6 +3,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 
+const Skeleton = ({ className = "" }) => (
+  <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
+);
+
 const Applications = () => {
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +49,26 @@ const Applications = () => {
       <div className="container mx-auto py-8 px-4 sm:px-6">
         <h1 className="text-2xl font-bold mb-6">Prijave kandidata</h1>
         {loading ? (
-          <div className="text-center text-gray-500">Učitavanje...</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Card key={i} className="p-5 flex flex-col gap-3 shadow-md">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="w-12 h-12" />
+                  <div className="flex-1">
+                    <Skeleton className="h-4 w-32 mb-2" />
+                    <Skeleton className="h-3 w-20" />
+                  </div>
+                </div>
+                <Skeleton className="h-3 w-full my-2" />
+                <Skeleton className="h-3 w-2/3 my-2" />
+                <Skeleton className="h-3 w-1/2 my-2" />
+                <div className="flex gap-2 mt-2">
+                  <Skeleton className="h-8 w-20" />
+                  <Skeleton className="h-8 w-20" />
+                </div>
+              </Card>
+            ))}
+          </div>
         ) : applications.length === 0 ? (
           <div className="text-center text-gray-400">Nema prijava.</div>
         ) : (

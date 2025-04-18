@@ -7,6 +7,10 @@ import { useNavigate } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 import { Toaster, toast } from "react-hot-toast";
 
+const Skeleton = ({ className = "" }) => (
+  <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
+);
+
 const Jobs = () => {
   const [jobListings, setJobListings] = useState([]);
   const [jobToDelete, setJobToDelete] = useState(null); // Track the job to delete
@@ -14,16 +18,20 @@ const Jobs = () => {
   const [descriptionContent, setDescriptionContent] = useState(""); // Track the description content
   const [isEditing, setIsEditing] = useState(false); // Track if editing mode is active
   const [editJob, setEditJob] = useState({ id: null, title: "", description: "", status: "active" }); // Track the job being edited
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
+        setLoading(true);
         const { data: jobsData, error } = await supabase.from("job_listings").select("*");
         if (error) throw error;
         setJobListings(jobsData || []);
       } catch (error) {
         console.error("Error fetching jobs:", error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -184,85 +192,114 @@ const Jobs = () => {
             </div>
           )}
 
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md text-sm">
-              <thead className="bg-gray-100 hidden md:table-header-group">
-                {/* Hide table headers on smaller screens */}
-                <tr>
-                  <th className="px-4 py-2 text-left font-medium text-gray-600">Naslov</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-600">Opis</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-600">Status</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-600">Datum</th>
-                  <th className="px-4 py-2 text-right font-medium text-gray-600">Akcije</th>
-                </tr>
-              </thead>
-              <tbody>
-                {jobListings.map((job) => (
-                  <tr
-                    key={job.id}
-                    className="border-t md:table-row flex flex-col md:flex-row md:items-center md:justify-between"
-                  >
-                    <td className="px-4 py-2 text-gray-800 md:whitespace-nowrap">
-                      <span className="block md:hidden font-medium text-gray-600">Naslov:</span>
-                      {job.title}
-                    </td>
-                    <td className="px-4 py-2 text-gray-600 md:whitespace-nowrap">
-                      <span className="block md:hidden font-medium text-gray-600">Opis:</span>
-                      <button
-                        onClick={() => openDescriptionModal(job.description)} // Open the description modal
-                        className="text-blue-600 hover:underline"
-                      >
-                        Opis
-                      </button>
-                    </td>
-                    <td className="px-4 py-2 md:whitespace-nowrap">
-                      <span className="block md:hidden font-medium text-gray-600">Status:</span>
-                      <span
-                        className={cn(
-                          job.active ? "text-green-600" : "text-red-600",
-                          "font-medium"
-                        )}
-                      >
-                        {job.active ? "Aktivan" : "Neaktivan"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2 text-gray-500 md:whitespace-nowrap">
-                      <span className="block md:hidden font-medium text-gray-600">Datum:</span>
-                      {new Date(job.created_at).toLocaleDateString("hr-HR")}
-                    </td>
-                    <td className="px-4 py-2 text-right flex justify-end gap-2 md:whitespace-nowrap">
-                      <span className="block md:hidden font-medium text-gray-600">Akcije:</span>
-                      <button
-                        onClick={() => startEditing(job)} // Start editing the job
-                        className="p-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M15.232 5.232l3.536 3.536M9 11l6.536-6.536a2 2 0 112.828 2.828L11.828 13.828a2 2 0 01-.828.536l-3 1a1 1 0 01-1.264-1.264l1-3a2 2 0 01.536-.828z"
-                          />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => setJobToDelete(job)} // Open the delete modal
-                        className="p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition"
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </button>
-                    </td>
+          {loading ? (
+            <div className="p-4">
+              <div className="overflow-x-auto">
+                <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md text-sm">
+                  <thead className="bg-gray-100 hidden md:table-header-group">
+                    <tr>
+                      {[...Array(6)].map((_, i) => (
+                        <th key={i} className="px-4 py-2">
+                          <Skeleton className="h-4 w-20" />
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[...Array(6)].map((_, i) => (
+                      <tr key={i} className="border-b">
+                        {[...Array(6)].map((_, j) => (
+                          <td key={j} className="px-4 py-3">
+                            <Skeleton className="h-4 w-full" />
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md text-sm">
+                <thead className="bg-gray-100 hidden md:table-header-group">
+                  {/* Hide table headers on smaller screens */}
+                  <tr>
+                    <th className="px-4 py-2 text-left font-medium text-gray-600">Naslov</th>
+                    <th className="px-4 py-2 text-left font-medium text-gray-600">Opis</th>
+                    <th className="px-4 py-2 text-left font-medium text-gray-600">Status</th>
+                    <th className="px-4 py-2 text-left font-medium text-gray-600">Datum</th>
+                    <th className="px-4 py-2 text-right font-medium text-gray-600">Akcije</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {jobListings.map((job) => (
+                    <tr
+                      key={job.id}
+                      className="border-t md:table-row flex flex-col md:flex-row md:items-center md:justify-between"
+                    >
+                      <td className="px-4 py-2 text-gray-800 md:whitespace-nowrap">
+                        <span className="block md:hidden font-medium text-gray-600">Naslov:</span>
+                        {job.title}
+                      </td>
+                      <td className="px-4 py-2 text-gray-600 md:whitespace-nowrap">
+                        <span className="block md:hidden font-medium text-gray-600">Opis:</span>
+                        <button
+                          onClick={() => openDescriptionModal(job.description)} // Open the description modal
+                          className="text-blue-600 hover:underline"
+                        >
+                          Opis
+                        </button>
+                      </td>
+                      <td className="px-4 py-2 md:whitespace-nowrap">
+                        <span className="block md:hidden font-medium text-gray-600">Status:</span>
+                        <span
+                          className={cn(
+                            job.active ? "text-green-600" : "text-red-600",
+                            "font-medium"
+                          )}
+                        >
+                          {job.active ? "Aktivan" : "Neaktivan"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2 text-gray-500 md:whitespace-nowrap">
+                        <span className="block md:hidden font-medium text-gray-600">Datum:</span>
+                        {new Date(job.created_at).toLocaleDateString("hr-HR")}
+                      </td>
+                      <td className="px-4 py-2 text-right flex justify-end gap-2 md:whitespace-nowrap">
+                        <span className="block md:hidden font-medium text-gray-600">Akcije:</span>
+                        <button
+                          onClick={() => startEditing(job)} // Start editing the job
+                          className="p-2 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M15.232 5.232l3.536 3.536M9 11l6.536-6.536a2 2 0 112.828 2.828L11.828 13.828a2 2 0 01-.828.536l-3 1a1 1 0 01-1.264-1.264l1-3a2 2 0 01.536-.828z"
+                            />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setJobToDelete(job)} // Open the delete modal
+                          className="p-2 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition"
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         {/* Delete Confirmation Modal */}
