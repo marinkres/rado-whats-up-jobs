@@ -61,7 +61,8 @@ export default async function handler(req, res) {
 
   // 2. Ako je "PRIJAVA" ili "PRIJAVA:{job_id}" i kandidat ne postoji, kreiraj ga i pitaj za jezik
   let prijavaJobId = null;
-  let prijavaMatch = body.toUpperCase().match(/^PRIJAVA(?::(\d+))?$/);
+  // Ispravi regex da podržava i UUID (ne samo brojeve)
+  let prijavaMatch = body.toUpperCase().match(/^PRIJAVA(?::([A-Z0-9-]+))?$/i);
   if (prijavaMatch) {
     prijavaJobId = prijavaMatch[1] ? prijavaMatch[1] : null;
     if (!candidate) {
