@@ -91,12 +91,10 @@ const Jobs = () => {
             title: editJob.title,
             description: editJob.description,
             active: editJob.status === "active",
-            job_link: editJob.job_link,
           })
           .eq("id", editJob.id);
         if (error) throw error;
 
-        // Update the job in the state
         setJobListings((prevJobs) =>
           prevJobs.map((job) =>
             job.id === editJob.id
@@ -105,7 +103,6 @@ const Jobs = () => {
                   title: editJob.title,
                   description: editJob.description,
                   active: editJob.status === "active",
-                  job_link: editJob.job_link,
                 }
               : job
           )
@@ -119,11 +116,25 @@ const Jobs = () => {
             title: editJob.title,
             description: editJob.description,
             active: editJob.status === "active",
-            job_link: editJob.job_link,
-          });
+          })
+          .select();
         if (error) throw error;
 
-        setJobListings((prevJobs) => [...prevJobs, ...(data || [])]);
+        // Generiraj job_link na temelju novog ID-a
+        if (data && data.length > 0) {
+          const newJob = data[0];
+          const job_link = `https://wa.me/14155238886?text=PRIJAVA:${newJob.id}`;
+          // Updajtaj job_link u bazi
+          await supabase
+            .from("job_listings")
+            .update({ job_link })
+            .eq("id", newJob.id);
+
+          setJobListings((prevJobs) => [
+            ...prevJobs,
+            { ...newJob, job_link },
+          ]);
+        }
         toast.success("Posao uspješno dodan!");
       }
 
@@ -201,21 +212,23 @@ const Jobs = () => {
                     <option value="paused">Pauziran</option>
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Job link</label>
-                  <input
-                    type="text"
-                    value={
-                      (() => {
-                        const job = jobListings.find((j) => j.id === editJob.id);
-                        return job?.job_link ?? editJob.job_link ?? "";
-                      })()
-                    }
-                    readOnly
-                    className="w-full border border-gray-300 rounded-lg p-2 bg-gray-100 text-gray-500"
-                    placeholder="https://example.com/oglas"
-                  />
-                </div>
+                {editJob.id && (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Job link</label>
+                    <input
+                      type="text"
+                      value={
+                        (() => {
+                          const job = jobListings.find((j) => j.id === editJob.id);
+                          return job?.job_link ?? editJob.job_link ?? "";
+                        })()
+                      }
+                      readOnly
+                      className="w-full border border-gray-300 rounded-lg p-2 bg-gray-100 text-gray-500"
+                      placeholder="https://example.com/oglas"
+                    />
+                  </div>
+                )}
                 {editJob.id && (
                   <div>
                     <label className="block text-sm font-medium mb-1">Datum objave</label>
