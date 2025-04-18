@@ -205,9 +205,14 @@ const Jobs = () => {
                   <label className="block text-sm font-medium mb-1">Job link</label>
                   <input
                     type="text"
-                    value={editJob.job_link}
-                    onChange={(e) => setEditJob({ ...editJob, job_link: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg p-2"
+                    value={
+                      (() => {
+                        const job = jobListings.find((j) => j.id === editJob.id);
+                        return job?.job_link ?? editJob.job_link ?? "";
+                      })()
+                    }
+                    readOnly
+                    className="w-full border border-gray-300 rounded-lg p-2 bg-gray-100 text-gray-500"
                     placeholder="https://example.com/oglas"
                   />
                 </div>
@@ -313,6 +318,8 @@ const Jobs = () => {
                             toast.success("WhatsApp link kopiran!");
                           }}
                           className="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition font-semibold"
+                          disabled={!job.active}
+                          style={job.active ? {} : { opacity: 0.5, cursor: "not-allowed" }}
                         >
                           Copy Whatsapp link
                         </button>

@@ -77,12 +77,28 @@ export default async function handler(req, res) {
     }
     candidate_id = candidate.id;
 
-    // Stvori conversation i veži na posao ako postoji job_id
-    const { data: newConv } = await supabase
-      .from("conversations")
-      .insert([{ candidate_id, job_id: prijavaJobId, created_at: new Date().toISOString() }])
-      .select();
-    const conversation_id = newConv && newConv.length > 0 ? newConv[0].id : null;
+    // Provjeri postoji li već conversation za ovog kandidata i taj job_id
+    let conversation_id = null;
+    if (prijavaJobId) {
+      const { data: existingConv } = await supabase
+        .from("conversations")
+        .select("id")
+        .eq("candidate_id", candidate_id)
+        .eq("job_id", prijavaJobId)
+        .order("created_at", { ascending: false })
+        .limit(1);
+      if (existingConv && existingConv.length > 0) {
+        conversation_id = existingConv[0].id;
+      }
+    }
+    // Ako ne postoji, kreiraj novi conversation
+    if (!conversation_id) {
+      const { data: newConv } = await supabase
+        .from("conversations")
+        .insert([{ candidate_id, job_id: prijavaJobId, created_at: new Date().toISOString() }])
+        .select();
+      conversation_id = newConv && newConv.length > 0 ? newConv[0].id : null;
+    }
 
     // Spremi poruku
     await supabase.from("messages").insert([
