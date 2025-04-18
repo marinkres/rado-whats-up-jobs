@@ -25,7 +25,12 @@ const Jobs = () => {
     const fetchJobs = async () => {
       try {
         setLoading(true);
-        const { data: jobsData, error } = await supabase.from("job_listings").select("*");
+        // Dohvati samo potrebna polja i limitiraj broj rezultata
+        const { data: jobsData, error } = await supabase
+          .from("job_listings")
+          .select("id,title,description,created_at,active")
+          .order("created_at", { ascending: false })
+          .limit(50); // ili koliko trebaš prikazati
         if (error) throw error;
         setJobListings(jobsData || []);
       } catch (error) {

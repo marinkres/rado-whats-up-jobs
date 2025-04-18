@@ -10,39 +10,19 @@ const Skeleton = ({ className = "" }) => (
 const Applications = () => {
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 20;
 
   useEffect(() => {
     const fetchApplications = async () => {
       setLoading(true);
-      // Pretpostavljamo da tablica conversations ima candidate_id i job_id
-      // i da postoji veza na candidates i (opcionalno) job_listings
-      const { data, error } = await supabase
-        .from("conversations")
-        .select(`
-          id,
-          created_at,
-          candidate_id,
-          job_id,
-          candidates (
-            id,
-            name,
-            phone,
-            languages,
-            availability,
-            experience,
-            language_choice
-          ),
-          job_listings (
-            id,
-            title
-          )
-        `)
-        .order("created_at", { ascending: false });
-      if (!error && data) setApplications(data);
+      const res = await fetch("/api/applications-cache");
+      const json = await res.json();
+      setApplications(json.data || []);
       setLoading(false);
     };
     fetchApplications();
-  }, []);
+  }, [page]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -130,6 +110,16 @@ const Applications = () => {
                 </div>
               </Card>
             ))}
+          </div>
+        )}
+        {!loading && (
+          <div className="flex justify-center mt-6">
+            <button
+              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+              onClick={() => setPage((p) => p + 1)}
+            >
+              Učitaj još
+            </button>
           </div>
         )}
       </div>
