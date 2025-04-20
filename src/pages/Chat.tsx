@@ -144,7 +144,7 @@ const Chat = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white dark:bg-[hsl(var(--sidebar-background))] transition-colors">
       <main
         className={cn(
           "transition-all duration-300",
@@ -155,34 +155,34 @@ const Chat = () => {
         <div className="container mx-auto py-8 px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <Card className="p-4">
-              <h2 className="text-lg font-semibold mb-4">Kandidati</h2>
+              <h2 className="text-lg font-semibold mb-4 dark:text-gray-200">Kandidati</h2>
               <div className="space-y-2">
                 {loading
                   ? Array.from({ length: 5 }).map((_, i) => (
-                      <div key={i} className="flex items-center gap-3 p-3">
-                        <Skeleton className="w-10 h-10" />
-                        <div className="flex-1">
-                          <Skeleton className="h-4 w-32 mb-2" />
-                          <Skeleton className="h-3 w-20" />
+                      <div key={i} className="flex items-center gap-3 p-3 dark:bg-gray-900">
+                        <Skeleton className="w-10 h-10 dark:bg-gray-800" />
+                        <div className="flex-1 dark:bg-gray-900">
+                          <Skeleton className="h-4 w-32 mb-2 dark:bg-gray-900" />
+                          <Skeleton className="h-3 w-20 dark:bg-gray-900" />
                         </div>
                       </div>
                     ))
                   : candidates.map((candidate) => (
                       <div
                         key={candidate.id}
-                        className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-gray-100 ${
-                          selectedCandidate?.id === candidate.id ? "bg-gray-200" : ""
+                        className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-gray-400 text-gray-800 bg-gray-300 dark:hover:bg-gray-700 dark:text-gray-100 dark:bg-gray-800 ${
+                          selectedCandidate?.id === candidate.id ? "bg-gray-300" : ""
                         }`}
                         onClick={() => setSelectedCandidate(candidate)}
                       >
-                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-600">
+                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold">
                           {candidate.name?.split(" ").map((n: string) => n[0]).join("")}
                         </div>
                         <div>
                           <p className="font-medium">
                             {candidate.name}
                           </p>
-                          <p className="text-sm text-gray-500">{candidate.phone}</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-300">{candidate.phone}</p>
                         </div>
                       </div>
                     ))}
@@ -194,15 +194,15 @@ const Chat = () => {
                 <div className="flex flex-col h-[600px]">
                   <div className="flex-1 overflow-auto space-y-4 mb-4">
                     {Array.from({ length: 6 }).map((_, i) => (
-                      <div key={i} className="flex gap-2">
-                        <Skeleton className="w-8 h-8" />
-                        <Skeleton className="h-8 w-2/3" />
+                      <div key={i} className="flex gap-2 dark:bg-gray-900">
+                        <Skeleton className="w-8 h-8 dark:bg-gray-900" />
+                        <Skeleton className="h-8 w-2/3 dark:bg-gray-900" />
                       </div>
                     ))}
                   </div>
-                  <div className="flex gap-2">
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-10 w-10" />
+                  <div className="flex gap-2 dark:bg-gray-900">
+                    <Skeleton className="h-10 w-full dark:bg-gray-900" />
+                    <Skeleton className="h-10 w-10 dark:bg-gray-800" />
                   </div>
                 </div>
               ) : selectedCandidate ? (
@@ -210,9 +210,9 @@ const Chat = () => {
                   <div className="flex-1 overflow-auto space-y-4 mb-4">
                     {/* Prikaži sažetak ako su svi podaci popunjeni */}
                     {selectedCandidate.name && selectedCandidate.languages && selectedCandidate.availability && selectedCandidate.experience ? (
-                      <div className="bg-purple-50 rounded-lg p-4 mb-4">
-                        <div className="font-semibold mb-2 text-purple-800">Podaci kandidata:</div>
-                        <div className="text-sm text-purple-900">
+                      <div className="bg-purple-50 rounded-lg p-4 mb-4 dark:bg-gray-800">
+                        <div className="font-semibold mb-2 text-purple-800 dark:text-green-300">Podaci kandidata:</div>
+                        <div className="text-sm text-purple-900 dark:text-gray-200">
                           <div><span className="font-medium">Ime i prezime:</span> {selectedCandidate.name}</div>
                           <div><span className="font-medium">Jezici:</span> {selectedCandidate.languages}</div>
                           <div><span className="font-medium">Dostupnost:</span> {selectedCandidate.availability}</div>
@@ -258,14 +258,12 @@ const Chat = () => {
                               : "justify-start"
                           }`}
                         >
-                          {chat.sender === "candidate" && (
-                            <div className="w-8 h-8 rounded-full bg-purple-200 flex-shrink-0" />
-                          )}
+
                           <div
                             className={`rounded-lg p-3 max-w-[80%] ${
                               chat.sender === "employer"
-                                ? "bg-gray-100"
-                                : "bg-purple-100"
+                                ? "bg-gray-200 dark:bg-gray-800"
+                                : "bg-green-200 dark:bg-green-800"
                             }`}
                           >
                             <p className="text-sm">{chat.content}</p>
@@ -273,9 +271,7 @@ const Chat = () => {
                               {new Date(chat.sent_at).toLocaleTimeString()}
                             </span>
                           </div>
-                          {chat.sender === "employer" && (
-                            <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0" />
-                          )}
+
                         </div>
                     ))}
                   </div>
@@ -288,11 +284,11 @@ const Chat = () => {
                       disabled={!conversationId}
                     />
                     <button
-                      className="p-2 rounded-lg bg-purple-600 text-white"
+                      className="p-2 rounded-lg bg-green-600 text-white"
                       onClick={handleSendMessage}
                       disabled={!conversationId}
                     >
-                      <Send className="h-5 w-5" />
+                      <Send className="h-5 w-8" />
                     </button>
                   </div>
                 </div>

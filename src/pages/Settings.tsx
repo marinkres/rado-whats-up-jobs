@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import Sidebar from "@/components/Sidebar";
 import { cn } from "@/lib/utils";
 import { MessageCircle } from "lucide-react"; // Import WhatsApp-like icon
+import ThemeSwitch from "@/components/ThemeSwitch"; // Import theme switch component
 
 const Settings = () => {
   const [userEmail, setUserEmail] = useState("");
@@ -36,7 +37,9 @@ const Settings = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div
+      className="min-h-screen bg-white dark:bg-[hsl(var(--sidebar-background))] transition-colors"
+    >
       <main
         className={cn(
           "transition-all duration-300",
@@ -45,8 +48,17 @@ const Settings = () => {
         )}
       >
         <div className="container mx-auto py-8 px-4 sm:px-6">
-          <h1 className="text-4xl font-bold text-gray-800 mb-8 mt-16 sm:mt-0">Postavke</h1>
+          <h1 className="text-4xl font-bold text-gray-800 mb-8 mt-16 sm:mt-0 dark:text-gray-200">Postavke</h1>
           {/* Adjusted `mt-16` to ensure more spacing between the burger menu and the title on mobile */}
+          <Card className="p-6 mb-6">
+              <div className="flex items-center gap-2 mb-4">
+                <h2 className="text-lg font-semibold">Izgled</h2>
+              </div>
+              <div className="space-y-4 max-w-lg">
+                <p>Svijetlo/Tamno</p>
+                <ThemeSwitch />
+              </div>
+            </Card>
           <div className="space-y-6">
             <Card className="p-6">
               <h2 className="text-lg font-semibold mb-4">Profil tvrtke</h2>
@@ -63,7 +75,7 @@ const Settings = () => {
                   <label className="block text-sm font-medium mb-1">Telefon</label>
                   <Input value={phone} readOnly />
                 </div>
-                <Button>Spremi promjene</Button>
+                <Button variant="outline">Spremi promjene</Button>
               </div>
             </Card>
 
@@ -73,10 +85,10 @@ const Settings = () => {
                 <h2 className="text-lg font-semibold">WhatsApp integracija</h2>
               </div>
               <div className="space-y-4 max-w-lg">
-                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg dark:bg-green-700">
                   <div>
-                    <p className="font-medium text-green-800">Povezano</p>
-                    <p className="text-sm text-green-600">+385 98 765 4321</p>
+                    <p className="font-medium text-green-800 dark:text-green-100">Povezano</p>
+                    <p className="text-sm text-green-600 dark:text-green-200">+385 98 765 4321</p>
                   </div>
                   <Button variant="outline">Promijeni broj</Button>
                 </div>

@@ -169,7 +169,7 @@ const Jobs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white dark:bg-[hsl(var(--sidebar-background))] transition-colors">
       <main
         className={cn(
           "transition-all duration-300",
@@ -179,7 +179,7 @@ const Jobs = () => {
       >
         <Toaster position="top-right" reverseOrder={false} />
         <div className="container mx-auto py-8 px-4 sm:px-6">
-          <h1 className="text-4xl font-bold text-gray-800 mb-8 mt-16 sm:mt-0">Poslovi</h1>
+          <h1 className="text-4xl font-bold text-gray-800 mb-8 mt-16 sm:mt-0 dark:text-gray-200">Poslovi</h1>
           <div className="flex justify-between items-center mb-8">
             {!isEditing && (
               <button
@@ -192,8 +192,8 @@ const Jobs = () => {
           </div>
 
           {isEditing && (
-            <div className="bg-white p-6 shadow-lg border border-gray-200 rounded-lg mb-8">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">
+            <div className="bg-white p-6 shadow-lg border border-gray-200 rounded-lg mb-8 dark:bg-gray-800">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4 dark:text-gray-200">
                 {editJob.id ? "Uredi posao" : "Dodaj novi posao"}
               </h2>
               <div className="space-y-4">
@@ -203,7 +203,7 @@ const Jobs = () => {
                     type="text"
                     value={editJob.title}
                     onChange={(e) => setEditJob({ ...editJob, title: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg p-2"
+                    className="w-full border border-gray-300 rounded-lg p-2 dark:bg-gray-800"
                   />
                 </div>
                 <div>
@@ -211,7 +211,7 @@ const Jobs = () => {
                   <textarea
                     value={editJob.description}
                     onChange={(e) => setEditJob({ ...editJob, description: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg p-2"
+                    className="w-full border border-gray-300 rounded-lg p-2 dark:bg-gray-800"
                   />
                 </div>
                 <div>
@@ -219,7 +219,7 @@ const Jobs = () => {
                   <select
                     value={editJob.status}
                     onChange={(e) => setEditJob({ ...editJob, status: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg p-2"
+                    className="w-full border border-gray-300 rounded-lg p-2 dark:bg-gray-800"
                   >
                     <option value="active">Aktivan</option>
                     <option value="paused">Pauziran</option>
@@ -237,7 +237,7 @@ const Jobs = () => {
                         })()
                       }
                       readOnly
-                      className="w-full border border-gray-300 rounded-lg p-2 bg-gray-100 text-gray-500"
+                      className="w-full border border-gray-300 rounded-lg p-2 bg-gray-100 text-gray-500 dark:bg-gray-900 dark:text-gray-300"
                       placeholder="https://example.com/oglas"
                     />
                   </div>
@@ -256,7 +256,7 @@ const Jobs = () => {
                         })()
                       }
                       readOnly
-                      className="w-full border border-gray-300 rounded-lg p-2 bg-gray-100 text-gray-500"
+                      className="w-full border border-gray-300 rounded-lg p-2 bg-gray-100 text-gray-500 dark:bg-gray-900 dark:text-gray-300"
                     />
                   </div>
                 )}
@@ -307,29 +307,29 @@ const Jobs = () => {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md text-sm">
-                <thead className="bg-gray-100 hidden md:table-header-group">
+              <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md text-sm dark:bg-gray-900 dark:border-gray-800">
+                <thead className="bg-gray-100 hidden md:table-header-group dark:bg-gray-800">
                   <tr>
-                    <th className="px-4 py-2 text-left font-medium text-gray-600">Naslov</th>
-                    <th className="px-4 py-2 text-left font-medium text-gray-600">Status</th>
-                    <th className="px-4 py-2 text-left font-medium text-gray-600">Akcije</th>
+                    <th className="px-4 py-2 text-left font-medium text-gray-600 dark:text-gray-200">Naslov</th>
+                    <th className="px-4 py-2 text-left font-medium text-gray-600 dark:text-gray-200">Status</th>
+                    <th className="px-4 py-2 text-left font-medium text-gray-600 dark:text-gray-200">Akcije</th>
                   </tr>
                 </thead>
                 <tbody>
                   {jobListings.map((job) => (
                     <tr
                       key={job.id}
-                      className="border-t md:table-row flex flex-col md:flex-row md:items-center md:justify-between"
+                      className="border-t md:table-row flex flex-col md:flex-row md:items-center md:justify-between dark:bg-gray-900"
                     >
-                      <td className="px-4 py-2 text-gray-800 md:whitespace-nowrap">
-                        <span className="block md:hidden font-medium text-gray-600">Naslov:</span>
+                      <td className="px-4 py-2 text-gray-800 md:whitespace-nowrap dark:text-gray-200">
+                        <span className="block md:hidden font-medium text-gray-600 dark:text-gray-400">Naslov:</span>
                         {job.title}
                       </td>
-                      <td className="px-4 py-2 md:whitespace-nowrap">
-                        <span className="block md:hidden font-medium text-gray-600">Status:</span>
+                      <td className="px-4 py-2 md:whitespace-nowrap dark:text-gray-200">
+                        <span className="block md:hidden font-medium text-gray-600 dark:text-gray-400">Status:</span>
                         <span
                           className={cn(
-                            job.active ? "text-green-600" : "text-red-600",
+                            job.active ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400",
                             "font-medium"
                           )}
                         >
@@ -343,7 +343,7 @@ const Jobs = () => {
                             await navigator.clipboard.writeText(link);
                             toast.success("WhatsApp link kopiran!");
                           }}
-                          className="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition font-semibold"
+                          className="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition font-semibold dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800"
                           disabled={!job.active}
                           style={job.active ? {} : { opacity: 0.5, cursor: "not-allowed" }}
                         >
@@ -351,7 +351,7 @@ const Jobs = () => {
                         </button>
                         <button
                           onClick={() => setQrModalJob(job)}
-                          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-semibold"
+                          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-semibold dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
                           disabled={!job.active}
                           style={job.active ? {} : { opacity: 0.5, cursor: "not-allowed" }}
                         >
@@ -359,13 +359,13 @@ const Jobs = () => {
                         </button>
                         <button
                           onClick={() => startEditing(job)}
-                          className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition font-semibold"
+                          className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition font-semibold dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
                         >
                           Uredi
                         </button>
                         <button
                           onClick={() => setJobToDelete(job)}
-                          className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"
+                          className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition dark:bg-red-900 dark:text-red-300 dark:hover:bg-red-800"
                         >
                           Obriši
                         </button>
