@@ -1,4 +1,4 @@
-import { MessageSquare, Grid, Briefcase, Users, Settings, Menu } from "lucide-react";
+import { MessageSquare, Grid, Briefcase, Settings, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLocation, Link } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
@@ -9,7 +9,6 @@ const menuItems = [
   { icon: Grid, label: "Pregled", href: "/overview" },
   { icon: MessageSquare, label: "Razgovori", href: "/chat" },
   { icon: Briefcase, label: "Poslovi", href: "/jobs" },
-  { icon: Users, label: "Prijave", href: "/applications" },
   { icon: Settings, label: "Postavke", href: "/settings" },
 ];
 
@@ -68,13 +67,19 @@ const Sidebar = () => {
       >
         <div className="p-6">
           <div className="flex justify-center mb-6">
+            {/* Use different SVG files for light and dark modes */}
             <img
-              src="/rado.png"
+              src="/rado.svg"
               alt="Rado Logo"
-              className="h-28 bg-transparent dark:bg-transparent rounded-lg"
-              // logo je već transparentan, ali možeš dodati dark:filter invert ako treba
+              className="h-26 p-12 block dark:hidden bg-transparent rounded-lg"
+            />
+            <img
+              src="/radow.svg"
+              alt="Rado Logo"
+              className="h-26 p-12 hidden dark:block bg-transparent rounded-lg"
             />
           </div>
+          
           <nav className="space-y-1">
             {menuItems.map((item) => (
               <Link
@@ -86,7 +91,7 @@ const Sidebar = () => {
                   "text-gray-600",
                   "hover:bg-gray-100 dark:hover:bg-gray-700",
                   location.pathname === item.href &&
-                    "bg-gray-100  dark:bg-gray-800 text-gray-900"
+                    "bg-gray-100 dark:bg-gray-800 text-gray-900"
                 )}
                 onClick={() => setIsOpen(false)}
               >
@@ -98,7 +103,7 @@ const Sidebar = () => {
         </div>
         
         <div className="absolute bottom-8 left-0 right-0 px-6 space-y-4">
-        <ThemeSwitch />
+          <ThemeSwitch />
           <div className="bg-gray-300 dark:bg-sidebar-accent/40 rounded-lg p-4 border border-gray-100 dark:border-gray-700 dark:bg-gray-800">   
             <div className="flex items-center gap-3">
               <div>
