@@ -222,7 +222,7 @@ const Applications = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Svi statusi</SelectItem>
-                    <SelectItem value="pending">Na čekanju</SelectItem>
+                    <SelectItem value="pending">Čekanje</SelectItem>
                     <SelectItem value="approved">Odobreno</SelectItem>
                     <SelectItem value="rejected">Odbijeno</SelectItem>
                     <SelectItem value="interview">Intervju</SelectItem>
@@ -340,7 +340,7 @@ const Applications = () => {
                                       <div className="flex items-center gap-1">
                                         {statusIcons[application.status]}
                                         <SelectValue>
-                                          {application.status === "pending" && "Na čekanju"}
+                                          {application.status === "pending" && "Čekanje"}
                                           {application.status === "approved" && "Odobreno"}
                                           {application.status === "rejected" && "Odbijeno"}
                                           {application.status === "interview" && "Intervju"}
@@ -348,7 +348,7 @@ const Applications = () => {
                                       </div>
                                     </SelectTrigger>
                                     <SelectContent>
-                                      <SelectItem value="pending">Na čekanju</SelectItem>
+                                      <SelectItem value="pending">Čekanje</SelectItem>
                                       <SelectItem value="approved">Odobreno</SelectItem>
                                       <SelectItem value="rejected">Odbijeno</SelectItem>
                                       <SelectItem value="interview">Intervju</SelectItem>
@@ -407,7 +407,7 @@ const Applications = () => {
                             >
                               <span className="flex items-center gap-1">
                                 {statusIcons[application.status]}
-                                {application.status === "pending" && "Na čekanju"}
+                                {application.status === "pending" && "Čekanje"}
                                 {application.status === "approved" && "Odobreno"}
                                 {application.status === "rejected" && "Odbijeno"}
                                 {application.status === "interview" && "Intervju"}

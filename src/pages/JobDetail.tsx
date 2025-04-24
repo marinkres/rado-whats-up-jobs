@@ -347,7 +347,7 @@ const JobDetail = () => {
                                           application.status === "interview" && "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
                                         )}
                                       >
-                                        {application.status === "pending" && "Na čekanju"}
+                                        {application.status === "pending" && "Čekanje"}
                                         {application.status === "approved" && "Odobreno"}
                                         {application.status === "rejected" && "Odbijeno"}
                                         {application.status === "interview" && "Intervju"}

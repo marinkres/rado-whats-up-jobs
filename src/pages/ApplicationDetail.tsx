@@ -263,7 +263,7 @@ const ApplicationDetail = () => {
                                 <div className="flex items-center gap-2">
                                   {statusIcons[application.status]}
                                   <SelectValue>
-                                    {application.status === "pending" && "Na čekanju"}
+                                    {application.status === "pending" && "Čekanje"}
                                     {application.status === "approved" && "Odobreno"}
                                     {application.status === "rejected" && "Odbijeno"}
                                     {application.status === "interview" && "Intervju"}
@@ -271,7 +271,7 @@ const ApplicationDetail = () => {
                                 </div>
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="pending">Na čekanju</SelectItem>
+                                <SelectItem value="pending">Čekanje</SelectItem>
                                 <SelectItem value="approved">Odobreno</SelectItem>
                                 <SelectItem value="rejected">Odbijeno</SelectItem>
                                 <SelectItem value="interview">Intervju</SelectItem>
