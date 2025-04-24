@@ -5,6 +5,44 @@ import { motion, useAnimation } from "framer-motion";
 import { ChevronRight, Mail, MoveRight } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 
+// Counter animation component for statistics
+const AnimatedCounter = ({ value, suffix = "", className = "", duration = 2 }) => {
+  const [count, setCount] = useState(0);
+  const [ref, inView] = useInView({
+    triggerOnce: true,
+    threshold: 0.3,
+  });
+
+  useEffect(() => {
+    if (!inView) return;
+    
+    let start = 0;
+    const end = parseInt(value.toString(), 10);
+    
+    // Make sure we don't exceed the end value
+    if (start === end) return;
+    
+    // Calculate duration per increment
+    const incrementTime = (duration * 1000) / end;
+    
+    // Timer to count up to the target value
+    let timer = setInterval(() => {
+      start += 1;
+      setCount(start);
+      if (start === end) clearInterval(timer);
+    }, incrementTime);
+    
+    return () => clearInterval(timer);
+  }, [inView, value, duration]);
+
+  return (
+    <div ref={ref} className={className}>
+      <span>{count}</span>
+      <span>{suffix}</span>
+    </div>
+  );
+};
+
 const ComingSoon = () => {
   const [mounted, setMounted] = useState(false);
 
@@ -187,31 +225,36 @@ const ComingSoon = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
               <div className="text-center">
                 <p className="text-4xl md:text-5xl font-bold">
-                  <span className="text-[#43AA8B]">98</span>
-                  <span className="text-[#43AA8B]">%</span>
+                  <span className="text-[#43AA8B]">
+                    <AnimatedCounter value={98} suffix="%" className="inline" />
+                  </span>
                 </p>
                 <p className="text-sm text-gray-400 mt-2">Zadovoljstvo kandidata</p>
               </div>
               
               <div className="text-center">
                 <p className="text-4xl md:text-5xl font-bold">
-                  <span className="text-blue-500">77</span>
-                  <span className="text-blue-500">%</span>
+                  <span className="text-blue-500">
+                    <AnimatedCounter value={77} suffix="%" className="inline" />
+                  </span>
                 </p>
                 <p className="text-sm text-gray-400 mt-2">Više prijava</p>
               </div>
               
               <div className="text-center">
                 <p className="text-4xl md:text-5xl font-bold">
-                  <span className="text-purple-500">5</span>
-                  <span className="text-purple-500">x</span>
-                  <span className="text-purple-500 ml-1 text-2xl">brže</span>
+                  <span className="text-purple-500">
+                    <AnimatedCounter value={5} suffix="x" className="inline" />
+                    <span className="text-purple-500 ml-1 text-2xl">brže</span>
+                  </span>
                 </p>
                 <p className="text-sm text-gray-400 mt-2">Od prijave do posla</p>
               </div>
               
               <div className="text-center">
-                <p className="text-4xl md:text-5xl font-bold text-gray-100">520h</p>
+                <p className="text-4xl md:text-5xl font-bold text-gray-100">
+                  <AnimatedCounter value={520} suffix="h" className="inline" duration={2.5} />
+                </p>
                 <p className="text-sm text-gray-400 mt-2">Ušteđeno u 90 dana</p>
               </div>
             </div>
