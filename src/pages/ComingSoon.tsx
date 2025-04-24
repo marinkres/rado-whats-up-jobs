@@ -485,7 +485,7 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
         return (
           <div className="w-full h-full bg-gray-800 rounded-xl flex justify-center items-center overflow-hidden">
             <img 
-              src="/text.jpg" 
+              src="/mockup.png" 
               alt="Text Message" 
               className="w-auto h-auto object-contain" 
               onError={(e) => {
@@ -508,66 +508,70 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
               <h4 className="text-white text-lg font-medium mb-6">Integracija s kalendarima</h4>
               
               <div className="grid grid-cols-2 gap-8 w-full max-w-xs">
-                {/* Google Calendar with proper logo */}
+                {/* Google Calendar with official logo */}
                 <div className="flex flex-col items-center">
-                  <div className="w-16 h-16 bg-white rounded-lg p-2 shadow-lg mb-3 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="100%" height="100%">
-                      <rect width="16" height="16" x="12" y="16" fill="#fff"/>
-                      <polygon fill="#EA4335" points="29,16 29,17 28,17 28,16 24,16 24,20 32,20 32,16"/>
-                      <polygon fill="#FBBC04" points="24,24 24,28 32,28 32,24"/>
-                      <polygon fill="#34A853" points="24,32 24,36 28,36 28,35 29,35 29,36 32,36 32,32"/>
-                      <polygon fill="#188038" points="32,24 36,24 36,28 32,28"/>
-                      <polygon fill="#1967D2" points="32,32 36,32 36,36 32,36"/>
-                      <polygon fill="#4285F4" points="32,16 36,16 36,20 32,20"/>
-                      <polygon fill="#1A73E8" points="36,20 40,20 40,24 36,24"/>
-                      <polygon fill="#D93025" points="40,16 44,16 44,20 40,20"/>
-                      <polygon fill="#EA4335" points="40,24 44,24 44,28 40,28"/>
-                      <polygon fill="#FBBC04" points="40,28 44,28 44,32 40,32"/>
-                      <polygon fill="#4285F4" points="40,32 44,32 44,36 40,36"/>
-                      <polygon fill="#34A853" points="36,36 40,36 40,40 36,40"/>
-                      <polygon fill="#188038" points="32,36 36,36 36,40 32,40"/>
-                      <polygon fill="#1967D2" points="36,32 40,32 40,36 36,36"/>
-                      <polygon fill="#EA4335" points="32,24 36,24 36,28 32,28"/>
-                      <polygon fill="#4285F4" points="28,16 32,16 32,20 28,20"/>
-                      <polygon fill="#1A73E8" points="24,20 28,20 28,24 24,24"/>
-                      <polygon fill="#EA4335" points="20,16 24,16 24,20 20,20"/>
-                      <polygon fill="#FBBC04" points="20,24 24,24 24,28 20,28"/>
-                      <polygon fill="#34A853" points="20,32 24,32 24,36 20,36"/>
-                      <polygon fill="#188038" points="16,36 20,36 20,40 16,40"/>
-                      <polygon fill="#1967D2" points="12,32 16,32 16,36 12,36"/>
-                      <polygon fill="#4285F4" points="16,20 20,20 20,24 16,24"/>
-                      <polygon fill="#1A73E8" points="12,24 16,24 16,28 12,28"/>
-                      <polygon fill="#34A853" points="16,28 20,28 20,32 16,32"/>
-                    </svg>
+                  <div className="w-16 h-16 bg-white rounded-lg shadow-lg mb-3 flex items-center justify-center overflow-hidden">
+                    <img 
+                      src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg" 
+                      alt="Google Calendar Logo"
+                      className="w-14 h-14 object-contain"
+                      onError={(e) => {
+                        // Fallback to embedded SVG if image fails to load
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.parentElement.innerHTML = `
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="90%" height="90%">
+                            <rect width="36" height="36" x="6" y="6" fill="#fff"/>
+                            <path fill="#4285F4" d="M38,6H10c-2.2,0-4,1.8-4,4v28c0,2.2,1.8,4,4,4h28c2.2,0,4-1.8,4-4V10C42,7.8,40.2,6,38,6z M38,24H24v14H10V10h28V24z"/>
+                            <path fill="#EA4335" d="M24,24h14v4H24V24z"/>
+                            <path fill="#FBBC04" d="M24,28h14v4H24V28z"/>
+                            <path fill="#34A853" d="M24,32h14v6H24V32z"/>
+                            <path fill="#188038" d="M10,24h14v14H10V24z"/>
+                            <path fill="#1967D2" d="M24,10h14v14H24V10z"/>
+                            <path fill="#4285F4" d="M10,10h14v14H10V10z"/>
+                            <path fill="#4285F4" d="M20,15m-3,0a3,3,0,1,0,6,0a3,3,0,1,0,-6,0"/>
+                            <path fill="#34A853" d="M13,24l7-7l7,7H13z"/>
+                          </svg>
+                        `;
+                      }}
+                    />
                   </div>
                   <div className="text-sm font-medium text-white">Google Calendar</div>
                 </div>
                 
-                {/* Microsoft Outlook with proper logo */}
+                {/* Microsoft Outlook with official logo */}
                 <div className="flex flex-col items-center">
-                  <div className="w-16 h-16 bg-white rounded-lg p-2 shadow-lg mb-3 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="100%" height="100%">
-                      <path fill="#03A9F4" d="M21,31H7V17h14c2.2,0,4,1.8,4,4v6C25,29.2,23.2,31,21,31z"/>
-                      <path fill="#0D47A1" d="M10.1,20.1l3.9,2.7l3.9-2.7l-3.9-2.7L10.1,20.1z M17.9,27.9l-3.9-2.7l-3.9,2.7l3.9,2.7L17.9,27.9z M10.1,27.9l3.9-2.7l-3.9-2.7V27.9z M17.9,20.1v5.1l3.9-2.5L17.9,20.1z"/>
-                      <path fill="#0D47A1" d="M18,40V8c0-2.2,1.8-4,4-4h16c2.2,0,4,1.8,4,4v32c0,2.2-1.8,4-4,4H22C19.8,44,18,42.2,18,40z"/>
-                      <path fill="#FFF" d="M35,14H25v2h10V14z M35,18H25v2h10V18z M35,22H25v2h10V22z M35,26H25v2h10V26z M35,30H25v2h10V30z M35,34H25v2h10V34z"/>
-                    </svg>
+                  <div className="w-16 h-16 bg-white rounded-lg shadow-lg mb-3 flex items-center justify-center overflow-hidden">
+                    <img 
+                      src="https://upload.wikimedia.org/wikipedia/commons/d/df/Microsoft_Office_Outlook_%282018%E2%80%93present%29.svg" 
+                      alt="Microsoft Outlook Logo"
+                      className="w-14 h-14 object-contain"
+                      onError={(e) => {
+                        // Fallback to embedded SVG if image fails to load
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.parentElement.innerHTML = `
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="90%" height="90%">
+                            <path fill="#0A2767" d="M45,16.2l-18,6.3v-8.8c0-0.7-0.6-1.3-1.3-1.3H7.3C6.6,12.5,6,13.1,6,13.8v20.5c0,0.7,0.6,1.3,1.3,1.3h18.5c0.7,0,1.3-0.6,1.3-1.3v-8.8l18,6.3V16.2z"/>
+                            <path fill="#28A8EA" d="M25.7,34.3h-6.8l-7.7-8.6l7.7-8.6h6.8l-5.5,8.6L25.7,34.3z"/>
+                          </svg>
+                        `;
+                      }}
+                    />
                   </div>
                   <div className="text-sm font-medium text-white">Outlook</div>
                 </div>
               </div>
               
-              {/* Calendar interface example */}
-              <div className="mt-6 bg-white rounded-lg w-full max-w-xs overflow-hidden shadow-lg">
+              {/* Calendar interface example - unchanged */}
+              <div className="mt-6 bg-gray-700 rounded-lg w-full max-w-xs overflow-hidden shadow-lg">
                 <div className="bg-[#43AA8B] text-white p-2 text-center text-sm font-medium">
                   Zakaži intervju
                 </div>
                 <div className="p-3 text-center">
-                  <div className="text-sm font-bold text-gray-800 mb-2">Odaberite termin:</div>
+                  <div className="text-sm font-bold text-gray-300 mb-2">Odaberite termin:</div>
                   <div className="grid grid-cols-3 gap-1">
-                    <div className="bg-gray-100 p-1 rounded text-xs text-gray-700">09:00</div>
+                    <div className="bg-gray-500 p-1 rounded text-xs text-gray-700">09:00</div>
                     <div className="bg-[#43AA8B]/20 p-1 rounded text-xs text-[#43AA8B] border border-[#43AA8B]/30">13:30</div>
-                    <div className="bg-gray-100 p-1 rounded text-xs text-gray-700">16:00</div>
+                    <div className="bg-gray-500 p-1 rounded text-xs text-gray-700">16:00</div>
                   </div>
                   <div className="mt-3 text-xs text-gray-500">
                     Jednim klikom do intervjua
@@ -590,7 +594,7 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
   };
 
   // Check if this is the last item (number 4) to remove the bottom line
-  const isLastItem = number === 4;
+  const isLastItem = number === "4";
 
   return (
     <div ref={ref} className="relative mb-16 md:mb-24">
@@ -637,6 +641,11 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
           </div>
         </div>
       </motion.div>
+      
+      {/* Ensure the timeline completely ends for the last item */}
+      {isLastItem && (
+        <div className="absolute left-8 md:left-1/2 transform translate-x-[-50%] bottom-[-20px] w-6 h-6 rounded-full bg-[#43AA8B]/30"></div>
+      )}
     </div>
   );
 };
