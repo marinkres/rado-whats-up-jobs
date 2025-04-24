@@ -243,7 +243,7 @@ const ComingSoon = () => {
             {/* Step 1 */}
             <TimelineCard 
               number="1"
-              title="Prijave putem WhatsApp"
+              title="Prijave putem WhatsApp i iMessage-a"
               description="Bez životopisa, bez motivacijskih pisama, kandidati se mogu prijaviti za 2 minute na platformama koje svakodnevno koriste."
               alignment="right"
               delay={0}
@@ -313,7 +313,7 @@ const ComingSoon = () => {
   );
 };
 
-// Timeline Card Component - Updated with green color for step numbers and buttons
+// Timeline Card Component - Improved for better appearance and animations
 const TimelineCard = ({ number, title, description, alignment, delay = 0, buttonText = undefined, animation }) => {
   const controls = useAnimation();
   const [ref, inView] = useInView({
@@ -331,175 +331,265 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
     }
   }, [controls, inView, delay]);
 
-  // Animation components
+  // Animation components with improved sizing
   const AnimationComponent = () => {
     switch(animation) {
       case 'chat':
+        // Custom WhatsApp animation for first step (replacing static image)
         return (
-          <div className="w-full h-full bg-gray-800 rounded-xl p-8 flex justify-center items-center">
-            <div className="w-full max-w-[300px]">
-              <div className="mb-4 flex justify-end">
-                <div className="bg-blue-500 text-white rounded-tl-xl rounded-bl-xl rounded-br-xl p-3 inline-block animate-pulse-slow">
-                  <p>Tražite radnike?</p>
+          <div className="w-full h-full bg-gray-800 rounded-xl flex justify-center items-center overflow-hidden">
+            <div className="w-full max-w-[280px] p-4">
+              <div className="relative bg-[#075e54] w-full h-10 flex items-center px-3 rounded-t-lg">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 rounded-full bg-gray-300 mr-2"></div>
+                  <div className="text-white text-sm font-medium">WhatsApp</div>
                 </div>
               </div>
-              <div className="mb-4">
-                <div className="bg-gray-700 text-white rounded-tr-xl rounded-br-xl rounded-bl-xl p-3 inline-block">
-                  <p>Da, trebamo kvalitetne kandidate!</p>
+              
+              <div className="bg-[#ece5dd] h-[180px] px-3 py-2 flex flex-col justify-between">
+                <div className="space-y-2 overflow-hidden">
+                  <motion.div 
+                    className="bg-white rounded-lg p-2 text-sm ml-auto max-w-[70%] relative"
+                    initial={{ x: 50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div className="text-gray-800 text-xs">Je li još otvoren oglas za posao?</div>
+                    <div className="text-[10px] text-gray-500 text-right">12:01</div>
+                  </motion.div>
+                  
+                  <motion.div 
+                    className="bg-[#dcf8c6] rounded-lg p-2 text-sm mr-auto max-w-[70%] relative"
+                    initial={{ x: -50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.7, duration: 0.5 }}
+                  >
+                    <div className="text-gray-800 text-xs">Da, pošaljite nam svoju prijavu!</div>
+                    <div className="text-[10px] text-gray-500 text-right">12:02</div>
+                  </motion.div>
+                  
+                  <motion.div 
+                    className="bg-white rounded-lg p-2 text-sm ml-auto max-w-[70%] relative"
+                    initial={{ x: 50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 1.4, duration: 0.5 }}
+                  >
+                    <div className="text-gray-800 text-xs">Odlično! Kako se mogu prijaviti?</div>
+                    <div className="text-[10px] text-gray-500 text-right">12:03</div>
+                  </motion.div>
                 </div>
-              </div>
-              <div className="flex justify-end">
-                <div className="bg-blue-500 text-white rounded-tl-xl rounded-bl-xl rounded-br-xl p-3 inline-block animate-pulse-slow">
-                  <p>Mogu se prijaviti kroz WhatsApp?</p>
+                
+                <div className="flex items-center bg-white rounded-full px-3 py-1.5 mt-2">
+                  <div className="text-gray-400 text-xs flex-1">Odgovorite ovdje...</div>
+                  <motion.div 
+                    className="w-6 h-6 rounded-full bg-[#43AA8B] flex items-center justify-center"
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                  </motion.div>
                 </div>
               </div>
             </div>
           </div>
         );
       case 'filter':
+        // Improved filter animation that fits properly within container
         return (
-          <div className="w-full h-full bg-gray-800 rounded-xl p-8 flex justify-center items-center">
-            <div className="relative w-full max-w-[300px]">
-              <div className="grid grid-cols-3 gap-3">
-                {[1, 2, 3, 4, 5, 6, 9].map(i => (
-                  <div key={i} className="aspect-square bg-gray-700/50 rounded-lg"></div>
-                ))}
-                {[7, 8].map(i => (
+          <div className="w-full h-full bg-gray-800 rounded-xl p-4 flex justify-center items-center overflow-hidden">
+            <div className="flex flex-col items-center w-full max-w-[250px]">
+              <div className="flex items-center justify-between w-full mb-3">
+                <div className="text-sm text-white font-medium">Kandidati</div>
+                <div className="text-xs text-gray-400">24 rezultata</div>
+              </div>
+              
+              <div className="bg-gray-700/50 w-full rounded-lg p-3 mb-3">
+                <div className="flex items-center mb-2">
+                  <div className="w-4 h-4 rounded bg-[#43AA8B] mr-2"></div>
+                  <div className="text-xs text-white">Kriteriji</div>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {[1, 2, 3].map(i => (
+                    <motion.div 
+                      key={i}
+                      className="bg-[#43AA8B]/20 text-[#43AA8B] py-1 px-2 rounded text-[10px] text-center"
+                      initial={{ opacity: 0.5 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ 
+                        repeat: Infinity, 
+                        repeatType: "reverse", 
+                        duration: 1.5,
+                        delay: i * 0.3
+                      }}
+                    >
+                      {i === 1 ? "Iskustvo" : i === 2 ? "Lokacija" : "Jezik"}
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3 w-full">
+                {[1, 2, 3, 4].map(i => (
                   <motion.div 
                     key={i} 
-                    className="aspect-square bg-[#43AA8B]/80 rounded-lg"
+                    className={`p-3 rounded-lg ${i <= 2 ? "bg-[#43AA8B]/20 border border-[#43AA8B]/30" : "bg-gray-700/50"}`}
                     animate={{ 
-                      scale: [1, 1.05, 1],
-                      borderRadius: ["10%", "20%", "10%"]
+                      y: i <= 2 ? [0, -4, 0] : 0
                     }}
                     transition={{ 
-                      repeat: Infinity, 
-                      repeatType: "reverse", 
+                      repeat: i <= 2 ? Infinity : 0, 
                       duration: 2,
-                      delay: i === 7 ? 0 : 1
+                      delay: i * 0.2
                     }}
-                  />
+                  >
+                    <div className="w-8 h-8 bg-gray-600 rounded-full mb-2"></div>
+                    <div className="h-2 bg-gray-600 rounded w-full mb-1"></div>
+                    <div className="h-2 bg-gray-600 rounded w-2/3"></div>
+                  </motion.div>
                 ))}
               </div>
-              <motion.div 
-                className="absolute inset-0 border-2 border-[#43AA8B] rounded-xl"
-                initial={{ opacity: 0 }}
-                animate={{ 
-                  opacity: [0, 1, 0],
-                  scale: [0.9, 1.02, 0.9]
-                }}
-                transition={{ 
-                  repeat: Infinity, 
-                  duration: 3 
-                }}
-              />
             </div>
           </div>
         );
       case 'messages':
+        // Better chat animation with proper sizing
         return (
-          <div className="w-full h-full bg-gray-800 rounded-xl p-6 flex justify-center items-center">
-            <div className="w-full max-w-[300px]">
-              <div className="flex items-center mb-4">
-                <div className="w-10 h-10 rounded-full bg-blue-500 mr-3 flex items-center justify-center text-white font-bold">HR</div>
-                <div className="flex-1">
-                  <h4 className="text-white text-sm">Razgovor s kandidatom</h4>
-                  <p className="text-gray-400 text-xs">Sada</p>
+          <div className="w-full h-full bg-gray-800 rounded-xl p-4 flex justify-center items-center overflow-hidden">
+            <div className="w-full max-w-[250px]">
+              <div className="bg-gray-700 rounded-t-lg p-3">
+                <div className="flex items-center mb-3">
+                  <div className="w-8 h-8 bg-[#43AA8B] rounded-full mr-2 flex items-center justify-center text-white font-medium text-sm">JD</div>
+                  <div>
+                    <div className="text-xs font-medium text-white">Josip Došen</div>
+                    <div className="text-[10px] text-gray-300">online</div>
+                  </div>
                 </div>
               </div>
-              <div className="space-y-3">
+              
+              <div className="bg-gray-900 p-3 h-[160px] flex flex-col justify-end">
+                <div className="space-y-3">
+                  <motion.div 
+                    className="bg-gray-700 text-white rounded-lg p-2 text-xs mr-auto max-w-[70%]"
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <p className="text-xs">Poštovani, kada možete doći na intervju?</p>
+                  </motion.div>
+                  
+                  <motion.div 
+                    className="bg-[#43AA8B] text-white rounded-lg p-2 text-xs ml-auto max-w-[70%]"
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.8, duration: 0.5 }}
+                  >
+                    <p className="text-xs">Mogu doći sutra u 14:00h ako vam odgovara.</p>
+                  </motion.div>
+                  
+                  <motion.div 
+                    className="bg-gray-700 text-white rounded-lg p-2 text-xs mr-auto max-w-[70%]"
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 1.6, duration: 0.5 }}
+                  >
+                    <p className="text-xs">Odlično, vidimo se sutra u 14h!</p>
+                  </motion.div>
+                </div>
+              </div>
+              
+              <div className="bg-gray-700 rounded-b-lg p-2 flex items-center">
+                <div className="bg-gray-600 rounded-full flex-1 h-6 px-2 mr-2"></div>
                 <motion.div 
-                  className="bg-gray-700 text-white rounded-lg p-3"
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 0.5, duration: 0.5 }}
+                  className="w-6 h-6 rounded-full bg-[#43AA8B] flex items-center justify-center"
+                  animate={{ rotate: [0, 10, 0, -10, 0] }}
+                  transition={{ repeat: Infinity, duration: 2, repeatDelay: 1 }}
                 >
-                  <p className="text-sm">Kada možete započeti s radom?</p>
-                </motion.div>
-                <motion.div 
-                  className="bg-blue-500 text-white rounded-lg p-3 ml-auto max-w-[80%]"
-                  initial={{ x: 20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: 1.0, duration: 0.5 }}
-                >
-                  <p className="text-sm">Mogu početi već od sljedećeg tjedna!</p>
-                </motion.div>
-                <motion.div 
-                  className="flex items-center text-gray-400 text-xs"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 1.5, duration: 0.5 }}
-                >
-                  <div className="flex-1"></div>
-                  <div className="flex items-center">
-                    <span>Pročitano</span>
-                    <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M5 12L10 17L20 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
                 </motion.div>
               </div>
             </div>
           </div>
         );
       case 'calendar':
+        // Better calendar animation that fits within container
         return (
-          <div className="w-full h-full bg-gray-800 rounded-xl p-6 flex justify-center items-center">
-            <div className="w-full max-w-[300px]">
-              <div className="text-center mb-4">
-                <h3 className="text-white text-sm font-medium">Odaberite termin za intervju</h3>
-                <p className="text-gray-400 text-xs">Rujan 2023</p>
+          <div className="w-full h-full bg-gray-800 rounded-xl p-4 flex justify-center items-center overflow-hidden">
+            <div className="w-full max-w-[270px] bg-gray-900 rounded-lg overflow-hidden">
+              <div className="bg-[#43AA8B] p-3 text-center">
+                <div className="text-white font-medium text-sm">Svibanj 2024</div>
               </div>
-              <div className="grid grid-cols-7 gap-1 mb-4">
-                {["P", "U", "S", "Č", "P", "S", "N"].map((day, i) => (
-                  <div key={i} className="text-center text-gray-400 text-xs p-2">{day}</div>
-                ))}
-                {Array(31).fill(0).map((_, i) => {
-                  const isHighlighted = i === 14 || i === 15 || i === 21;
-                  return (
+              
+              <div className="p-3">
+                <div className="grid grid-cols-7 gap-1 text-center mb-2">
+                  {["P", "U", "S", "Č", "P", "S", "N"].map((day, i) => (
+                    <div key={i} className="text-gray-400 text-xs">{day}</div>
+                  ))}
+                </div>
+                
+                <div className="grid grid-cols-7 gap-1">
+                  {[...Array(31)].map((_, i) => {
+                    const day = i + 1;
+                    const isSelected = day === 15;
+                    const isAvailable = [10, 12, 15, 18, 20, 22].includes(day);
+                    
+                    return (
+                      <motion.div 
+                        key={i}
+                        className={`text-center p-1 text-xs rounded-full ${
+                          isSelected 
+                            ? "bg-[#43AA8B] text-white" 
+                            : isAvailable 
+                              ? "text-[#43AA8B]" 
+                              : "text-gray-500"
+                        }`}
+                        animate={
+                          isSelected 
+                            ? { scale: [1, 1.2, 1] } 
+                            : isAvailable 
+                              ? { opacity: [0.7, 1, 0.7] } 
+                              : {}
+                        }
+                        transition={{ 
+                          repeat: Infinity, 
+                          duration: isSelected ? 2 : 3
+                        }}
+                      >
+                        {day}
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              <div className="p-3 border-t border-gray-700">
+                <div className="text-xs text-white mb-2">Dostupni termini - 15. Svibanj</div>
+                <div className="grid grid-cols-3 gap-2">
+                  {["09:00", "13:30", "16:00"].map((time, i) => (
                     <motion.div 
                       key={i}
-                      className={`text-center text-xs p-2 rounded-full ${
-                        isHighlighted 
-                          ? "bg-[#43AA8B] text-white" 
-                          : "text-gray-300"
-                      }`}
-                      animate={isHighlighted ? { 
-                        scale: [1, 1.1, 1],
-                      } : {}}
-                      transition={{ 
-                        repeat: isHighlighted ? Infinity : 0, 
-                        repeatType: "reverse", 
-                        duration: 2,
-                        delay: i % 3
-                      }}
+                      className={`text-center py-1 rounded ${i === 1 ? "bg-[#43AA8B] text-white" : "bg-gray-700 text-gray-300"}`}
+                      animate={i === 1 ? { y: [0, -2, 0] } : {}}
+                      transition={{ repeat: Infinity, duration: 1.5 }}
                     >
-                      {i + 1}
+                      <span className="text-xs">{time}</span>
                     </motion.div>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
-              <motion.div 
-                className="p-3 bg-[#43AA8B] text-white rounded-lg text-center text-sm"
-                animate={{ 
-                  y: [0, -5, 0]
-                }}
-                transition={{ 
-                  repeat: Infinity, 
-                  duration: 2
-                }}
-              >
-                Rezerviraj termin
-              </motion.div>
             </div>
           </div>
         );
       default:
         return (
-          <div className="w-full h-full bg-gray-800 rounded-xl flex items-center justify-center p-8">
+          <div className="w-full h-full bg-gray-800 rounded-xl flex items-center justify-center p-4">
             <div className="text-center">
-              <div className="text-[#43AA8B] text-xl font-bold mb-2">{title}</div>
-              <p className="text-gray-400">Feature visualization</p>
+              <div className="text-[#43AA8B] text-lg font-bold mb-2">{title}</div>
+              <p className="text-gray-400 text-sm">Feature visualization</p>
             </div>
           </div>
         );
@@ -507,38 +597,41 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
   };
 
   return (
-    <div ref={ref} className="relative mb-24 md:mb-32">
-      {/* Circle marker on timeline - Updated color to [#43AA8B] */}
-      <div className="absolute left-8 md:left-1/2 transform md:translate-x-[-50%] w-16 h-16 bg-[#43AA8B] rounded-full flex items-center justify-center text-2xl font-bold border-4 border-black z-10">
+    <div ref={ref} className="relative mb-16 md:mb-24">
+      {/* Vertical timeline line - positioned behind circles */}
+      <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-[#43AA8B]/30" style={{ transform: 'translateX(-50%)' }}></div>
+      
+      {/* Circle marker on timeline - now with border to appear over line */}
+      <div className="absolute left-8 md:left-1/2 transform translate-x-[-50%] w-16 h-16 bg-[#43AA8B] rounded-full flex items-center justify-center text-2xl font-bold border-4 border-black dark:border-gray-900 z-10">
         {number}
       </div>
       
-      {/* Content card */}
+      {/* Content card - adjusted for better mobile display */}
       <motion.div 
-        className={`flex flex-col ${alignment === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-6 md:gap-12`}
+        className={`flex flex-col ${alignment === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-4 md:gap-6 lg:gap-12`}
         initial={{ opacity: 0, y: 50 }}
         animate={controls}
       >
-        {/* Text content */}
-        <div className={`mt-20 md:mt-0 md:w-1/2 ${alignment === 'left' ? 'md:pl-12' : 'md:pr-12'} text-left`}>
-          <h3 className="text-xl md:text-3xl font-semibold mb-4 text-white">
+        {/* Text content - better spacing for mobile */}
+        <div className={`ml-16 md:ml-0 mt-6 md:mt-0 md:w-1/2 ${alignment === 'left' ? 'md:pl-12' : 'md:pr-12'} text-left`}>
+          <h3 className="text-lg md:text-2xl lg:text-3xl font-semibold mb-3 md:mb-4 text-white">
             {title}
           </h3>
-          <p className="text-gray-300 mb-6">
+          <p className="text-sm md:text-base text-gray-300 mb-4 md:mb-6">
             {description}
           </p>
           {buttonText && (
             <Button
-              className="bg-[#43AA8B] hover:bg-[#43AA8B]/80 text-white rounded-full" // Changed button color to [#43AA8B]
+              className="bg-[#43AA8B] hover:bg-[#43AA8B]/80 text-white rounded-full text-sm md:text-base"
             >
               {buttonText}
             </Button>
           )}
         </div>
 
-        {/* Animation section */}
-        <div className="w-full md:w-1/2 p-4">
-          <div className="bg-gray-800/50 border border-white/10 rounded-xl overflow-hidden shadow-2xl h-[250px]">
+        {/* Animation/Image section - fixed height and contained animations */}
+        <div className="w-full md:w-1/2 p-3 md:p-4">
+          <div className="bg-gray-800/50 border border-white/10 rounded-xl overflow-hidden shadow-2xl h-[220px] md:h-[250px]">
             <AnimationComponent />
           </div>
         </div>
