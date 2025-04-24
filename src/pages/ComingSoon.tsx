@@ -141,8 +141,8 @@ const ComingSoon = () => {
                     <CheckIcon className="h-4 w-4 text-[#43AA8B]" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">AI matchmaking</p>
-                    <p className="text-xs text-gray-400">Pametno spajanje</p>
+                    <p className="text-sm font-medium">AI chatbot</p>
+                    <p className="text-xs text-gray-400">Pametna prijava</p>
                   </div>
                 </div>
               </motion.div>
@@ -243,8 +243,8 @@ const ComingSoon = () => {
             {/* Step 1 */}
             <TimelineCard 
               number="1"
-              title="Prijave putem WhatsApp i iMessage-a"
-              description="Bez životopisa, bez motivacijskih pisama, kandidati se mogu prijaviti za 2 minute na platformama koje svakodnevno koriste."
+              title="Prijave putem WhatsApp-a"
+              description="Automatizirano bez životopisa, bez motivacijskih pisama, kandidati se mogu prijaviti za 2 minute na platformama koje svakodnevno koriste."
               alignment="right"
               delay={0}
               buttonText="Isprobajte sada (~50 sekundi)"
@@ -365,7 +365,7 @@ const ComingSoon = () => {
   );
 };
 
-// Timeline Card Component - Updated for step 3 to use text.webp image
+// Timeline Card Component - Updated with proper WhatsApp logo and fixed timeline line
 const TimelineCard = ({ number, title, description, alignment, delay = 0, buttonText = undefined, animation }) => {
   const controls = useAnimation();
   const [ref, inView] = useInView({
@@ -387,44 +387,38 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
   const AnimationComponent = () => {
     switch(animation) {
       case 'chat':
-        // Static (non-animated) design for step 1
+        // WhatsApp logo animation for step 1
         return (
           <div className="w-full h-full bg-gray-800 rounded-xl flex justify-center items-center overflow-hidden">
-            <div className="w-full max-w-[280px] p-4">
-              <div className="relative bg-[#075e54] w-full h-10 flex items-center px-3 rounded-t-lg">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-gray-300 mr-2"></div>
-                  <div className="text-white text-sm font-medium">WhatsApp</div>
-                </div>
+            <div className="w-32 h-32 relative">
+              {/* WhatsApp logo with proper green color */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" className="w-24 h-24">
+                  <path fill="#25D366" d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+                </svg>
               </div>
               
-              <div className="bg-[#ece5dd] h-[180px] px-3 py-2 flex flex-col justify-between">
-                <div className="space-y-2 overflow-hidden">
-                  <div className="bg-white rounded-lg p-2 text-sm ml-auto max-w-[70%] relative">
-                    <div className="text-gray-800 text-xs">Je li još otvoren oglas za posao?</div>
-                    <div className="text-[10px] text-gray-500 text-right">12:01</div>
-                  </div>
-                  
-                  <div className="bg-[#dcf8c6] rounded-lg p-2 text-sm mr-auto max-w-[70%] relative">
-                    <div className="text-gray-800 text-xs">Da, pošaljite nam svoju prijavu!</div>
-                    <div className="text-[10px] text-gray-500 text-right">12:02</div>
-                  </div>
-                  
-                  <div className="bg-white rounded-lg p-2 text-sm ml-auto max-w-[70%] relative">
-                    <div className="text-gray-800 text-xs">Odlično! Kako se mogu prijaviti?</div>
-                    <div className="text-[10px] text-gray-500 text-right">12:03</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center bg-white rounded-full px-3 py-1.5 mt-2">
-                  <div className="text-gray-400 text-xs flex-1">Odgovorite ovdje...</div>
-                  <div className="w-6 h-6 rounded-full bg-[#43AA8B] flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                    </svg>
-                  </div>
-                </div>
-              </div>
+              {/* Pulsing outer circles */}
+              <motion.div 
+                className="absolute inset-0 rounded-full border-4 border-[#25D366]/30"
+                animate={{ scale: [1, 1.5, 1.5], opacity: [0.7, 0, 0] }}
+                transition={{ 
+                  repeat: Infinity,
+                  duration: 2,
+                  times: [0, 0.7, 1],
+                  repeatDelay: 0.5
+                }}
+              />
+              <motion.div 
+                className="absolute inset-0 rounded-full border-4 border-[#25D366]/20"
+                animate={{ scale: [1, 2, 2], opacity: [0.5, 0, 0] }}
+                transition={{ 
+                  repeat: Infinity,
+                  duration: 2.5,
+                  times: [0, 0.7, 1],
+                  repeatDelay: 0.2
+                }}
+              />
             </div>
           </div>
         );
@@ -489,11 +483,11 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
       case 'messages':
         // Step 3 now uses text.webp image from public folder
         return (
-          <div className="w-fit h-fit bg-gray-800 rounded-xl flex justify-center items-center overflow-hidden">
+          <div className="w-full h-full bg-gray-800 rounded-xl flex justify-center items-center overflow-hidden">
             <img 
-              src="/text.webp" 
+              src="/text.gif" 
               alt="Text Message" 
-              className="w-full h-full object-contain" 
+              className="w-auto h-auto object-contain" 
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
                 e.currentTarget.parentElement.innerHTML = `<div class="flex items-center justify-center bg-gray-800 p-8 h-full">
@@ -507,71 +501,121 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
           </div>
         );
       case 'calendar':
-        // Better calendar animation that fits within container
+        // Calendar integration animation (Google and Outlook)
         return (
           <div className="w-full h-full bg-gray-800 rounded-xl p-4 flex justify-center items-center overflow-hidden">
-            <div className="w-full max-w-[220px] bg-gray-900 rounded-lg overflow-hidden">
-              <div className="bg-[#43AA8B] p-2 text-center">
-                <div className="text-white font-medium text-sm">Svibanj 2024</div>
-              </div>
-              
-              <div className="p-2">
-                <div className="grid grid-cols-7 gap-1 text-center mb-1">
-                  {["P", "U", "S", "Č", "P", "S", "N"].map((day, i) => (
-                    <div key={i} className="text-gray-400 text-[10px]">{day}</div>
-                  ))}
+            <div className="relative w-full max-w-[240px] h-[180px]">
+              {/* Google Calendar icon */}
+              <motion.div 
+                className="absolute left-0 top-0 w-24 h-24 bg-white rounded-lg shadow-lg flex flex-col items-center justify-center"
+                initial={{ x: -100, rotate: -10, opacity: 0 }}
+                animate={{ 
+                  x: [-100, -20, -20, -100],
+                  rotate: [-10, 0, 0, -10],
+                  opacity: [0, 1, 1, 0]
+                }}
+                transition={{ 
+                  duration: 4,
+                  times: [0, 0.3, 0.7, 1],
+                  repeat: Infinity,
+                  repeatDelay: 0.5
+                }}
+              >
+                <div className="w-12 h-12">
+                  <svg viewBox="0 0 48 48" className="w-full h-full">
+                    <path fill="#4285F4" d="M37,45H11c-1.657,0-3-1.343-3-3V6c0-1.657,1.343-3,3-3h19l10,10v29C40,43.657,38.657,45,37,45z"/>
+                    <path fill="#F1F1F1" d="M40,13H30V3L40,13z"/>
+                    <path fill="#F1F1F1" d="M30 23A4 4 0 1 0 30 31A4 4 0 1 0 30 23Z"/>
+                    <path fill="#F1F1F1" d="M30,23v-4h-4h-4v4v4v4h4h1v-4.5v-3.5H30z"/>
+                    <path fill="#F1F1F1" d="M22,23h-4v4h3.5v4H18v4h4h4v-4v-4v-4H22z"/>
+                  </svg>
                 </div>
-                
-                <div className="grid grid-cols-7 gap-1">
-                  {[...Array(31)].map((_, i) => {
-                    const day = i + 1;
-                    const isSelected = day === 15;
-                    const isAvailable = [10, 12, 15, 18, 20, 22].includes(day);
-                    
-                    return (
-                      <motion.div 
+                <div className="text-xs font-medium text-gray-800 mt-1">Google Calendar</div>
+              </motion.div>
+
+              {/* Outlook Calendar icon */}
+              <motion.div 
+                className="absolute right-0 top-0 w-24 h-24 bg-white rounded-lg shadow-lg flex flex-col items-center justify-center"
+                initial={{ x: 100, rotate: 10, opacity: 0 }}
+                animate={{ 
+                  x: [100, 20, 20, 100],
+                  rotate: [10, 0, 0, 10],
+                  opacity: [0, 1, 1, 0]
+                }}
+                transition={{ 
+                  duration: 4,
+                  times: [0, 0.3, 0.7, 1],
+                  repeat: Infinity,
+                  repeatDelay: 0.5,
+                  delay: 1
+                }}
+              >
+                <div className="w-12 h-12">
+                  <svg viewBox="0 0 48 48" className="w-full h-full">
+                    <path fill="#03A9F4" d="M21 31H7V17h14c2.2 0 4 1.8 4 4v6C25 29.2 23.2 31 21 31zM43 15l-8 3.5V34l8 3.5V15z"/>
+                    <path fill="#BBD5EA" d="M7,31l13.6,5.1c1.6,0.6,2.4,0,2.4,0L35,31V17l-12-4.5c0,0-0.8-0.5-2.4,0L7,17V31z"/>
+                    <path fill="#BBD5EA" d="M32.2,32.8L35,31V17l-2.5,1.9c-0.5,0.4-0.8,1-0.8,1.6v10C31.7,31.3,31.9,32.1,32.2,32.8z"/>
+                  </svg>
+                </div>
+                <div className="text-xs font-medium text-gray-800 mt-1">Outlook</div>
+              </motion.div>
+
+              {/* Central calendar card */}
+              <motion.div 
+                className="absolute left-1/2 bottom-0 transform -translate-x-1/2 w-32 h-32 bg-white rounded-lg shadow-lg overflow-hidden"
+                animate={{ 
+                  y: [50, 0, 0, 50],
+                  opacity: [0, 1, 1, 0],
+                  scale: [0.8, 1, 1, 0.8]
+                }}
+                transition={{ 
+                  duration: 4,
+                  times: [0, 0.3, 0.7, 1],
+                  repeat: Infinity,
+                  repeatDelay: 0.5,
+                  delay: 0.5
+                }}
+              >
+                <div className="w-full h-7 bg-[#43AA8B] flex items-center justify-center">
+                  <div className="text-xs text-white font-medium">Intervjui</div>
+                </div>
+                <div className="p-2 flex flex-col items-center">
+                  <div className="text-xs font-bold text-gray-800 mb-1">15. Svibanj</div>
+                  <div className="grid grid-cols-3 gap-1 w-full">
+                    {["09:00", "13:30", "16:00"].map((time, i) => (
+                      <div 
                         key={i}
-                        className={`text-center p-1 text-[10px] rounded-full ${
-                          isSelected 
-                            ? "bg-[#43AA8B] text-white" 
-                            : isAvailable 
-                              ? "text-[#43AA8B]" 
-                              : "text-gray-500"
-                        }`}
-                        animate={
-                          isSelected 
-                            ? { scale: [1, 1.2, 1] } 
-                            : isAvailable 
-                              ? { opacity: [0.7, 1, 0.7] } 
-                              : {}
-                        }
-                        transition={{ 
-                          repeat: Infinity, 
-                          duration: isSelected ? 2 : 3
-                        }}
+                        className={`text-center py-1 rounded text-[10px] ${i === 1 ? "bg-[#43AA8B] text-white" : "bg-gray-200 text-gray-700"}`}
                       >
-                        {day}
-                      </motion.div>
-                    );
-                  })}
+                        {time}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <motion.div 
+                    className="mt-3 h-4 w-4 rounded-full bg-[#43AA8B]"
+                    animate={{ scale: [1, 1.3, 1] }}
+                    transition={{ repeat: Infinity, duration: 1.5 }}
+                  />
+                  <div className="text-[9px] mt-1 text-gray-500">Uspješno zakazano!</div>
                 </div>
-              </div>
-              
-              <div className="p-2 border-t border-gray-700">
-                <div className="text-[10px] text-white mb-1">Dostupni termini - 15. Svibanj</div>
-                <div className="grid grid-cols-3 gap-1">
-                  {["09:00", "13:30", "16:00"].map((time, i) => (
-                    <motion.div 
-                      key={i}
-                      className={`text-center py-1 rounded text-[10px] ${i === 1 ? "bg-[#43AA8B] text-white" : "bg-gray-700 text-gray-300"}`}
-                      animate={i === 1 ? { y: [0, -2, 0] } : {}}
-                      transition={{ repeat: Infinity, duration: 1.5 }}
-                    >
-                      {time}
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
+              </motion.div>
+
+              {/* Connecting lines */}
+              <motion.div 
+                className="absolute left-[40px] top-[50px] w-[160px] h-[2px] bg-[#43AA8B]"
+                animate={{ 
+                  opacity: [0, 1, 1, 0],
+                  scaleX: [0, 1, 1, 0]
+                }}
+                transition={{ 
+                  duration: 4, 
+                  times: [0.05, 0.3, 0.7, 0.95],
+                  repeat: Infinity,
+                  repeatDelay: 0.5,
+                  delay: 0.2
+                }}
+              />
             </div>
           </div>
         );
@@ -587,11 +631,18 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
     }
   };
 
+  // Check if this is the last item (number 4) to remove the bottom line
+  const isLastItem = number === 4;
+
   return (
     <div ref={ref} className="relative mb-16 md:mb-24">
       {/* Vertical timeline line - positioned to go around the content boxes */}
       <div className="absolute left-8 md:left-1/2 top-0 h-[40px] w-0.5 bg-[#43AA8B]/30" style={{ transform: 'translateX(-50%)' }}></div>
-      <div className="absolute left-8 md:left-1/2 bottom-0 h-[calc(100%-40px-220px)] w-0.5 bg-[#43AA8B]/30" style={{ transform: 'translateX(-50%)', top: 'calc(40px + 220px)' }}></div>
+      
+      {/* Only show the bottom line if it's not the last item */}
+      {!isLastItem && (
+        <div className="absolute left-8 md:left-1/2 bottom-0 h-[calc(100%-40px-220px)] w-0.5 bg-[#43AA8B]/30" style={{ transform: 'translateX(-50%)', top: 'calc(40px + 220px)' }}></div>
+      )}
       
       {/* Circle marker on timeline - now with border to appear over line */}
       <div className="absolute left-8 md:left-1/2 transform translate-x-[-50%] w-16 h-16 bg-[#43AA8B] rounded-full flex items-center justify-center text-2xl font-bold border-4 border-black dark:border-gray-900 z-10">
