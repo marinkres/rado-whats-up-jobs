@@ -513,7 +513,7 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
       case 'chat':
         // WhatsApp logo animation for step 1
         return (
-          <div className="w-full h-full bg-gray-800 rounded-xl flex justify-center items-center overflow-hidden">
+          <div className="w-full h-full  rounded-xl flex justify-center items-center overflow-hidden">
             <div className="w-32 h-32 relative">
               {/* WhatsApp logo with proper green color */}
               <div className="absolute inset-0 flex items-center justify-center">
@@ -549,7 +549,7 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
       case 'filter':
         // Improved filter animation that fits properly within container
         return (
-          <div className="w-full h-full bg-gray-800 rounded-xl p-4 flex justify-center items-center overflow-hidden">
+          <div className="w-full h-full  rounded-xl p-4 flex justify-center items-center overflow-hidden">
             <div className="flex flex-col items-center w-full max-w-[200px]">
               <div className="flex items-center justify-between w-full mb-3">
                 <div className="text-sm text-white font-medium">Kandidati</div>
@@ -607,14 +607,14 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
       case 'messages':
         // Step 3 now uses text.webp image from public folder
         return (
-          <div className="w-full h-full bg-gray-800 rounded-xl flex justify-center items-center overflow-hidden">
+          <div className="w-full h-full  rounded-xl flex justify-center items-center overflow-hidden">
             <img 
               src="/raz.png" 
               alt="Text Message" 
               className="w-fill h-fill object-contain" 
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
-                e.currentTarget.parentElement.innerHTML = `<div class="flex items-center justify-center bg-gray-800 p-8 h-full">
+                e.currentTarget.parentElement.innerHTML = `<div class="flex items-center justify-center  p-8 h-full">
                   <div class="text-center">
                     <div class="text-[#43AA8B] text-xl font-bold mb-2">${title}</div>
                     <p class="text-gray-400">Slika nije dostupna</p>
@@ -627,14 +627,14 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
       case 'calendar':
         // Static calendar integration display with proper logos
         return (
-          <div className="w-full h-full bg-gray-800 rounded-xl flex justify-center items-center overflow-hidden">
+          <div className="w-full h-full  rounded-xl flex justify-center items-center overflow-hidden">
             <img 
               src="/mail.png" 
               alt="Text Message" 
               className="w-fill h-fill object-contain" 
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
-                e.currentTarget.parentElement.innerHTML = `<div class="flex items-center justify-center bg-gray-800 p-8 h-full">
+                e.currentTarget.parentElement.innerHTML = `<div class="flex items-center justify-center  p-8 h-full">
                   <div class="text-center">
                     <div class="text-[#43AA8B] text-xl font-bold mb-2">${title}</div>
                     <p class="text-gray-400">Slika nije dostupna</p>
@@ -670,7 +670,7 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
       )}
       
       {/* Circle marker on timeline - now with border to appear over line */}
-      <div className="absolute left-8 md:left-1/2 transform translate-x-[-50%] w-16 h-16 bg-[#43AA8B] rounded-full flex items-center justify-center text-2xl font-bold border-4 border-black dark:border-gray-900 z-10">
+      <div className="absolute left-8 md:left-1/2 transform translate-x-[-50%] w-12 h-12 bg-[#43AA8B] rounded-full flex items-center justify-center text-2xl font-bold border-4 border-black dark:border-gray-900 z-10">
         {number}
       </div>
       
