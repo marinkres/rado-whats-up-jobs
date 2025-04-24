@@ -100,7 +100,7 @@ const Login = () => {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <Label htmlFor="password" className="text-gray-200">Lozinka</Label>
-                    <Link to="/forgot-password" className="text-xs text-[#43AA8B] hover:underline">
+                    <Link to="/login" className="text-xs text-[#43AA8B] hover:underline">
                       Zaboravljena lozinka?
                     </Link>
                   </div>
@@ -148,9 +148,9 @@ const Login = () => {
               </div>
               
               <div className="text-center text-sm text-gray-400">
-                Nemate korisnički račun?{" "}
-                <Link to="/signup" className="font-medium text-[#43AA8B] hover:underline">
-                  Registrirajte se
+                Kontaktiraj{" "}
+                <Link to="/login" className="font-medium text-[#43AA8B] hover:underline">
+                  Podršku
                 </Link>
               </div>
             </CardFooter>
