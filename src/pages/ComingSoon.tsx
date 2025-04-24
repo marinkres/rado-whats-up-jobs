@@ -75,7 +75,7 @@ const ComingSoon = () => {
             </h1>
             
             <p className="text-lg md:text-xl text-gray-300 mb-10 max-w-lg">
-              Napredna platforma koja koristi AI tehnologiju za povezivanje poslodavaca s idealnim kandidatima brže i učinkovitije nego ikad prije.
+            Upotrijebite snagu WhatsApp-a za povezivanje sa idealnim kandidatima brže i učinkovitije nego ikad prije.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">
@@ -117,16 +117,28 @@ const ComingSoon = () => {
             {/* Mockup image with local fallback */}
             <div className="relative z-10 w-full max-w-lg mx-auto">
               <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-                {/* Using a self-contained placeholder div instead of external image service */}
-                <div 
-                  className="w-full aspect-[3/2] bg-gray-800 flex items-center justify-center"
-                  style={{ minHeight: "300px" }}
-                >
-                  <div className="text-center p-4">
-                    <div className="text-[#43AA8B] text-4xl font-bold mb-2">Rado Platform</div>
-                    <p className="text-gray-400">AI-powered recruitment solution</p>
-                  </div>
-                </div>
+                {/* Using the mockup.png image from public folder */}
+                <img 
+                  src="/mockup1.png" 
+                  alt="Rado Platform" 
+                  className="w-full h-auto"
+                  onError={(e) => {
+                    // Fallback in case image fails to load
+                    e.currentTarget.style.display = 'none';
+                    const container = e.currentTarget.parentElement;
+                    if (container) {
+                      const fallback = document.createElement('div');
+                      fallback.className = 'w-full aspect-[3/2] bg-gray-800 flex items-center justify-center p-4 text-center';
+                      fallback.innerHTML = `
+                        <div>
+                          <div class="text-[#43AA8B] text-xl font-bold mb-2">Rado Platform</div>
+                          <p class="text-gray-400">AI-powered recruitment solution</p>
+                        </div>
+                      `;
+                      container.appendChild(fallback);
+                    }
+                  }}
+                />
               </div>
               
               {/* Floating elements */}
@@ -173,24 +185,24 @@ const ComingSoon = () => {
           transition={{ delay: 0.4, duration: 0.7 }}
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-16 max-w-2xl mx-auto">
-            Naša revolucionarna AI platforma mijenja način na koji kompanije zapošljavaju
+            Kako naši korisnici zapošljavaju 5x brže
           </h2>
           
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <FeatureCard 
               icon={<SearchIcon />}
-              title="AI pretraga kandidata"
-              description="Automatsko uparivanje kandidata s radnim mjestima koristeći napredne AI algoritme."
+              title="Komunikacija izravno u chatu"
+              description="Skratite vrijeme potrebno za zapošljavanje i razgovarajte izravno s kandidatima. Nema više čekanja na e-mail."
             />
             <FeatureCard 
               icon={<WhatsAppIcon />}
               title="WhatsApp integracija"
-              description="Komunicirajte s kandidatima putem WhatsAppa direktno kroz našu platformu."
+              description="Nema životopisa, nema motivacijskih pisama, kandidati se mogu prijaviti za 2 minute na platformama koje svakodnevno koriste."
             />
             <FeatureCard 
               icon={<ChartIcon />}
-              title="Analitika zapošljavanja"
-              description="Dobijte uvid u ključne metrike zapošljavanja s detaljnim izvješćima."
+              title="Do intervjua jednim klikom"
+              description="Kandidati mogu rezervirati svoje najbolje vrijeme jednim klikom na svoj chat, sinkroniziranim izravno u vaš kalendar."
             />
           </div>
         </motion.div>
