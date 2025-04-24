@@ -105,7 +105,7 @@ const ComingSoon = () => {
                 variant="outline" 
                 className="border border-white/20 text-white bg-white/5 hover:bg-white/10"
               >
-                <Link to="/login">
+                <Link to="https://dashboard.radojobs.eu/login">
                   <span>Prijava</span>
                 </Link>
               </Button>
@@ -146,7 +146,7 @@ const ComingSoon = () => {
               variant="outline" 
               className="border border-white/20 text-white bg-white/5 backdrop-blur-sm hover:bg-white/10"
             >
-              <Link to="/login">
+              <Link to="https://dashboard.radojobs.eu/login">
                 <span>Prijava</span>
                 <ChevronRight className="ml-2 h-4 w-4" />
               </Link>
