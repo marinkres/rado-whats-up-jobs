@@ -28,6 +28,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getCurrentEmployerId } from '@/utils/authUtils';
 
 // Skeleton loader component
 const Skeleton = ({ className = "" }) => (
@@ -60,93 +61,42 @@ const Chat = () => {
   useEffect(() => {
     const fetchConversations = async () => {
       try {
-        // Get the current user's session
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.user) {
-          console.error("No authenticated user");
-          setLoading(false);
+        setLoading(true);
+        
+        // Dohvati ID trenutnog poslodavca
+        const employerId = await getCurrentEmployerId();
+        
+        if (!employerId) {
+          console.error("Nije moguće dohvatiti ID poslodavca");
           return;
         }
-
-        // Get employer ID by email
-        const { data: employerData, error: employerError } = await supabase
-          .from('employers')
-          .select('id')
-          .eq('email', session.user.email)
-          .single();
-
-        if (employerError) {
-          console.error("Error fetching employer:", employerError);
-          setLoading(false);
-          return;
-        }
-
-        const employerId = employerData.id;
-
-        // Get all conversations - remove the archived field since it doesn't exist
-        const { data: conversationsData, error } = await supabase
-          .from('conversations')
-          .select('id, candidate_id, job_id, created_at, phone, job_listings(title)')
-          .order('created_at', { ascending: false });
+  
+        const { data, error } = await supabase
+          .from("conversations")
+          .select(`
+            *,
+            candidates(*),
+            job_listings!inner(*)
+          `)
+          .eq('job_listings.employer_id', employerId) // Dodano filtriranje po employer_id
+          .order("created_at", { ascending: false });
         
         if (error) throw error;
-        
-        // Now fetch candidate details for each conversation
-        if (conversationsData?.length > 0) {
-          const candidateIds = conversationsData.map(conv => conv.candidate_id);
-          const { data: candidatesData } = await supabase
-            .from('candidates')
-            .select('id, name, phone')
-            .in('id', candidateIds);
-            
-          // Create a lookup object for candidates
-          const candidatesMap = {};
-          candidatesData?.forEach(candidate => {
-            candidatesMap[candidate.id] = candidate;
-          });
-          
-          // Attach candidate details to conversations
-          const enhancedConversations = conversationsData.map(conv => ({
-            ...conv,
-            candidateDetails: candidatesMap[conv.candidate_id] || null
-          }));
-          
-          setConversations(enhancedConversations);
-          setCandidateDetails(candidatesMap);
-          
-          // Select the first conversation or the one from query parameter
-          if (enhancedConversations.length > 0) {
-            // If we have a conversation ID in the URL, select that one
-            if (conversationIdFromQuery) {
-              const targetConversation = enhancedConversations.find(
-                conv => conv.id === conversationIdFromQuery
-              );
-              
-              if (targetConversation) {
-                setSelectedConversation(targetConversation);
-                fetchMessages(targetConversation.id);
-              } else {
-                // If conversation not found, select the first one
-                setSelectedConversation(enhancedConversations[0]);
-                fetchMessages(enhancedConversations[0].id);
-              }
-            } else {
-              // No specific conversation requested, select the first one
-              setSelectedConversation(enhancedConversations[0]);
-              fetchMessages(enhancedConversations[0].id);
-            }
-          } else {
-            setLoading(false);
-          }
-        } else {
-          setLoading(false);
-        }
+  
+        // Format the data to include candidate details
+        const formattedConversations = data.map(conversation => ({
+          ...conversation,
+          candidateDetails: conversation.candidates,
+        }));
+  
+        setConversations(formattedConversations || []);
       } catch (error) {
-        console.error('Error fetching conversations:', error);
+        console.error("Error fetching conversations:", error);
+      } finally {
         setLoading(false);
       }
     };
-
+  
     fetchConversations();
   }, [conversationIdFromQuery]);
 

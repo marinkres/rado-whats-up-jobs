@@ -33,6 +33,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { getCurrentEmployerId } from '@/utils/authUtils';
 
 // Form validation schema
 const formSchema = z.object({
@@ -42,6 +43,14 @@ const formSchema = z.object({
   requirements: z.string().optional(),
   benefits: z.string().optional(),
 });
+
+type FormValues = {
+  title: string;
+  location: string;
+  description: string;
+  requirements?: string;
+  benefits?: string;
+}
 
 const NewJob = () => {
   const navigate = useNavigate();
@@ -60,9 +69,21 @@ const NewJob = () => {
     },
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: FormValues) => {
     try {
       setLoading(true);
+      
+      // Dohvati ID trenutnog poslodavca
+      const employerId = await getCurrentEmployerId();
+      
+      if (!employerId) {
+        toast({
+          title: "Greška",
+          description: "Nije moguće identificirati poslodavca. Prijavite se ponovno.",
+          variant: "destructive",
+        });
+        return;
+      }
       
       const { error } = await supabase
         .from("job_listings")
@@ -72,6 +93,7 @@ const NewJob = () => {
           description: data.description,
           requirements: data.requirements || null,
           benefits: data.benefits || null,
+          employer_id: employerId // Dodajemo employer_id
         });
       
       if (error) throw error;
@@ -88,7 +110,7 @@ const NewJob = () => {
         navigate("/jobs");
       }, 1500);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating job:", error.message);
       toast({
         title: "Greška",

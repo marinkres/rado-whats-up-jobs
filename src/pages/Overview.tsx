@@ -4,6 +4,8 @@ import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { MapPin, Briefcase, Users, ClipboardList, ChevronRight, Calendar, TrendingUp, BarChart3 } from "lucide-react";
+import { getCurrentEmployerId } from '@/utils/authUtils';
+import { toast } from "@/components/ui/use-toast";
 
 // Skeleton loader component
 const Skeleton = ({ className = "" }) => (
@@ -21,34 +23,69 @@ const Overview = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data: locationsData } = await supabase.from("locations").select("*");
-        setLocations(locationsData || []);
-
-        const { data: jobListingsData } = await supabase.from("job_listings").select("*");
-        setJobListings(jobListingsData || []);
-
-        const { data: candidatesData } = await supabase.from("candidates").select("*");
-        setCandidates(candidatesData || []);
-
-        const { data: applicationsData } = await supabase
+        setLoading(true);
+        
+        // Dohvati ID trenutnog poslodavca
+        const employerId = await getCurrentEmployerId();
+        
+        if (!employerId) {
+          console.error("Nije moguće dohvatiti ID poslodavca");
+          return;
+        }
+        
+        // Dohvaćanje poslova
+        const { data: jobData, error: jobError } = await supabase
+          .from("job_listings")
+          .select("*, applications(*)")
+          .eq('employer_id', employerId) // Dodano filtriranje po employer_id
+          .order("created_at", { ascending: false });
+          
+        if (jobError) throw jobError;
+        
+        // Dohvaćanje prijava
+        const { data: applicationData, error: applicationError } = await supabase
           .from("applications")
           .select(`
-            id,
-            status,
-            created_at,
-            message,
-            job_id,
-            candidates (name),
-            job_listings (id, title)
-          `); // Ensure `job_id` and `job_listings` are properly joined
-        setApplications(applicationsData || []);
+            *,
+            candidates(*),
+            job_listings!inner(*)
+          `)
+          .eq('job_listings.employer_id', employerId) // Dodano filtriranje po employer_id
+          .order("created_at", { ascending: false });
+          
+        if (applicationError) throw applicationError;
+        
+        // Dohvaćanje kandidata
+        const { data: candidateData, error: candidateError } = await supabase
+          .from("candidates")
+          .select(`
+            *,
+            applications!inner(
+              *,
+              job_listings!inner(*)
+            )
+          `)
+          .eq('applications.job_listings.employer_id', employerId) // Dodano filtriranje po employer_id
+          .order("created_at", { ascending: false });
+          
+        if (candidateError) throw candidateError;
+        
+        setJobListings(jobData || []);
+        setApplications(applicationData || []);
+        setCandidates(candidateData || []);
+        
       } catch (error) {
-        console.error("Error fetching data:", error.message);
+        console.error("Error fetching overview data:", error.message);
+        toast({
+          title: "Greška",
+          description: "Nije moguće učitati podatke.",
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
     };
-
+    
     fetchData();
   }, []);
 
@@ -265,3 +302,4 @@ const Overview = () => {
 };
 
 export default Overview;
+

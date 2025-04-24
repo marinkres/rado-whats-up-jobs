@@ -23,19 +23,37 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
       setLoading(true);
       setError("");
       
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
+      
+      // Dohvati employer_id nakon uspješne prijave
+      const { data: employer, error: employerError } = await supabase
+        .from('employers')
+        .select('id, company_name')
+        .eq('email', email)
+        .single();
+      
+      if (employerError) {
+        console.error("Greška pri dohvaćanju employer ID-a:", employerError);
+      } else if (employer) {
+        console.log("Prijava uspješna, employer_id:", employer.id);
+        // Spremi employer_id u localStorage
+        localStorage.setItem('currentEmployerId', employer.id);
+      }
+      
+      // Spremi email korisnika u localStorage za praćenje sesija
+      localStorage.setItem('currentUserEmail', email);
       
       navigate("/overview");
       toast({

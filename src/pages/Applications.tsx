@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { getCurrentEmployerId, getCurrentEmployerIdWithCache } from '@/utils/authUtils';
 
 // Skeleton loader component
 const Skeleton = ({ className = "" }) => (
@@ -63,39 +64,40 @@ const Applications = () => {
       try {
         setLoading(true);
         
-        // Fetch jobs first
-        const { data: jobsData } = await supabase
-          .from("job_listings")
-          .select("id, title");
-          
-        // Create a lookup object
-        const jobsMap = {};
-        if (jobsData) {
-          jobsData.forEach(job => {
-            jobsMap[job.id] = job;
-          });
-        }
-        setJobs(jobsMap);
+        // Dohvati ID trenutnog poslodavca s cachiranjem
+        const employerId = await getCurrentEmployerIdWithCache();
         
-        // Fetch applications with related data
+        if (!employerId) {
+          console.error("Nije moguće dohvatiti ID poslodavca");
+          return;
+        }
+
+        console.log("Dohvaćam prijave za employer ID:", employerId);
+        
+        // Promijenjen upit za dohvaćanje prijava
         const { data, error } = await supabase
           .from("applications")
           .select(`
-            id,
-            status,
-            created_at, 
-            message,
-            job_id,
-            candidate_id,
-            candidates (id, name, phone),
-            job_listings (id, title)
-          `);
-          
-        if (error) throw error;
+            *,
+            candidates(*),
+            job_listings!inner(*)
+          `)
+          .eq('job_listings.employer_id', employerId)
+          .order("created_at", { ascending: false });
+        
+        if (error) {
+          console.error("Error fetching applications:", error);
+          throw error;
+        }
+        
+        console.log("Dohvaćeno prijava:", data?.length || 0);
+        if (data?.length > 0) {
+          console.log("Prva prijava:", data[0]);
+        }
         
         setApplications(data || []);
         applyFiltersAndSort(data || [], searchQuery, statusFilter, sortBy);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching applications:", error.message);
       } finally {
         setLoading(false);
@@ -113,13 +115,13 @@ const Applications = () => {
   const applyFiltersAndSort = (apps, search, status, sort) => {
     // First apply filters
     let result = apps;
-    
+
     // Search filter
     if (search.trim()) {
       const searchLower = search.toLowerCase();
       result = result.filter(app => 
-        (app.candidates?.name?.toLowerCase().includes(searchLower)) ||
-        (app.job_listings?.title?.toLowerCase().includes(searchLower)) ||
+        (app.candidates?.name?.toLowerCase().includes(searchLower)) || 
+        (app.job_listings?.title?.toLowerCase().includes(searchLower)) || 
         (app.message?.toLowerCase().includes(searchLower))
       );
     }
@@ -128,7 +130,7 @@ const Applications = () => {
     if (status && status !== "all") {
       result = result.filter(app => app.status === status);
     }
-    
+
     // Apply sorting
     switch (sort) {
       case "date_asc":
@@ -303,7 +305,7 @@ const Applications = () => {
                         <tbody className="divide-y divide-gray-100 dark:divide-gray-700/40">
                           {filteredApplications.map((application) => (
                             <tr 
-                              key={application.id} 
+                              key={application.id}
                               className="bg-white dark:bg-gray-800/20 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors cursor-pointer"
                               onClick={() => viewApplicationDetails(application.id)}
                             >
@@ -421,7 +423,6 @@ const Applications = () => {
                               {application.job_listings?.title || `Job ID: ${application.job_id}`}
                             </p>
                           </div>
-                          
                           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 pt-1">
                             <span>{new Date(application.created_at).toLocaleDateString("hr-HR")}</span>
                             <ChevronRight className="h-4 w-4" />

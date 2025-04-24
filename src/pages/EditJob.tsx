@@ -21,6 +21,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getCurrentEmployerId } from '@/utils/authUtils';
+
+type FormData = {
+  title: string;
+  location: string;
+  description: string;
+  requirements: string;
+  benefits: string;
+}
 
 const EditJob = () => {
   const { id } = useParams();
@@ -30,7 +39,7 @@ const EditJob = () => {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     title: "",
     location: "", // Changed from location_id to location
     description: "",
@@ -44,25 +53,43 @@ const EditJob = () => {
       try {
         setLoading(true);
         
-        // Fetch job details
-        const { data: jobData, error: jobError } = await supabase
+        // Dohvati ID trenutnog poslodavca
+        const employerId = await getCurrentEmployerId();
+        
+        if (!employerId) {
+          console.error("Nije moguće dohvatiti ID poslodavca");
+          return;
+        }
+        
+        // Dohvati podatke o poslu
+        const { data, error } = await supabase
           .from("job_listings")
           .select("*")
           .eq("id", id)
           .single();
-          
-        if (jobError) throw jobError;
         
-        // Set state - no need to fetch locations anymore
+        if (error) throw error;
+        
+        // Provjeri pripada li posao trenutnom poslodavcu
+        if (data.employer_id !== employerId) {
+          toast({
+            title: "Pristup odbijen",
+            description: "Nemate ovlaštenje za uređivanje ovog posla.",
+            variant: "destructive",
+          });
+          navigate('/jobs');
+          return;
+        }
+        
         setFormData({
-          title: jobData.title || "",
-          location: jobData.location || "", // Changed from location_id to location
-          description: jobData.description || "",
-          requirements: jobData.requirements || "",
-          benefits: jobData.benefits || "",
+          title: data.title || "",
+          location: data.location || "", // Changed from location_id to location
+          description: data.description || "",
+          requirements: data.requirements || "",
+          benefits: data.benefits || "",
         });
       } catch (error) {
-        console.error("Error fetching job data:", error.message);
+        console.error("Error fetching job details:", error.message);
         toast({
           title: "Greška",
           description: "Nije moguće učitati podatke o poslu.",
@@ -74,9 +101,9 @@ const EditJob = () => {
     };
     
     fetchData();
-  }, [id]);
+  }, [id, navigate]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -84,7 +111,7 @@ const EditJob = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {

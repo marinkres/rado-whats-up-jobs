@@ -28,6 +28,7 @@ import { hr } from "date-fns/locale";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import QRCode from "react-qr-code";
 import { toast } from "@/components/ui/use-toast";
+import { getCurrentEmployerId } from '@/utils/authUtils';
 
 // Skeleton loader component
 const Skeleton = ({ className = "" }) => (
@@ -45,48 +46,67 @@ const JobDetail = () => {
   const [copying, setCopying] = useState(false);
 
   useEffect(() => {
-    const fetchJobDetails = async () => {
+    const fetchJob = async () => {
       try {
         setLoading(true);
         
-        // Get job info in a single query since we no longer need to join with locations table
+        // Dohvati ID trenutnog poslodavca
+        const employerId = await getCurrentEmployerId();
+        
+        if (!employerId) {
+          console.error("Nije moguće dohvatiti ID poslodavca");
+          return;
+        }
+        
+        // Dohvati podatke o poslu
         const { data: jobData, error: jobError } = await supabase
           .from("job_listings")
           .select("*")
-          .eq('id', id)
+          .eq("id", id)
           .single();
-          
+        
         if (jobError) throw jobError;
+        
+        // Provjeri pripada li posao trenutnom poslodavcu
+        if (jobData.employer_id !== employerId) {
+          toast({
+            title: "Pristup odbijen",
+            description: "Nemate ovlaštenje za pregledavanje ovog posla.",
+            variant: "destructive",
+          });
+          navigate('/jobs');
+          return;
+        }
         
         setJob(jobData);
         
-        // Fetch applications for this job
-        const { data: applicationsData, error: applicationsError } = await supabase
+        // Dohvati prijave za ovaj posao
+        const { data: appData, error: appError } = await supabase
           .from("applications")
           .select(`
-            id,
-            status,
-            created_at,
-            candidate_id,
-            candidates (id, name, phone)
+            *,
+            candidates(*)
           `)
-          .eq('job_id', id)
-          .order('created_at', { ascending: false });
-          
-        if (applicationsError) throw applicationsError;
+          .eq("job_id", id)
+          .order("created_at", { ascending: false });
         
-        setApplications(applicationsData || []);
+        if (appError) throw appError;
+        
+        setApplications(appData || []);
       } catch (error) {
         console.error("Error fetching job details:", error.message);
+        toast({
+          title: "Greška",
+          description: "Nije moguće učitati detalje posla.",
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
     };
-
-    if (id) {
-      fetchJobDetails();
-    }
-  }, [id]);
+    
+    fetchJob();
+  }, [id, navigate]);
 
   const goBack = () => {
     navigate('/jobs');
@@ -244,7 +264,7 @@ const JobDetail = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="border-gray-200 dark:border-gray-700"
+                            className="border-gray-200 bg-green-600 hover:bg-green-700 hover:text-white text-white dark:border-gray-700"
                             asChild
                           >
                             <a 

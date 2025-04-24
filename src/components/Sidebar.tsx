@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import ThemeSwitch from "./ThemeSwitch";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { getCurrentEmployerId } from '@/utils/authUtils';
 
 const menuItems = [
   { icon: Grid, label: "Pregled", href: "/overview" },
@@ -51,13 +52,20 @@ const Sidebar = () => {
         // Fetch company name from employers table
         const { data: employer, error } = await supabase
           .from("employers")
-          .select("company_name")
+          .select("id, company_name")
           .eq("email", session.user.email)
           .single();
 
         if (employer) {
           setCompanyName(employer.company_name);
+          console.log("Employer details in sidebar:", employer.company_name, "ID:", employer.id);
+        } else {
+          console.error("Employer not found:", error?.message);
         }
+        
+        // Dohvati i provjeravamo employer_id kroz našu utility funkciju
+        const employerId = await getCurrentEmployerId();
+        console.log("CurrentEmployerId from utility:", employerId);
       }
     };
     fetchUserDetails();
@@ -69,12 +77,12 @@ const Sidebar = () => {
 
   // Close sidebar when clicking outside on mobile
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: MouseEvent) => {
       const sidebar = document.getElementById('mobile-sidebar');
       const menuButton = document.getElementById('menu-button');
       
-      if (sidebar && !sidebar.contains(event.target) && 
-          menuButton && !menuButton.contains(event.target)) {
+      if (sidebar && !sidebar.contains(event.target as Node) && 
+          menuButton && !menuButton.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -93,7 +101,7 @@ const Sidebar = () => {
     setIsOpen(false);
   }, [location.pathname]);
 
-  const handleLogout = async (e) => {
+  const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent any default navigation
     await signOut(); // Use the signOut function from AuthContext
   };

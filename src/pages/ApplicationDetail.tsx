@@ -26,6 +26,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getCurrentEmployerId } from '@/utils/authUtils';
+import { toast } from "@/components/ui/use-toast";
 
 // Skeleton loader component
 const Skeleton = ({ className = "" }) => (
@@ -57,73 +59,53 @@ const ApplicationDetail = () => {
       try {
         setLoading(true);
         
-        // First, get the application data
-        const { data: applicationData, error: applicationError } = await supabase
-          .from("applications")
-          .select(`
-            id,
-            status,
-            created_at, 
-            message,
-            job_id,
-            candidate_id,
-            candidates (id, name, phone, experience, languages)
-          `)
-          .eq('id', id)
-          .single();
-          
-        if (applicationError) throw applicationError;
+        // Dohvati ID trenutnog poslodavca
+        const employerId = await getCurrentEmployerId();
         
-        // Then, get the job listing data separately to avoid the nested locations issue
-        const { data: jobData, error: jobError } = await supabase
-          .from("job_listings")
-          .select(`
-            id, 
-            title, 
-            description, 
-            location_id
-          `)
-          .eq('id', applicationData.job_id)
-          .single();
-        
-        if (jobError) throw jobError;
-        
-        // If there's a location, get that data separately
-        let locationData = null;
-        if (jobData.location_id) {
-          const { data: location, error: locationError } = await supabase
-            .from("locations")
-            .select("id, name")
-            .eq('id', jobData.location_id)
-            .single();
-          
-          if (!locationError) {
-            locationData = location;
-          }
+        if (!employerId) {
+          console.error("Nije moguće dohvatiti ID poslodavca");
+          return;
         }
         
-        // Combine all the data
-        const combinedData = {
-          ...applicationData,
-          job_listings: {
-            ...jobData,
-            locations: locationData
-          }
-        };
+        // Dohvati detalje prijave zajedno s podacima o poslu i kandidatu
+        const { data, error } = await supabase
+          .from("applications")
+          .select(`
+            *,
+            candidates(*),
+            job_listings!inner(*)
+          `)
+          .eq("id", id)
+          .single();
         
-        console.log("Application data:", combinedData);
-        setApplication(combinedData);
+        if (error) throw error;
+        
+        // Provjeri pripada li prijava trenutnom poslodavcu
+        if (data.job_listings.employer_id !== employerId) {
+          toast({
+            title: "Pristup odbijen",
+            description: "Nemate ovlaštenje za pregledavanje ove prijave.",
+            variant: "destructive",
+          });
+          navigate('/applications');
+          return;
+        }
+        
+        setApplication(data);
       } catch (error) {
         console.error("Error fetching application details:", error.message);
+        toast({
+          title: "Greška",
+          description: "Nije moguće učitati detalje prijave.",
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
     };
-
-    if (id) {
-      fetchApplicationDetails();
-    }
-  }, [id]);
+    
+    fetchApplicationDetails();
+  }, [id, navigate]);
 
   const handleStatusChange = async (newStatus) => {
     try {

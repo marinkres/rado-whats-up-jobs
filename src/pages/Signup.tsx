@@ -16,9 +16,17 @@ import { toast } from "@/components/ui/use-toast";
 import { Mail, Lock, Loader2, AlertCircle, Building, User } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
+type FormData = {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  companyName: string;
+  name: string;
+}
+
 const Signup = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
     confirmPassword: "",
@@ -28,12 +36,12 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSignup = async (e) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validate form
@@ -54,16 +62,30 @@ const Signup = () => {
 
       if (authError) throw authError;
       
-      // Create employer record in database
+      // Generate a UUID for employer ID to ensure we have a stable reference
+      const employerId = crypto.randomUUID();
+      
+      console.log("Kreiranje employer zapisa s ID:", employerId);
+      
+      // Create employer record in database with explicit ID
       const { error: profileError } = await supabase
         .from("employers")
         .insert({
+          id: employerId,
           email: formData.email,
           company_name: formData.companyName,
-          contact_name: formData.name
+          contact_name: formData.name,
+          created_at: new Date().toISOString()
         });
 
-      if (profileError) throw profileError;
+      if (profileError) {
+        console.error("Greška pri kreiranju poslodavca:", profileError);
+        throw profileError;
+      }
+      
+      // Spremi email korisnika u localStorage za praćenje sesija
+      localStorage.setItem('currentUserEmail', formData.email);
+      localStorage.setItem('currentEmployerId', employerId);
       
       toast({
         title: "Registracija uspješna",

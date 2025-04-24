@@ -16,6 +16,7 @@ import {
   Filter,
   ArrowUpDown,
 } from "lucide-react";
+import { getCurrentEmployerId } from '@/utils/authUtils';
 
 // Skeleton loader component
 const Skeleton = ({ className = "" }) => (
@@ -31,9 +32,24 @@ const Jobs = () => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
+        setLoading(true);
+        
+        // Dohvati ID trenutnog poslodavca
+        const employerId = await getCurrentEmployerId();
+        
+        if (!employerId) {
+          console.error("Nije moguće dohvatiti ID poslodavca");
+          return;
+        }
+        
         const { data, error } = await supabase
           .from("job_listings")
-          .select("*, locations(*), applications(id)");
+          .select(`
+            *,
+            applications:applications(*)
+          `)
+          .eq('employer_id', employerId) // Dodano filtriranje po employer_id
+          .order("created_at", { ascending: false });
         
         if (error) throw error;
         
@@ -92,10 +108,7 @@ const Jobs = () => {
               </div>
               
               <div className="flex gap-2">
-                <Button variant="outline" className="border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filtriraj
-                </Button>
+                
                 <Button variant="outline" className="border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                   <ArrowUpDown className="h-4 w-4 mr-2" />
                   Sortiraj
