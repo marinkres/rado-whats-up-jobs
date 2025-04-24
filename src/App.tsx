@@ -9,10 +9,14 @@ import Chat from "./pages/Chat";
 import Jobs from "./pages/Jobs";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup"; // Import the React-based signup page
-import NewJob from "./pages/NewJob"; // Import the NewJob page
-import Sidebar from "@/components/Sidebar"; // Import the Sidebar component
-import ComingSoon from "./pages/ComingSoon"; // Import the Coming Soon page
+import Signup from "./pages/Signup"; 
+import NewJob from "./pages/NewJob"; 
+import Applications from "./pages/Applications";
+import ApplicationDetail from "./pages/ApplicationDetail"; // New import
+import JobDetail from "./pages/JobDetail"; // Add this import
+import EditJob from "./pages/EditJob"; // Add this import
+import Sidebar from "@/components/Sidebar"; 
+import ComingSoon from "./pages/ComingSoon"; 
 
 const queryClient = new QueryClient();
 
@@ -39,6 +43,10 @@ const App = () => (
             <Route path="/chat" element={<Chat />} />
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/jobs/new" element={<NewJob />} />
+            <Route path="/jobs/:id" element={<JobDetail />} /> {/* Add this new route */}
+            <Route path="/jobs/:id/edit" element={<EditJob />} /> {/* Add this new route */}
+            <Route path="/applications" element={<Applications />} />
+            <Route path="/applications/:id" element={<ApplicationDetail />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
           <Route path="*" element={<NotFound />} />

@@ -1,136 +1,241 @@
 import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
-import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
+import { toast } from "@/components/ui/use-toast";
+import { Mail, Lock, Loader2, AlertCircle, Building, User } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Signup = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+    companyName: "",
+    name: ""
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSignup = async (e) => {
     e.preventDefault();
-    setErrorMessage("");
-
-    // Input validation
-    if (!email || !password || !companyName || !phone) {
-      setErrorMessage("All fields are required.");
+    
+    // Validate form
+    if (formData.password !== formData.confirmPassword) {
+      setError("Lozinke se ne podudaraju.");
       return;
     }
-    if (password.length < 6) {
-      setErrorMessage("Password must be at least 6 characters long.");
-      return;
+    
+    try {
+      setLoading(true);
+      setError("");
+      
+      // Create user in Supabase auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (authError) throw authError;
+      
+      // Create employer record in database
+      const { error: profileError } = await supabase
+        .from("employers")
+        .insert({
+          email: formData.email,
+          company_name: formData.companyName,
+          contact_name: formData.name
+        });
+
+      if (profileError) throw profileError;
+      
+      toast({
+        title: "Registracija uspješna",
+        description: "Vaš račun je kreiran. Dobrodošli u Rado sustav!",
+      });
+      
+      navigate("/overview");
+    } catch (error) {
+      console.error("Signup error:", error.message);
+      setError(error.message || "Došlo je do greške prilikom registracije. Pokušajte ponovno.");
+    } finally {
+      setLoading(false);
     }
-
-    // Create user in Supabase
-    const { data: user, error: signupError } = await supabase.auth.signUp({ email, password });
-    if (signupError) {
-      setErrorMessage(signupError.message);
-      return;
-    }
-
-    // Insert employer details into the employers table
-    const { error: insertError } = await supabase
-      .from("employers")
-      .insert({ email, company_name: companyName, phone });
-
-    if (insertError) {
-      setErrorMessage(insertError.message);
-      return;
-    }
-
-    alert("Signup successful! Please check your email for confirmation.");
-    navigate("/"); // Redirect to login page
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-green-900 px-4">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-lg p-8">
-        <div className="flex justify-center">
-          <img src="/rado.png" alt="Rado Logo" className="h-28" />
+    <div className="min-h-screen flex flex-col bg-gray-900">
+      <header className="container py-6">
+        {/* Empty header to maintain spacing */}
+      </header>
+      
+      <main className="flex flex-1 items-center justify-center p-4">
+        <div className="w-full max-w-md flex flex-col items-center">
+          <img 
+            src="/radow.svg" 
+            alt="Rado Logo" 
+            className="h-12 md:h-16 mb-8" 
+          />
+          
+          <Card className="backdrop-blur-sm bg-gray-800/90 border border-gray-700/50 shadow-xl w-full">
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-2xl font-bold text-center text-white">Registracija</CardTitle>
+              <CardDescription className="text-center text-gray-300">
+                Kreirajte svoj poslodavački račun
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent>
+              {error && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              
+              <form onSubmit={handleSignup} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="companyName" className="text-gray-200">Naziv tvrtke</Label>
+                  <div className="relative">
+                    <Building className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="companyName"
+                      name="companyName"
+                      placeholder="Vaša tvrtka d.o.o."
+                      value={formData.companyName}
+                      onChange={handleChange}
+                      className="pl-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-gray-200">Vaše ime i prezime</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="name"
+                      name="name"
+                      placeholder="Ivan Horvat"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="pl-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-gray-200">Email adresa</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="vas@email.com"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="pl-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-gray-200">Lozinka</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="password"
+                      name="password"
+                      type="password"
+                      placeholder="Minimalno 6 znakova"
+                      value={formData.password}
+                      onChange={handleChange}
+                      className="pl-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword" className="text-gray-200">Potvrdite lozinku</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type="password"
+                      placeholder="Ponovite lozinku"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      className="pl-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <Button 
+                  type="submit" 
+                  className="w-full bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Registracija u tijeku...
+                    </>
+                  ) : (
+                    "Registrirajte se"
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+            
+            <CardFooter className="flex flex-col space-y-4">
+              <div className="relative w-full">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-700/50" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-gray-800 px-2 text-gray-400">
+                    ili
+                  </span>
+                </div>
+              </div>
+              
+              <div className="text-center text-sm text-gray-400">
+                Već imate korisnički račun?{" "}
+                <Link to="/login" className="font-medium text-[#43AA8B] hover:underline">
+                  Prijavite se
+                </Link>
+              </div>
+            </CardFooter>
+          </Card>
+          
+          <p className="text-center mt-6 text-sm text-gray-400">
+            © {new Date().getFullYear()} Rado, Inc. Sva prava pridržana.
+          </p>
         </div>
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
-          Registrirajte se
-        </h2>
-        <p className="text-sm text-center text-gray-600 mb-6">
-          Već imate račun?{" "}
-          <a href="/" className="text-[#43AA8B] hover:underline">
-            Prijavite se
-          </a>
-        </p>
-        <form onSubmit={handleSignup} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Naziv tvrtke
-            </label>
-            <input
-              type="text"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#43AA8B]"
-              placeholder="Unesite naziv tvrtke"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Telefon
-            </label>
-            <input
-              type="text"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#43AA8B]"
-              placeholder="Unesite telefon"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#43AA8B]"
-              placeholder="Unesite email"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Lozinka
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#43AA8B]"
-              placeholder="Unesite lozinku"
-              required
-            />
-          </div>
-          {errorMessage && (
-            <p className="text-sm text-red-500 text-center">{errorMessage}</p>
-          )}
-          <button
-            type="submit"
-            className="w-full py-2 bg-[#43AA8B] text-white font-semibold rounded-lg hover:bg-green-600 transition"
-          >
-            Registriraj se
-          </button>
-        </form>
-        <p className="text-sm text-center text-gray-600 mt-6">
-          Trebate pomoć?{" "}
-          <a href="mailto:support@rado.ai" className="text-[#43AA8B] hover:underline">
-            Kontaktirajte Rado podršku
-          </a>
-        </p>
-        <p className="text-xs text-center text-black mt-2 font-bold">Rado 2025</p>
-      </div>
+      </main>
     </div>
   );
 };
