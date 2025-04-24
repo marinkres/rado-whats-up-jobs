@@ -284,6 +284,58 @@ const ComingSoon = () => {
           </div>
         </div>
         
+        {/* Dashboard Preview Section - New addition */}
+        <motion.div 
+          className="mt-20 md:mt-32 py-16 px-4 md:px-8"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.7 }}
+        >
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-5xl font-bold mb-4">
+                <span className="text-gray-100">Moćan i jednostavan </span>
+                <span className="text-[#43AA8B]">dashboard</span>
+              </h2>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Pratite sve svoje oglase i prijave na jednom mjestu uz naše intuitivno sučelje
+              </p>
+            </div>
+            
+            <div className="relative">
+              {/* Shadow blob under the dashboard image */}
+              <div className="absolute inset-0 bg-[#43AA8B]/20 rounded-3xl blur-2xl transform translate-y-4 scale-95 opacity-60"></div>
+              
+              {/* Dashboard image */}
+              <motion.div
+                className="relative rounded-xl overflow-hidden border border-gray-700/50 shadow-2xl"
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.8, type: "spring" }}
+              >
+                <img 
+                  src="/dashboard.png" 
+                  alt="Rado Dashboard Preview" 
+                  className="w-full h-auto object-cover"
+                />
+                
+                {/* Gradient overlay on the image */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                
+                {/* CTA button positioned at the bottom of the image */}
+                <div className="absolute bottom-0 left-0 right-0 p-8 flex justify-center">
+                  <Button 
+                    size="lg" 
+                    className="bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white font-medium px-8 py-6 rounded-full shadow-xl"
+                  >
+                    Zatraži demo pristup
+                  </Button>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </motion.div>
+        
         {/* Footer */}
         <motion.footer 
           className="mt-24 py-8 border-t border-white/10 text-center"
@@ -313,7 +365,7 @@ const ComingSoon = () => {
   );
 };
 
-// Timeline Card Component - Improved for better appearance and animations
+// Timeline Card Component - Improved for better appearance with static designs for steps 1 and 3
 const TimelineCard = ({ number, title, description, alignment, delay = 0, buttonText = undefined, animation }) => {
   const controls = useAnimation();
   const [ref, inView] = useInView({
@@ -331,11 +383,11 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
     }
   }, [controls, inView, delay]);
 
-  // Animation components with improved sizing
+  // Animation components with improved sizing and static options for steps 1 and 3
   const AnimationComponent = () => {
     switch(animation) {
       case 'chat':
-        // Custom WhatsApp animation for first step
+        // Static (non-animated) design for step 1
         return (
           <div className="w-full h-full bg-gray-800 rounded-xl flex justify-center items-center overflow-hidden">
             <div className="w-full max-w-[280px] p-4">
@@ -348,48 +400,29 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
               
               <div className="bg-[#ece5dd] h-[180px] px-3 py-2 flex flex-col justify-between">
                 <div className="space-y-2 overflow-hidden">
-                  <motion.div 
-                    className="bg-white rounded-lg p-2 text-sm ml-auto max-w-[70%] relative"
-                    initial={{ x: 50, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                  >
+                  <div className="bg-white rounded-lg p-2 text-sm ml-auto max-w-[70%] relative">
                     <div className="text-gray-800 text-xs">Je li još otvoren oglas za posao?</div>
                     <div className="text-[10px] text-gray-500 text-right">12:01</div>
-                  </motion.div>
+                  </div>
                   
-                  <motion.div 
-                    className="bg-[#dcf8c6] rounded-lg p-2 text-sm mr-auto max-w-[70%] relative"
-                    initial={{ x: -50, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.7, duration: 0.5 }}
-                  >
+                  <div className="bg-[#dcf8c6] rounded-lg p-2 text-sm mr-auto max-w-[70%] relative">
                     <div className="text-gray-800 text-xs">Da, pošaljite nam svoju prijavu!</div>
                     <div className="text-[10px] text-gray-500 text-right">12:02</div>
-                  </motion.div>
+                  </div>
                   
-                  <motion.div 
-                    className="bg-white rounded-lg p-2 text-sm ml-auto max-w-[70%] relative"
-                    initial={{ x: 50, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 1.4, duration: 0.5 }}
-                  >
+                  <div className="bg-white rounded-lg p-2 text-sm ml-auto max-w-[70%] relative">
                     <div className="text-gray-800 text-xs">Odlično! Kako se mogu prijaviti?</div>
                     <div className="text-[10px] text-gray-500 text-right">12:03</div>
-                  </motion.div>
+                  </div>
                 </div>
                 
                 <div className="flex items-center bg-white rounded-full px-3 py-1.5 mt-2">
                   <div className="text-gray-400 text-xs flex-1">Odgovorite ovdje...</div>
-                  <motion.div 
-                    className="w-6 h-6 rounded-full bg-[#43AA8B] flex items-center justify-center"
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ repeat: Infinity, duration: 2 }}
-                  >
+                  <div className="w-6 h-6 rounded-full bg-[#43AA8B] flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polygon points="5 3 19 12 5 21 5 3"></polygon>
                     </svg>
-                  </motion.div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -454,7 +487,7 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
           </div>
         );
       case 'messages':
-        // Better chat animation with proper sizing
+        // Static (non-animated) simplified design for step 3
         return (
           <div className="w-full h-full bg-gray-800 rounded-xl p-4 flex justify-center items-center overflow-hidden">
             <div className="w-full max-w-[220px]">
@@ -470,47 +503,28 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
               
               <div className="bg-gray-900 p-3 h-[160px] flex flex-col justify-end">
                 <div className="space-y-3">
-                  <motion.div 
-                    className="bg-gray-700 text-white rounded-lg p-2 text-xs mr-auto max-w-[70%]"
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                  >
+                  <div className="bg-gray-700 text-white rounded-lg p-2 text-xs mr-auto max-w-[70%]">
                     <p className="text-xs">Poštovani, kada možete doći na intervju?</p>
-                  </motion.div>
+                  </div>
                   
-                  <motion.div 
-                    className="bg-[#43AA8B] text-white rounded-lg p-2 text-xs ml-auto max-w-[70%]"
-                    initial={{ x: 20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.8, duration: 0.5 }}
-                  >
+                  <div className="bg-[#43AA8B] text-white rounded-lg p-2 text-xs ml-auto max-w-[70%]">
                     <p className="text-xs">Mogu doći sutra u 14:00h ako vam odgovara.</p>
-                  </motion.div>
+                  </div>
                   
-                  <motion.div 
-                    className="bg-gray-700 text-white rounded-lg p-2 text-xs mr-auto max-w-[70%]"
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 1.6, duration: 0.5 }}
-                  >
+                  <div className="bg-gray-700 text-white rounded-lg p-2 text-xs mr-auto max-w-[70%]">
                     <p className="text-xs">Odlično, vidimo se sutra u 14h!</p>
-                  </motion.div>
+                  </div>
                 </div>
               </div>
               
               <div className="bg-gray-700 rounded-b-lg p-2 flex items-center">
                 <div className="bg-gray-600 rounded-full flex-1 h-6 px-2 mr-2"></div>
-                <motion.div 
-                  className="w-6 h-6 rounded-full bg-[#43AA8B] flex items-center justify-center"
-                  animate={{ rotate: [0, 10, 0, -10, 0] }}
-                  transition={{ repeat: Infinity, duration: 2, repeatDelay: 1 }}
-                >
+                <div className="w-6 h-6 rounded-full bg-[#43AA8B] flex items-center justify-center">
                   <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="22" y1="2" x2="11" y2="13"></line>
                     <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                   </svg>
-                </motion.div>
+                </div>
               </div>
             </div>
           </div>
