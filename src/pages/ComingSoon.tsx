@@ -365,7 +365,7 @@ const ComingSoon = () => {
   );
 };
 
-// Timeline Card Component - Improved for better appearance with static designs for steps 1 and 3
+// Timeline Card Component - Updated for step 3 to use text.webp image
 const TimelineCard = ({ number, title, description, alignment, delay = 0, buttonText = undefined, animation }) => {
   const controls = useAnimation();
   const [ref, inView] = useInView({
@@ -487,46 +487,23 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
           </div>
         );
       case 'messages':
-        // Static (non-animated) simplified design for step 3
+        // Step 3 now uses text.webp image from public folder
         return (
-          <div className="w-full h-full bg-gray-800 rounded-xl p-4 flex justify-center items-center overflow-hidden">
-            <div className="w-full max-w-[220px]">
-              <div className="bg-gray-700 rounded-t-lg p-3">
-                <div className="flex items-center mb-2">
-                  <div className="w-8 h-8 bg-[#43AA8B] rounded-full mr-2 flex items-center justify-center text-white font-medium text-sm">JD</div>
-                  <div>
-                    <div className="text-xs font-medium text-white">Josip Došen</div>
-                    <div className="text-[10px] text-gray-300">online</div>
+          <div className="w-fit h-fit bg-gray-800 rounded-xl flex justify-center items-center overflow-hidden">
+            <img 
+              src="/text.webp" 
+              alt="Text Message" 
+              className="w-full h-full object-contain" 
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement.innerHTML = `<div class="flex items-center justify-center bg-gray-800 p-8 h-full">
+                  <div class="text-center">
+                    <div class="text-[#43AA8B] text-xl font-bold mb-2">${title}</div>
+                    <p class="text-gray-400">Slika nije dostupna</p>
                   </div>
-                </div>
-              </div>
-              
-              <div className="bg-gray-900 p-3 h-[160px] flex flex-col justify-end">
-                <div className="space-y-3">
-                  <div className="bg-gray-700 text-white rounded-lg p-2 text-xs mr-auto max-w-[70%]">
-                    <p className="text-xs">Poštovani, kada možete doći na intervju?</p>
-                  </div>
-                  
-                  <div className="bg-[#43AA8B] text-white rounded-lg p-2 text-xs ml-auto max-w-[70%]">
-                    <p className="text-xs">Mogu doći sutra u 14:00h ako vam odgovara.</p>
-                  </div>
-                  
-                  <div className="bg-gray-700 text-white rounded-lg p-2 text-xs mr-auto max-w-[70%]">
-                    <p className="text-xs">Odlično, vidimo se sutra u 14h!</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-gray-700 rounded-b-lg p-2 flex items-center">
-                <div className="bg-gray-600 rounded-full flex-1 h-6 px-2 mr-2"></div>
-                <div className="w-6 h-6 rounded-full bg-[#43AA8B] flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                  </svg>
-                </div>
-              </div>
-            </div>
+                </div>`;
+              }}
+            />
           </div>
         );
       case 'calendar':
