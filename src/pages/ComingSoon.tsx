@@ -89,18 +89,6 @@ const ComingSoon = () => {
                   <MoveRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              
-              <Button 
-                asChild
-                size="lg" 
-                variant="outline" 
-                className="rounded-full px-8 text-lg bg-transparent border-white/20 text-white hover:bg-white/10 font-medium"
-              >
-                <a href="mailto:info@rado.ai" className="flex items-center">
-                  <Mail className="mr-2 h-5 w-5" />
-                  Kontaktirajte nas
-                </a>
-              </Button>
             </div>
           </motion.div>
           
@@ -176,6 +164,58 @@ const ComingSoon = () => {
             </div>
           </motion.div>
         </div>
+        
+        {/* Testimonial Section - New Addition */}
+        <motion.div 
+          className="mt-20 py-16 px-4 md:px-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.7 }}
+        >
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+              "Naš tim radi<span className="text-blue-500 font-bold"> brže i pametnije</span> a kandidatima pruža iskustvo koje se pamti."
+            </h2>
+            
+            <div className="text-center mb-12">
+              <p className="text-lg text-gray-300">
+              Pomažemo poslodavcima da popune pozicije bez napora, za manje od<span className="font-semibold"> 5 dana</span>
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+              <div className="text-center">
+                <p className="text-4xl md:text-5xl font-bold">
+                  <span className="text-[#43AA8B]">98</span>
+                  <span className="text-[#43AA8B]">%</span>
+                </p>
+                <p className="text-sm text-gray-400 mt-2">Zadovoljstvo kandidata</p>
+              </div>
+              
+              <div className="text-center">
+                <p className="text-4xl md:text-5xl font-bold">
+                  <span className="text-blue-500">77</span>
+                  <span className="text-blue-500">%</span>
+                </p>
+                <p className="text-sm text-gray-400 mt-2">Više prijava</p>
+              </div>
+              
+              <div className="text-center">
+                <p className="text-4xl md:text-5xl font-bold">
+                  <span className="text-purple-500">5</span>
+                  <span className="text-purple-500">x</span>
+                  <span className="text-purple-500 ml-2 text-2xl">brže</span>
+                </p>
+                <p className="text-sm text-gray-400 mt-2">Od prijave do posla</p>
+              </div>
+              
+              <div className="text-center">
+                <p className="text-4xl md:text-5xl font-bold text-gray-100">520h</p>
+                <p className="text-sm text-gray-400 mt-2">Ušteđeno u 90 dana</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
         
         {/* Features Section */}
         <motion.div 
