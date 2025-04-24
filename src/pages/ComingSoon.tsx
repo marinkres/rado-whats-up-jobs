@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 import { ChevronRight, Mail, MoveRight } from "lucide-react";
+import { useInView } from "react-intersection-observer";
 
 const ComingSoon = () => {
   const [mounted, setMounted] = useState(false);
@@ -75,7 +76,7 @@ const ComingSoon = () => {
             </h1>
             
             <p className="text-lg md:text-xl text-gray-300 mb-10 max-w-lg">
-            Upotrijebite snagu WhatsApp-a za povezivanje sa idealnim kandidatima brže i učinkovitije nego ikad prije.
+              Iskoristite snagu WhatsApp-a za povezivanje s idealnim kandidatima brže i učinkovitije nego ikad prije.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4">
@@ -165,7 +166,7 @@ const ComingSoon = () => {
           </motion.div>
         </div>
         
-        {/* Testimonial Section - New Addition */}
+        {/* Testimonial Section - Updated with complete content and colored text */}
         <motion.div 
           className="mt-20 py-16 px-4 md:px-8 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl"
           initial={{ opacity: 0, y: 40 }}
@@ -173,13 +174,13 @@ const ComingSoon = () => {
           transition={{ delay: 0.3, duration: 0.7 }}
         >
           <div className="max-w-5xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-              "Naš tim radi<span className="text-blue-500 font-bold"> brže i pametnije</span> a kandidatima pruža iskustvo koje se pamti."
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
+              "Naš tim radi <span className="text-[#43AA8B]">brže i pametnije</span> a kandidatima pruža iskustvo koje se pamti."
             </h2>
             
             <div className="text-center mb-12">
               <p className="text-lg text-gray-300">
-              Pomažemo poslodavcima da popune pozicije bez napora, za manje od<span className="font-semibold"> 5 dana</span>
+                Pomažemo poslodavcima da popune pozicije bez napora, za manje od 5 dana
               </p>
             </div>
             
@@ -204,7 +205,7 @@ const ComingSoon = () => {
                 <p className="text-4xl md:text-5xl font-bold">
                   <span className="text-purple-500">5</span>
                   <span className="text-purple-500">x</span>
-                  <span className="text-purple-500 ml-2 text-2xl">brže</span>
+                  <span className="text-purple-500 ml-1 text-2xl">brže</span>
                 </p>
                 <p className="text-sm text-gray-400 mt-2">Od prijave do posla</p>
               </div>
@@ -217,35 +218,71 @@ const ComingSoon = () => {
           </div>
         </motion.div>
         
-        {/* Features Section */}
-        <motion.div 
-          className="mt-20 md:mt-32 text-center"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.7 }}
-        >
-          <h2 className="text-3xl md:text-4xl font-bold mb-16 max-w-2xl mx-auto">
-            Kako naši korisnici zapošljavaju 5x brže
-          </h2>
-          
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <FeatureCard 
-              icon={<SearchIcon />}
+        {/* Features Section - Updated with Timeline Style */}
+        <div className="mt-20 md:mt-32 max-w-5xl mx-auto px-4 md:px-0">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+          >
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">
+              <span className="text-gray-100">Kako naši korisnici zapošljavaju </span>
+              <span className="text-[#43AA8B] font-bold">5x brže</span>
+            </h2>
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              Naši klijenti zapošljavaju kandidate unutar 5 dana rada s nama. Evo kako...
+            </p>
+          </motion.div>
+
+          {/* Timeline feature cards */}
+          <div className="relative">
+            {/* Vertical line */}
+            <div className="absolute left-8 md:left-1/2 transform md:translate-x-[-50%] top-0 bottom-0 w-0.5 bg-[#43AA8B]"></div>
+            
+            {/* Step 1 */}
+            <TimelineCard 
+              number="1"
+              title="Prijave putem WhatsApp"
+              description="Bez životopisa, bez motivacijskih pisama, kandidati se mogu prijaviti za 2 minute na platformama koje svakodnevno koriste."
+              alignment="right"
+              delay={0}
+              buttonText="Isprobajte sada (~50 sekundi)"
+              animation="chat"
+            />
+
+            {/* Step 2 */}
+            <TimelineCard 
+              number="2"
+              title="Automatska predkvalifikacija"
+              description="Primajte samo kvalificirane kandidate, pustite da naš softver obavi težak posao - nema više čitanja životopisa!"
+              alignment="left"
+              delay={0.2}
+              buttonText="Zatražite ponudu"
+              animation="filter"
+            />
+
+            {/* Step 3 - Updated from the image */}
+            <TimelineCard 
+              number="3"
               title="Komunikacija izravno u chatu"
               description="Skratite vrijeme potrebno za zapošljavanje i razgovarajte izravno s kandidatima. Nema više čekanja na e-mail."
+              alignment="right"
+              delay={0.4}
+              animation="messages"
             />
-            <FeatureCard 
-              icon={<WhatsAppIcon />}
-              title="WhatsApp integracija"
-              description="Nema životopisa, nema motivacijskih pisama, kandidati se mogu prijaviti za 2 minute na platformama koje svakodnevno koriste."
-            />
-            <FeatureCard 
-              icon={<ChartIcon />}
+
+            {/* Step 4 - Added from the image */}
+            <TimelineCard 
+              number="4"
               title="Do intervjua jednim klikom"
               description="Kandidati mogu rezervirati svoje najbolje vrijeme jednim klikom na svoj chat, sinkroniziranim izravno u vaš kalendar."
+              alignment="left"
+              delay={0.6}
+              animation="calendar"
             />
           </div>
-        </motion.div>
+        </div>
         
         {/* Footer */}
         <motion.footer 
@@ -272,6 +309,240 @@ const ComingSoon = () => {
           </div>
         </motion.footer>
       </div>
+    </div>
+  );
+};
+
+// Timeline Card Component - Updated with green color for step numbers and buttons
+const TimelineCard = ({ number, title, description, alignment, delay = 0, buttonText = undefined, animation }) => {
+  const controls = useAnimation();
+  const [ref, inView] = useInView({
+    triggerOnce: true,
+    threshold: 0.2
+  });
+
+  useEffect(() => {
+    if (inView) {
+      controls.start({ 
+        opacity: 1, 
+        y: 0,
+        transition: { duration: 0.7, delay }
+      });
+    }
+  }, [controls, inView, delay]);
+
+  // Animation components
+  const AnimationComponent = () => {
+    switch(animation) {
+      case 'chat':
+        return (
+          <div className="w-full h-full bg-gray-800 rounded-xl p-8 flex justify-center items-center">
+            <div className="w-full max-w-[300px]">
+              <div className="mb-4 flex justify-end">
+                <div className="bg-blue-500 text-white rounded-tl-xl rounded-bl-xl rounded-br-xl p-3 inline-block animate-pulse-slow">
+                  <p>Tražite radnike?</p>
+                </div>
+              </div>
+              <div className="mb-4">
+                <div className="bg-gray-700 text-white rounded-tr-xl rounded-br-xl rounded-bl-xl p-3 inline-block">
+                  <p>Da, trebamo kvalitetne kandidate!</p>
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <div className="bg-blue-500 text-white rounded-tl-xl rounded-bl-xl rounded-br-xl p-3 inline-block animate-pulse-slow">
+                  <p>Mogu se prijaviti kroz WhatsApp?</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case 'filter':
+        return (
+          <div className="w-full h-full bg-gray-800 rounded-xl p-8 flex justify-center items-center">
+            <div className="relative w-full max-w-[300px]">
+              <div className="grid grid-cols-3 gap-3">
+                {[1, 2, 3, 4, 5, 6, 9].map(i => (
+                  <div key={i} className="aspect-square bg-gray-700/50 rounded-lg"></div>
+                ))}
+                {[7, 8].map(i => (
+                  <motion.div 
+                    key={i} 
+                    className="aspect-square bg-[#43AA8B]/80 rounded-lg"
+                    animate={{ 
+                      scale: [1, 1.05, 1],
+                      borderRadius: ["10%", "20%", "10%"]
+                    }}
+                    transition={{ 
+                      repeat: Infinity, 
+                      repeatType: "reverse", 
+                      duration: 2,
+                      delay: i === 7 ? 0 : 1
+                    }}
+                  />
+                ))}
+              </div>
+              <motion.div 
+                className="absolute inset-0 border-2 border-[#43AA8B] rounded-xl"
+                initial={{ opacity: 0 }}
+                animate={{ 
+                  opacity: [0, 1, 0],
+                  scale: [0.9, 1.02, 0.9]
+                }}
+                transition={{ 
+                  repeat: Infinity, 
+                  duration: 3 
+                }}
+              />
+            </div>
+          </div>
+        );
+      case 'messages':
+        return (
+          <div className="w-full h-full bg-gray-800 rounded-xl p-6 flex justify-center items-center">
+            <div className="w-full max-w-[300px]">
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 rounded-full bg-blue-500 mr-3 flex items-center justify-center text-white font-bold">HR</div>
+                <div className="flex-1">
+                  <h4 className="text-white text-sm">Razgovor s kandidatom</h4>
+                  <p className="text-gray-400 text-xs">Sada</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <motion.div 
+                  className="bg-gray-700 text-white rounded-lg p-3"
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 0.5, duration: 0.5 }}
+                >
+                  <p className="text-sm">Kada možete započeti s radom?</p>
+                </motion.div>
+                <motion.div 
+                  className="bg-blue-500 text-white rounded-lg p-3 ml-auto max-w-[80%]"
+                  initial={{ x: 20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ delay: 1.0, duration: 0.5 }}
+                >
+                  <p className="text-sm">Mogu početi već od sljedećeg tjedna!</p>
+                </motion.div>
+                <motion.div 
+                  className="flex items-center text-gray-400 text-xs"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1.5, duration: 0.5 }}
+                >
+                  <div className="flex-1"></div>
+                  <div className="flex items-center">
+                    <span>Pročitano</span>
+                    <svg className="w-4 h-4 ml-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M5 12L10 17L20 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </div>
+        );
+      case 'calendar':
+        return (
+          <div className="w-full h-full bg-gray-800 rounded-xl p-6 flex justify-center items-center">
+            <div className="w-full max-w-[300px]">
+              <div className="text-center mb-4">
+                <h3 className="text-white text-sm font-medium">Odaberite termin za intervju</h3>
+                <p className="text-gray-400 text-xs">Rujan 2023</p>
+              </div>
+              <div className="grid grid-cols-7 gap-1 mb-4">
+                {["P", "U", "S", "Č", "P", "S", "N"].map((day, i) => (
+                  <div key={i} className="text-center text-gray-400 text-xs p-2">{day}</div>
+                ))}
+                {Array(31).fill(0).map((_, i) => {
+                  const isHighlighted = i === 14 || i === 15 || i === 21;
+                  return (
+                    <motion.div 
+                      key={i}
+                      className={`text-center text-xs p-2 rounded-full ${
+                        isHighlighted 
+                          ? "bg-[#43AA8B] text-white" 
+                          : "text-gray-300"
+                      }`}
+                      animate={isHighlighted ? { 
+                        scale: [1, 1.1, 1],
+                      } : {}}
+                      transition={{ 
+                        repeat: isHighlighted ? Infinity : 0, 
+                        repeatType: "reverse", 
+                        duration: 2,
+                        delay: i % 3
+                      }}
+                    >
+                      {i + 1}
+                    </motion.div>
+                  );
+                })}
+              </div>
+              <motion.div 
+                className="p-3 bg-[#43AA8B] text-white rounded-lg text-center text-sm"
+                animate={{ 
+                  y: [0, -5, 0]
+                }}
+                transition={{ 
+                  repeat: Infinity, 
+                  duration: 2
+                }}
+              >
+                Rezerviraj termin
+              </motion.div>
+            </div>
+          </div>
+        );
+      default:
+        return (
+          <div className="w-full h-full bg-gray-800 rounded-xl flex items-center justify-center p-8">
+            <div className="text-center">
+              <div className="text-[#43AA8B] text-xl font-bold mb-2">{title}</div>
+              <p className="text-gray-400">Feature visualization</p>
+            </div>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <div ref={ref} className="relative mb-24 md:mb-32">
+      {/* Circle marker on timeline - Updated color to [#43AA8B] */}
+      <div className="absolute left-8 md:left-1/2 transform md:translate-x-[-50%] w-16 h-16 bg-[#43AA8B] rounded-full flex items-center justify-center text-2xl font-bold border-4 border-black z-10">
+        {number}
+      </div>
+      
+      {/* Content card */}
+      <motion.div 
+        className={`flex flex-col ${alignment === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-6 md:gap-12`}
+        initial={{ opacity: 0, y: 50 }}
+        animate={controls}
+      >
+        {/* Text content */}
+        <div className={`mt-20 md:mt-0 md:w-1/2 ${alignment === 'left' ? 'md:pl-12' : 'md:pr-12'} text-left`}>
+          <h3 className="text-xl md:text-3xl font-semibold mb-4 text-white">
+            {title}
+          </h3>
+          <p className="text-gray-300 mb-6">
+            {description}
+          </p>
+          {buttonText && (
+            <Button
+              className="bg-[#43AA8B] hover:bg-[#43AA8B]/80 text-white rounded-full" // Changed button color to [#43AA8B]
+            >
+              {buttonText}
+            </Button>
+          )}
+        </div>
+
+        {/* Animation section */}
+        <div className="w-full md:w-1/2 p-4">
+          <div className="bg-gray-800/50 border border-white/10 rounded-xl overflow-hidden shadow-2xl h-[250px]">
+            <AnimationComponent />
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 };
