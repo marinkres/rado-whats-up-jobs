@@ -335,7 +335,7 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
   const AnimationComponent = () => {
     switch(animation) {
       case 'chat':
-        // Custom WhatsApp animation for first step (replacing static image)
+        // Custom WhatsApp animation for first step
         return (
           <div className="w-full h-full bg-gray-800 rounded-xl flex justify-center items-center overflow-hidden">
             <div className="w-full max-w-[280px] p-4">
@@ -399,7 +399,7 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
         // Improved filter animation that fits properly within container
         return (
           <div className="w-full h-full bg-gray-800 rounded-xl p-4 flex justify-center items-center overflow-hidden">
-            <div className="flex flex-col items-center w-full max-w-[250px]">
+            <div className="flex flex-col items-center w-full max-w-[200px]">
               <div className="flex items-center justify-between w-full mb-3">
                 <div className="text-sm text-white font-medium">Kandidati</div>
                 <div className="text-xs text-gray-400">24 rezultata</div>
@@ -457,9 +457,9 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
         // Better chat animation with proper sizing
         return (
           <div className="w-full h-full bg-gray-800 rounded-xl p-4 flex justify-center items-center overflow-hidden">
-            <div className="w-full max-w-[250px]">
+            <div className="w-full max-w-[220px]">
               <div className="bg-gray-700 rounded-t-lg p-3">
-                <div className="flex items-center mb-3">
+                <div className="flex items-center mb-2">
                   <div className="w-8 h-8 bg-[#43AA8B] rounded-full mr-2 flex items-center justify-center text-white font-medium text-sm">JD</div>
                   <div>
                     <div className="text-xs font-medium text-white">Josip Došen</div>
@@ -519,15 +519,15 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
         // Better calendar animation that fits within container
         return (
           <div className="w-full h-full bg-gray-800 rounded-xl p-4 flex justify-center items-center overflow-hidden">
-            <div className="w-full max-w-[270px] bg-gray-900 rounded-lg overflow-hidden">
-              <div className="bg-[#43AA8B] p-3 text-center">
+            <div className="w-full max-w-[220px] bg-gray-900 rounded-lg overflow-hidden">
+              <div className="bg-[#43AA8B] p-2 text-center">
                 <div className="text-white font-medium text-sm">Svibanj 2024</div>
               </div>
               
-              <div className="p-3">
-                <div className="grid grid-cols-7 gap-1 text-center mb-2">
+              <div className="p-2">
+                <div className="grid grid-cols-7 gap-1 text-center mb-1">
                   {["P", "U", "S", "Č", "P", "S", "N"].map((day, i) => (
-                    <div key={i} className="text-gray-400 text-xs">{day}</div>
+                    <div key={i} className="text-gray-400 text-[10px]">{day}</div>
                   ))}
                 </div>
                 
@@ -540,7 +540,7 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
                     return (
                       <motion.div 
                         key={i}
-                        className={`text-center p-1 text-xs rounded-full ${
+                        className={`text-center p-1 text-[10px] rounded-full ${
                           isSelected 
                             ? "bg-[#43AA8B] text-white" 
                             : isAvailable 
@@ -566,17 +566,17 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
                 </div>
               </div>
               
-              <div className="p-3 border-t border-gray-700">
-                <div className="text-xs text-white mb-2">Dostupni termini - 15. Svibanj</div>
-                <div className="grid grid-cols-3 gap-2">
+              <div className="p-2 border-t border-gray-700">
+                <div className="text-[10px] text-white mb-1">Dostupni termini - 15. Svibanj</div>
+                <div className="grid grid-cols-3 gap-1">
                   {["09:00", "13:30", "16:00"].map((time, i) => (
                     <motion.div 
                       key={i}
-                      className={`text-center py-1 rounded ${i === 1 ? "bg-[#43AA8B] text-white" : "bg-gray-700 text-gray-300"}`}
+                      className={`text-center py-1 rounded text-[10px] ${i === 1 ? "bg-[#43AA8B] text-white" : "bg-gray-700 text-gray-300"}`}
                       animate={i === 1 ? { y: [0, -2, 0] } : {}}
                       transition={{ repeat: Infinity, duration: 1.5 }}
                     >
-                      <span className="text-xs">{time}</span>
+                      {time}
                     </motion.div>
                   ))}
                 </div>
@@ -598,8 +598,9 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
 
   return (
     <div ref={ref} className="relative mb-16 md:mb-24">
-      {/* Vertical timeline line - positioned behind circles */}
-      <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-[#43AA8B]/30" style={{ transform: 'translateX(-50%)' }}></div>
+      {/* Vertical timeline line - positioned to go around the content boxes */}
+      <div className="absolute left-8 md:left-1/2 top-0 h-[40px] w-0.5 bg-[#43AA8B]/30" style={{ transform: 'translateX(-50%)' }}></div>
+      <div className="absolute left-8 md:left-1/2 bottom-0 h-[calc(100%-40px-220px)] w-0.5 bg-[#43AA8B]/30" style={{ transform: 'translateX(-50%)', top: 'calc(40px + 220px)' }}></div>
       
       {/* Circle marker on timeline - now with border to appear over line */}
       <div className="absolute left-8 md:left-1/2 transform translate-x-[-50%] w-16 h-16 bg-[#43AA8B] rounded-full flex items-center justify-center text-2xl font-bold border-4 border-black dark:border-gray-900 z-10">
@@ -631,7 +632,7 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
 
         {/* Animation/Image section - fixed height and contained animations */}
         <div className="w-full md:w-1/2 p-3 md:p-4">
-          <div className="bg-gray-800/50 border border-white/10 rounded-xl overflow-hidden shadow-2xl h-[220px] md:h-[250px]">
+          <div className="bg-gray-800/50 border border-white/10 rounded-xl overflow-hidden shadow-2xl h-[220px] md:h-[250px] z-20 relative">
             <AnimationComponent />
           </div>
         </div>
