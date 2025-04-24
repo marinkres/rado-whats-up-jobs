@@ -487,7 +487,7 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
             <img 
               src="/mockup.png" 
               alt="Text Message" 
-              className="w-auto h-auto object-contain" 
+              className="w-fill h-fill object-contain" 
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
                 e.currentTarget.parentElement.innerHTML = `<div class="flex items-center justify-center bg-gray-800 p-8 h-full">
