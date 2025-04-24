@@ -115,7 +115,9 @@ const ComingSoon = () => {
                 size="sm"
                 className="bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white"
               >
-                <Link to="/signup">
+                <Link to="https://cal.com/marindev-asjghd/30min"
+                target="_blank"
+                >
                   <span>Zatraži Demo</span>
                 </Link>
               </Button>
@@ -472,21 +474,50 @@ const ComingSoon = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.7 }}
         >
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-4 md:mb-0">
-              <img src="/radow.svg" alt="Rado Logo" className="h-8" />
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-8 px-4">
+            {/* Logo and Socials */}
+            <div className="flex flex-col items-center md:items-start gap-4 md:w-1/4">
+              <img src="/radow.svg" alt="Rado Logo" className="h-8 mb-2" />
+              <div className="flex gap-4">
+          <SocialLink icon={<TwitterIcon />} href="#" />
+          <SocialLink icon={<LinkedInIcon />} href="#" />
+              </div>
             </div>
-            
-            <div className="text-sm text-gray-400">
-              © {new Date().getFullYear()} Rado. Sva prava pridržana.
+            {/* Links */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 flex-1">
+              <div>
+          <h4 className="font-semibold text-white mb-2">Glavno</h4>
+          <ul className="space-y-1">
+            <li><Link to="/" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Početna</Link></li>
+            <li><Link to="https://dashboard.radojobs.eu/login" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Prijava</Link></li>
+            <li><Link to="/integrations" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Integracije</Link></li>
+          </ul>
+              </div>
+              <div>
+          <h4 className="font-semibold text-white mb-2">Ostalo</h4>
+          <ul className="space-y-1">
+            <li><Link to="/careers" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Karijere</Link></li>
+            <li><Link to="/pricing" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Cijene</Link></li>
+          </ul>
+              </div>
+              <div>
+          <h4 className="font-semibold text-white mb-2">Korisno</h4>
+          <ul className="space-y-1">
+            <li><Link to="/privacy-policy" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Politika privatnosti</Link></li>
+            <li><Link to="/terms-of-use" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Uvjeti korištenja</Link></li>
+            <li><Link to="/changelog" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Dnevnik promjena</Link></li>
+          </ul>
+              </div>
+              <div>
+          <h4 className="font-semibold text-white mb-2">Pomoć</h4>
+          <ul className="space-y-1">
+            <li><Link to="/support" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Podrška</Link></li>
+          </ul>
+              </div>
             </div>
-            
-            <div className="mt-4 md:mt-0 flex gap-4">
-              <SocialLink icon={<TwitterIcon />} href="#" />
-              <SocialLink icon={<LinkedInIcon />} href="#" />
-              <SocialLink icon={<FacebookIcon />} href="#" />
-              <SocialLink icon={<InstagramIcon />} href="#" />
-            </div>
+          </div>
+          <div className="mt-8 text-sm text-gray-400">
+            © {new Date().getFullYear()} Rado. Sva prava pridržana.
           </div>
         </motion.footer>
       </div>
