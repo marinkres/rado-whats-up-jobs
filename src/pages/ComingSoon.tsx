@@ -116,7 +116,7 @@ const ComingSoon = () => {
                 className="bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white"
               >
                 <Link to="/signup">
-                  <span>Registracija</span>
+                  <span>Zatraži Demo</span>
                 </Link>
               </Button>
             </div>
@@ -187,8 +187,10 @@ const ComingSoon = () => {
                 size="lg"
                 className="bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white rounded-full px-8 text-lg font-medium"
               >
-                <Link to="/signup">
-                  Registracija
+                <Link to="https://cal.com/marindev-asjghd/30min"
+                target="_blank"
+                >
+                  Zatraži Demo
                   <MoveRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -371,7 +373,6 @@ const ComingSoon = () => {
               description="Automatizirano bez životopisa, bez motivacijskih pisama, kandidati se mogu prijaviti za 2 minute na platformama koje svakodnevno koriste."
               alignment="right"
               delay={0}
-              buttonText="Isprobajte sada (~50 sekundi)"
               animation="chat"
             />
 
@@ -382,7 +383,7 @@ const ComingSoon = () => {
               description="Primajte samo kvalificirane kandidate, pustite da naš softver obavi težak posao - nema više čitanja životopisa!"
               alignment="left"
               delay={0.2}
-              buttonText="Zatražite ponudu"
+
               animation="filter"
             />
 
@@ -452,7 +453,11 @@ const ComingSoon = () => {
                     size="lg" 
                     className="bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white font-medium px-8 py-6 rounded-full shadow-xl"
                   >
-                    Zatraži demo pristup
+                    <Link to="https://cal.com/marindev-asjghd/30min"
+                target="_blank"
+                >
+                  Zatraži Demo
+                </Link>
                   </Button>
                 </div>
               </motion.div>
