@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { motion, useAnimation } from "framer-motion";
+import { motion, useAnimation, useScroll } from "framer-motion";
 import { ChevronRight, Mail, MoveRight } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 
@@ -45,6 +45,17 @@ const AnimatedCounter = ({ value, suffix = "", className = "", duration = 2 }) =
 
 const ComingSoon = () => {
   const [mounted, setMounted] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const { scrollY } = useScroll();
+  
+  // Track scroll position to determine when to show floating navbar
+  useEffect(() => {
+    const unsubscribe = scrollY.on("change", (y) => {
+      setIsScrolled(y > 100);
+    });
+    
+    return () => unsubscribe();
+  }, [scrollY]);
 
   useEffect(() => {
     setMounted(true);
@@ -67,9 +78,55 @@ const ComingSoon = () => {
         }}
       />
       
+      {/* Floating navbar that appears when scrolled */}
+      <motion.div 
+        className="fixed top-0 left-0 right-0 z-50 px-4 py-3 pointer-events-none"
+        animate={{
+          opacity: isScrolled ? 1 : 0,
+          y: isScrolled ? 0 : -20,
+        }}
+        transition={{
+          duration: 0.3,
+          ease: "easeInOut"
+        }}
+      >
+        <div className="max-w-6xl mx-auto">
+          <div className="flex justify-between items-center bg-black/80 backdrop-blur-md border border-white/10 rounded-full px-4 py-2 shadow-lg pointer-events-auto">
+            <Link to="/" className="flex items-center">
+              <img src="/radow.svg" alt="Rado Logo" className="h-8" />
+            </Link>
+            
+            <div className="flex items-center gap-4">
+              
+              
+              <Button 
+                asChild
+                size="sm"
+                variant="outline" 
+                className="border border-white/20 text-white bg-white/5 hover:bg-white/10"
+              >
+                <Link to="/login">
+                  <span>Prijava</span>
+                </Link>
+              </Button>
+              
+              <Button 
+                asChild
+                size="sm"
+                className="bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white"
+              >
+                <Link to="/signup">
+                  <span>Registracija</span>
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+      
       {/* Content */}
       <div className="container mx-auto px-4 py-12 relative z-10">
-        {/* Header */}
+        {/* Header - Original header that gets replaced by the floating navbar */}
         <header className="flex justify-between items-center mb-12 md:mb-20">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
