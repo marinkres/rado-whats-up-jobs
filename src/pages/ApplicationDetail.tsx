@@ -273,17 +273,9 @@ const ApplicationDetail = () => {
                       </div>
                       
                       <div className="p-6">
-                        <h2 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4">
-                          Motivacijsko pismo
-                        </h2>
+                       
                         
-                        <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg mb-6 border border-gray-100 dark:border-gray-700/50">
-                          <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">
-                            {application.message || "Kandidat nije priložio motivacijsko pismo."}
-                          </p>
-                        </div>
-                        
-                        <div className="flex flex-col sm:flex-row gap-4 mt-6">
+                        <div className="flex flex-col sm:flex-row gap-4">
                           <Button 
                             className="bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white" 
                             onClick={navigateToChat}

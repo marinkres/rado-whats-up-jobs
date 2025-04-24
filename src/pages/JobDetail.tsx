@@ -126,9 +126,9 @@ const JobDetail = () => {
 
   // Generate WhatsApp share link
   const getWhatsAppLink = () => {
-    const baseUrl = "https://rado.ai/jobs";
+    const baseUrl = "https://radojobs.eu/jobs";
     const jobUrl = `${baseUrl}/${id}`;
-    const text = `Pogledaj ovaj oglas za posao: ${job?.title} - ${jobUrl}`;
+    const text = `Započni prijavu na posao: ${job?.title} - ${jobUrl}`;
     return `https://wa.me/?text=${encodeURIComponent(text)}`;
   };
 
