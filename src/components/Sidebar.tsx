@@ -144,9 +144,16 @@ const Sidebar = () => {
           isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
         )}
       >
-        {/* Logo section - show X icon to close on mobile */}
+        {/* Logo section - show X icon to close on mobile - centered logo */}
         <div className="flex justify-between items-center px-4 py-5 border-b border-gray-200 dark:border-gray-700/30">
-          <div className="flex items-center">
+          <button
+            onClick={toggleSidebar}
+            className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 md:hidden"
+          >
+            <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+          </button>
+          
+          <div className="flex items-center justify-center w-full">
             <img
               src="/rado.svg"
               alt="Rado Logo"
@@ -158,12 +165,8 @@ const Sidebar = () => {
               className="h-8 hidden dark:block"
             />
           </div>
-          <button
-            onClick={toggleSidebar}
-            className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 md:hidden"
-          >
-            <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-          </button>
+          
+          <div className="w-9 md:hidden"></div> {/* Empty div to balance the layout */}
         </div>
         
         {/* Navigation links with improved styling */}

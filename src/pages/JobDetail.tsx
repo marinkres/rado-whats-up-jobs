@@ -18,6 +18,8 @@ import {
   Copy,
   QrCode,
   Check,
+  CalendarDays,
+  RefreshCw,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -187,9 +189,24 @@ const JobDetail = () => {
                               <span>{applications.length} prijava</span>
                             </Badge>
                           </div>
+
+                          {/* Dates section - new addition */}
+                          <div className="flex flex-wrap gap-x-6 gap-y-1 mt-4 text-xs text-gray-500 dark:text-gray-400">
+                            <div className="flex items-center">
+                              <CalendarDays className="h-3.5 w-3.5 mr-1" />
+                              <span>Kreirano: {formatDate(job.created_at)}</span>
+                            </div>
+                            {job.updated_at && job.updated_at !== job.created_at && (
+                              <div className="flex items-center">
+                                <RefreshCw className="h-3.5 w-3.5 mr-1" />
+                                <span>Ažurirano: {formatDate(job.updated_at)}</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                         
-                        <div className="flex gap-2">
+                        {/* Action buttons - fixed for mobile */}
+                        <div className="flex flex-wrap gap-2">
                           <Button 
                             variant="outline" 
                             size="sm" 
@@ -197,50 +214,48 @@ const JobDetail = () => {
                             onClick={navigateToEditJob}
                           >
                             <Edit className="h-4 w-4 mr-1" />
-                            Uredi
+                            <span className="md:inline">Uredi</span>
                           </Button>
                           
-                          <div className="flex gap-2">
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="border-gray-200 dark:border-gray-700"
-                              onClick={copyShareLink}
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-gray-200 dark:border-gray-700"
+                            onClick={copyShareLink}
+                          >
+                            {copying ? (
+                              <Check className="h-4 w-4 mr-1 text-green-500" />
+                            ) : (
+                              <Copy className="h-4 w-4 mr-1" />
+                            )}
+                            <span className="md:inline">Kopiraj</span>
+                          </Button>
+                          
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="border-gray-200 dark:border-gray-700"
+                            onClick={() => setShowQRCode(true)}
+                          >
+                            <QrCode className="h-4 w-4 mr-1" />
+                            <span className="md:inline">QR kod</span>
+                          </Button>
+                          
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-gray-200 dark:border-gray-700"
+                            asChild
+                          >
+                            <a 
+                              href={getWhatsAppLink()}
+                              target="_blank"
+                              rel="noopener noreferrer"
                             >
-                              {copying ? (
-                                <Check className="h-4 w-4 mr-1 text-green-500" />
-                              ) : (
-                                <Copy className="h-4 w-4 mr-1" />
-                              )}
-                              Kopiraj
-                            </Button>
-                            
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="border-gray-200 dark:border-gray-700"
-                              onClick={() => setShowQRCode(true)}
-                            >
-                              <QrCode className="h-4 w-4 mr-1" />
-                              QR kod
-                            </Button>
-                            
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="border-gray-200 dark:border-gray-700"
-                              asChild
-                            >
-                              <a 
-                                href={getWhatsAppLink()}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                <Share2 className="h-4 w-4 mr-1" />
-                                WhatsApp
-                              </a>
-                            </Button>
-                          </div>
+                              <Share2 className="h-4 w-4 mr-1" />
+                              <span className="md:inline">WhatsApp</span>
+                            </a>
+                          </Button>
                         </div>
                       </div>
                     </div>

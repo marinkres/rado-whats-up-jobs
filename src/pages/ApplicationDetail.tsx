@@ -156,6 +156,7 @@ const ApplicationDetail = () => {
         .from('conversations')
         .select('id')
         .eq('candidate_id', application.candidate_id)
+        .eq('job_id', application.job_id)
         .maybeSingle();
 
       if (convError) throw convError;
@@ -173,6 +174,7 @@ const ApplicationDetail = () => {
           candidate_id: application.candidate_id,
           job_id: application.job_id,
           phone: application.candidates?.phone || null,
+          created_at: new Date().toISOString(),
         })
         .select('id')
         .single();
