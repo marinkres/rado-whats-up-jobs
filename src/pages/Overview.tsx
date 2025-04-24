@@ -118,51 +118,51 @@ const Overview = () => {
           ) : (
             <>
               {/* Modern statistics cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-8">
                 <Card className="overflow-hidden relative shadow-sm border-0 group">
                   <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 z-0" />
-                  <div className="relative z-10 p-6">
-                    <div className="p-2 bg-green-100 dark:bg-green-800/30 rounded-xl w-fit mb-4">
-                      <MapPin className="h-5 w-5 text-[#43AA8B]" />
+                  <div className="relative z-10 p-3 md:p-6">
+                    <div className="p-1 md:p-2 bg-green-100 dark:bg-green-800/30 rounded-xl w-fit mb-2 md:mb-4">
+                      <MapPin className="h-4 w-4 md:h-5 md:w-5 text-[#43AA8B]" />
                     </div>
-                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Ukupno lokacija</h3>
-                    <p className="text-2xl font-bold text-gray-800 dark:text-white">{locations.length}</p>
+                    <h3 className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Ukupno lokacija</h3>
+                    <p className="text-lg md:text-2xl font-bold text-gray-800 dark:text-white">{locations.length}</p>
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#43AA8B]/50 transform scale-x-0 origin-left transition-transform group-hover:scale-x-100" />
                 </Card>
                 
                 <Card className="overflow-hidden relative shadow-sm border-0 group">
                   <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 z-0" />
-                  <div className="relative z-10 p-6">
-                    <div className="p-2 bg-green-100 dark:bg-green-800/30 rounded-xl w-fit mb-4">
-                      <Briefcase className="h-5 w-5 text-[#43AA8B]" />
+                  <div className="relative z-10 p-3 md:p-6">
+                    <div className="p-1 md:p-2 bg-green-100 dark:bg-green-800/30 rounded-xl w-fit mb-2 md:mb-4">
+                      <Briefcase className="h-4 w-4 md:h-5 md:w-5 text-[#43AA8B]" />
                     </div>
-                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Ukupno oglasa</h3>
-                    <p className="text-2xl font-bold text-gray-800 dark:text-white">{jobListings.length}</p>
+                    <h3 className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Ukupno oglasa</h3>
+                    <p className="text-lg md:text-2xl font-bold text-gray-800 dark:text-white">{jobListings.length}</p>
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#43AA8B]/50 transform scale-x-0 origin-left transition-transform group-hover:scale-x-100" />
                 </Card>
                 
                 <Card className="overflow-hidden relative shadow-sm border-0 group">
                   <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 z-0" />
-                  <div className="relative z-10 p-6">
-                    <div className="p-2 bg-green-100 dark:bg-green-800/30 rounded-xl w-fit mb-4">
-                      <Users className="h-5 w-5 text-[#43AA8B]" />
+                  <div className="relative z-10 p-3 md:p-6">
+                    <div className="p-1 md:p-2 bg-green-100 dark:bg-green-800/30 rounded-xl w-fit mb-2 md:mb-4">
+                      <Users className="h-4 w-4 md:h-5 md:w-5 text-[#43AA8B]" />
                     </div>
-                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Ukupno kandidata</h3>
-                    <p className="text-2xl font-bold text-gray-800 dark:text-white">{candidates.length}</p>
+                    <h3 className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Ukupno kandidata</h3>
+                    <p className="text-lg md:text-2xl font-bold text-gray-800 dark:text-white">{candidates.length}</p>
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#43AA8B]/50 transform scale-x-0 origin-left transition-transform group-hover:scale-x-100" />
                 </Card>
                 
                 <Card className="overflow-hidden relative shadow-sm border-0 group">
                   <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 z-0" />
-                  <div className="relative z-10 p-6">
-                    <div className="p-2 bg-green-100 dark:bg-green-800/30 rounded-xl w-fit mb-4">
-                      <ClipboardList className="h-5 w-5 text-[#43AA8B]" />
+                  <div className="relative z-10 p-3 md:p-6">
+                    <div className="p-1 md:p-2 bg-green-100 dark:bg-green-800/30 rounded-xl w-fit mb-2 md:mb-4">
+                      <ClipboardList className="h-4 w-4 md:h-5 md:w-5 text-[#43AA8B]" />
                     </div>
-                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Ukupno prijava</h3>
-                    <p className="text-2xl font-bold text-gray-800 dark:text-white">{applications.length}</p>
+                    <h3 className="text-xs md:text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Ukupno prijava</h3>
+                    <p className="text-lg md:text-2xl font-bold text-gray-800 dark:text-white">{applications.length}</p>
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#43AA8B]/50 transform scale-x-0 origin-left transition-transform group-hover:scale-x-100" />
                 </Card>
