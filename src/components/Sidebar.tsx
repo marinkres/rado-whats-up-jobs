@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import ThemeSwitch from "./ThemeSwitch";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 const menuItems = [
   { icon: Grid, label: "Pregled", href: "/overview" },
@@ -22,6 +23,7 @@ const Sidebar = () => {
   const [companyName, setCompanyName] = useState<string | null>(null);
   const [pageTitle, setPageTitle] = useState<string>("Rado");
   const fetchedRef = useRef(false);
+  const { signOut } = useAuth();
 
   // Get current page title based on route
   useEffect(() => {
@@ -90,6 +92,11 @@ const Sidebar = () => {
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
+
+  const handleLogout = async (e) => {
+    e.preventDefault(); // Prevent any default navigation
+    await signOut(); // Use the signOut function from AuthContext
+  };
 
   return (
     <>
@@ -231,7 +238,7 @@ const Sidebar = () => {
               variant="outline"
               size="sm"
               className="flex items-center justify-center gap-2 py-2 px-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-white font-medium rounded-lg transition-colors border border-gray-200 dark:border-gray-700/50"
-              onClick={() => window.location.href = "/"}
+              onClick={handleLogout}
             >
               <LogOut size={16} />
               <span className="text-sm">Odjava</span>

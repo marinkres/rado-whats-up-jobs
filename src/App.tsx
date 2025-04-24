@@ -2,7 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet, Navigate } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 import NotFound from "./pages/NotFound";
 import Overview from "./pages/Overview";
 import Chat from "./pages/Chat";
@@ -17,8 +18,28 @@ import JobDetail from "./pages/JobDetail";
 import EditJob from "./pages/EditJob";
 import Sidebar from "@/components/Sidebar"; 
 import ComingSoon from "./pages/ComingSoon";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+
+// Root redirect component to handle authentication state
+const RootRedirect = () => {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+        <Loader2 className="h-8 w-8 text-[#43AA8B] animate-spin" />
+      </div>
+    );
+  }
+  
+  // If logged in, redirect to overview, otherwise show landing page
+  if (user) {
+    return <Navigate to="/overview" replace />;
+  }
+  
+  return <ComingSoon />;
+};
 
 const queryClient = new QueryClient();
 
@@ -29,9 +50,21 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             {/* Public routes */}
-            <Route path="/" element={<ComingSoon />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+            <Route path="/" element={<RootRedirect />} />
+            <Route path="/login" element={
+              <>
+                <Login />
+                <Toaster />
+                <Sonner />
+              </>
+            } />
+            <Route path="/signup" element={
+              <>
+                <Signup />
+                <Toaster />
+                <Sonner />
+              </>
+            } />
 
             {/* Protected routes */}
             <Route element={<ProtectedRoute />}>
@@ -57,7 +90,13 @@ const App = () => (
             </Route>
 
             {/* 404 route */}
-            <Route path="*" element={<NotFound />} />
+            <Route path="*" element={
+              <>
+                <NotFound />
+                <Toaster />
+                <Sonner />
+              </>
+            } />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

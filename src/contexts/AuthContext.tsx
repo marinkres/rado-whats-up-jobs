@@ -43,8 +43,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
+    try {
+      setLoading(true);
+      
+      // Reset state first to prevent flashing of authenticated content
+      setUser(null);
+      
+      // Clear all storage - being thorough
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Sign out from Supabase
+      await supabase.auth.signOut();
+      
+      // Use timeout to ensure state is updated before redirect
+      setTimeout(() => {
+        // Hard reload to the root url
+        window.location.replace('/');
+      }, 100);
+    } catch (error) {
+      console.error("Error during sign out:", error);
+      // Force reload anyway
+      window.location.replace('/');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const value = {
