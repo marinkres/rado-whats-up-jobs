@@ -485,7 +485,7 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
         return (
           <div className="w-full h-full bg-gray-800 rounded-xl flex justify-center items-center overflow-hidden">
             <img 
-              src="/text.gif" 
+              src="/text.jpg" 
               alt="Text Message" 
               className="w-auto h-auto object-contain" 
               onError={(e) => {
@@ -501,121 +501,79 @@ const TimelineCard = ({ number, title, description, alignment, delay = 0, button
           </div>
         );
       case 'calendar':
-        // Calendar integration animation (Google and Outlook)
+        // Static calendar integration display with proper logos
         return (
           <div className="w-full h-full bg-gray-800 rounded-xl p-4 flex justify-center items-center overflow-hidden">
-            <div className="relative w-full max-w-[240px] h-[180px]">
-              {/* Google Calendar icon */}
-              <motion.div 
-                className="absolute left-0 top-0 w-24 h-24 bg-white rounded-lg shadow-lg flex flex-col items-center justify-center"
-                initial={{ x: -100, rotate: -10, opacity: 0 }}
-                animate={{ 
-                  x: [-100, -20, -20, -100],
-                  rotate: [-10, 0, 0, -10],
-                  opacity: [0, 1, 1, 0]
-                }}
-                transition={{ 
-                  duration: 4,
-                  times: [0, 0.3, 0.7, 1],
-                  repeat: Infinity,
-                  repeatDelay: 0.5
-                }}
-              >
-                <div className="w-12 h-12">
-                  <svg viewBox="0 0 48 48" className="w-full h-full">
-                    <path fill="#4285F4" d="M37,45H11c-1.657,0-3-1.343-3-3V6c0-1.657,1.343-3,3-3h19l10,10v29C40,43.657,38.657,45,37,45z"/>
-                    <path fill="#F1F1F1" d="M40,13H30V3L40,13z"/>
-                    <path fill="#F1F1F1" d="M30 23A4 4 0 1 0 30 31A4 4 0 1 0 30 23Z"/>
-                    <path fill="#F1F1F1" d="M30,23v-4h-4h-4v4v4v4h4h1v-4.5v-3.5H30z"/>
-                    <path fill="#F1F1F1" d="M22,23h-4v4h3.5v4H18v4h4h4v-4v-4v-4H22z"/>
-                  </svg>
-                </div>
-                <div className="text-xs font-medium text-gray-800 mt-1">Google Calendar</div>
-              </motion.div>
-
-              {/* Outlook Calendar icon */}
-              <motion.div 
-                className="absolute right-0 top-0 w-24 h-24 bg-white rounded-lg shadow-lg flex flex-col items-center justify-center"
-                initial={{ x: 100, rotate: 10, opacity: 0 }}
-                animate={{ 
-                  x: [100, 20, 20, 100],
-                  rotate: [10, 0, 0, 10],
-                  opacity: [0, 1, 1, 0]
-                }}
-                transition={{ 
-                  duration: 4,
-                  times: [0, 0.3, 0.7, 1],
-                  repeat: Infinity,
-                  repeatDelay: 0.5,
-                  delay: 1
-                }}
-              >
-                <div className="w-12 h-12">
-                  <svg viewBox="0 0 48 48" className="w-full h-full">
-                    <path fill="#03A9F4" d="M21 31H7V17h14c2.2 0 4 1.8 4 4v6C25 29.2 23.2 31 21 31zM43 15l-8 3.5V34l8 3.5V15z"/>
-                    <path fill="#BBD5EA" d="M7,31l13.6,5.1c1.6,0.6,2.4,0,2.4,0L35,31V17l-12-4.5c0,0-0.8-0.5-2.4,0L7,17V31z"/>
-                    <path fill="#BBD5EA" d="M32.2,32.8L35,31V17l-2.5,1.9c-0.5,0.4-0.8,1-0.8,1.6v10C31.7,31.3,31.9,32.1,32.2,32.8z"/>
-                  </svg>
-                </div>
-                <div className="text-xs font-medium text-gray-800 mt-1">Outlook</div>
-              </motion.div>
-
-              {/* Central calendar card */}
-              <motion.div 
-                className="absolute left-1/2 bottom-0 transform -translate-x-1/2 w-32 h-32 bg-white rounded-lg shadow-lg overflow-hidden"
-                animate={{ 
-                  y: [50, 0, 0, 50],
-                  opacity: [0, 1, 1, 0],
-                  scale: [0.8, 1, 1, 0.8]
-                }}
-                transition={{ 
-                  duration: 4,
-                  times: [0, 0.3, 0.7, 1],
-                  repeat: Infinity,
-                  repeatDelay: 0.5,
-                  delay: 0.5
-                }}
-              >
-                <div className="w-full h-7 bg-[#43AA8B] flex items-center justify-center">
-                  <div className="text-xs text-white font-medium">Intervjui</div>
-                </div>
-                <div className="p-2 flex flex-col items-center">
-                  <div className="text-xs font-bold text-gray-800 mb-1">15. Svibanj</div>
-                  <div className="grid grid-cols-3 gap-1 w-full">
-                    {["09:00", "13:30", "16:00"].map((time, i) => (
-                      <div 
-                        key={i}
-                        className={`text-center py-1 rounded text-[10px] ${i === 1 ? "bg-[#43AA8B] text-white" : "bg-gray-200 text-gray-700"}`}
-                      >
-                        {time}
-                      </div>
-                    ))}
+            <div className="flex flex-col items-center justify-center w-full">
+              <h4 className="text-white text-lg font-medium mb-6">Integracija s kalendarima</h4>
+              
+              <div className="grid grid-cols-2 gap-8 w-full max-w-xs">
+                {/* Google Calendar with proper logo */}
+                <div className="flex flex-col items-center">
+                  <div className="w-16 h-16 bg-white rounded-lg p-2 shadow-lg mb-3 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="100%" height="100%">
+                      <rect width="16" height="16" x="12" y="16" fill="#fff"/>
+                      <polygon fill="#EA4335" points="29,16 29,17 28,17 28,16 24,16 24,20 32,20 32,16"/>
+                      <polygon fill="#FBBC04" points="24,24 24,28 32,28 32,24"/>
+                      <polygon fill="#34A853" points="24,32 24,36 28,36 28,35 29,35 29,36 32,36 32,32"/>
+                      <polygon fill="#188038" points="32,24 36,24 36,28 32,28"/>
+                      <polygon fill="#1967D2" points="32,32 36,32 36,36 32,36"/>
+                      <polygon fill="#4285F4" points="32,16 36,16 36,20 32,20"/>
+                      <polygon fill="#1A73E8" points="36,20 40,20 40,24 36,24"/>
+                      <polygon fill="#D93025" points="40,16 44,16 44,20 40,20"/>
+                      <polygon fill="#EA4335" points="40,24 44,24 44,28 40,28"/>
+                      <polygon fill="#FBBC04" points="40,28 44,28 44,32 40,32"/>
+                      <polygon fill="#4285F4" points="40,32 44,32 44,36 40,36"/>
+                      <polygon fill="#34A853" points="36,36 40,36 40,40 36,40"/>
+                      <polygon fill="#188038" points="32,36 36,36 36,40 32,40"/>
+                      <polygon fill="#1967D2" points="36,32 40,32 40,36 36,36"/>
+                      <polygon fill="#EA4335" points="32,24 36,24 36,28 32,28"/>
+                      <polygon fill="#4285F4" points="28,16 32,16 32,20 28,20"/>
+                      <polygon fill="#1A73E8" points="24,20 28,20 28,24 24,24"/>
+                      <polygon fill="#EA4335" points="20,16 24,16 24,20 20,20"/>
+                      <polygon fill="#FBBC04" points="20,24 24,24 24,28 20,28"/>
+                      <polygon fill="#34A853" points="20,32 24,32 24,36 20,36"/>
+                      <polygon fill="#188038" points="16,36 20,36 20,40 16,40"/>
+                      <polygon fill="#1967D2" points="12,32 16,32 16,36 12,36"/>
+                      <polygon fill="#4285F4" points="16,20 20,20 20,24 16,24"/>
+                      <polygon fill="#1A73E8" points="12,24 16,24 16,28 12,28"/>
+                      <polygon fill="#34A853" points="16,28 20,28 20,32 16,32"/>
+                    </svg>
                   </div>
-                  
-                  <motion.div 
-                    className="mt-3 h-4 w-4 rounded-full bg-[#43AA8B]"
-                    animate={{ scale: [1, 1.3, 1] }}
-                    transition={{ repeat: Infinity, duration: 1.5 }}
-                  />
-                  <div className="text-[9px] mt-1 text-gray-500">Uspješno zakazano!</div>
+                  <div className="text-sm font-medium text-white">Google Calendar</div>
                 </div>
-              </motion.div>
-
-              {/* Connecting lines */}
-              <motion.div 
-                className="absolute left-[40px] top-[50px] w-[160px] h-[2px] bg-[#43AA8B]"
-                animate={{ 
-                  opacity: [0, 1, 1, 0],
-                  scaleX: [0, 1, 1, 0]
-                }}
-                transition={{ 
-                  duration: 4, 
-                  times: [0.05, 0.3, 0.7, 0.95],
-                  repeat: Infinity,
-                  repeatDelay: 0.5,
-                  delay: 0.2
-                }}
-              />
+                
+                {/* Microsoft Outlook with proper logo */}
+                <div className="flex flex-col items-center">
+                  <div className="w-16 h-16 bg-white rounded-lg p-2 shadow-lg mb-3 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="100%" height="100%">
+                      <path fill="#03A9F4" d="M21,31H7V17h14c2.2,0,4,1.8,4,4v6C25,29.2,23.2,31,21,31z"/>
+                      <path fill="#0D47A1" d="M10.1,20.1l3.9,2.7l3.9-2.7l-3.9-2.7L10.1,20.1z M17.9,27.9l-3.9-2.7l-3.9,2.7l3.9,2.7L17.9,27.9z M10.1,27.9l3.9-2.7l-3.9-2.7V27.9z M17.9,20.1v5.1l3.9-2.5L17.9,20.1z"/>
+                      <path fill="#0D47A1" d="M18,40V8c0-2.2,1.8-4,4-4h16c2.2,0,4,1.8,4,4v32c0,2.2-1.8,4-4,4H22C19.8,44,18,42.2,18,40z"/>
+                      <path fill="#FFF" d="M35,14H25v2h10V14z M35,18H25v2h10V18z M35,22H25v2h10V22z M35,26H25v2h10V26z M35,30H25v2h10V30z M35,34H25v2h10V34z"/>
+                    </svg>
+                  </div>
+                  <div className="text-sm font-medium text-white">Outlook</div>
+                </div>
+              </div>
+              
+              {/* Calendar interface example */}
+              <div className="mt-6 bg-white rounded-lg w-full max-w-xs overflow-hidden shadow-lg">
+                <div className="bg-[#43AA8B] text-white p-2 text-center text-sm font-medium">
+                  Zakaži intervju
+                </div>
+                <div className="p-3 text-center">
+                  <div className="text-sm font-bold text-gray-800 mb-2">Odaberite termin:</div>
+                  <div className="grid grid-cols-3 gap-1">
+                    <div className="bg-gray-100 p-1 rounded text-xs text-gray-700">09:00</div>
+                    <div className="bg-[#43AA8B]/20 p-1 rounded text-xs text-[#43AA8B] border border-[#43AA8B]/30">13:30</div>
+                    <div className="bg-gray-100 p-1 rounded text-xs text-gray-700">16:00</div>
+                  </div>
+                  <div className="mt-3 text-xs text-gray-500">
+                    Jednim klikom do intervjua
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         );
