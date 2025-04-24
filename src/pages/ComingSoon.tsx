@@ -154,11 +154,11 @@ const ComingSoon = () => {
           </motion.div>
         </header>
         
-        {/* Hero Section */}
-        <div className="grid md:grid-cols-2 gap-12 md:gap-8 py-10">
-          {/* Left column: Text content */}
+        {/* Hero Section - Completely redesigned */}
+        <div className="grid md:grid-cols-5 gap-12 md:gap-8 py-10">
+          {/* Left column: Text content (3 columns wide) */}
           <motion.div 
-            className="flex flex-col justify-center"
+            className="md:col-span-3 flex flex-col justify-center"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
@@ -174,7 +174,14 @@ const ComingSoon = () => {
               Iskoristite snagu WhatsApp-a za povezivanje s idealnim kandidatima brže i učinkovitije nego ikad prije.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4">
+            {/* Feature tags */}
+
+            {/* Registration button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7, duration: 0.5 }}
+            >
               <Button
                 asChild
                 size="lg"
@@ -185,29 +192,64 @@ const ComingSoon = () => {
                   <MoveRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-            </div>
+            </motion.div>
           </motion.div>
           
-          {/* Right column: Mockup image */}
+          {/* Right column: Mockup image (2 columns wide) */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.8 }}
-            className="relative flex items-center justify-center"
+            className="md:col-span-2 relative flex items-center justify-center"
           >
-            {/* Glowing circle behind */}
-            <div className="absolute w-[80%] h-[80%] rounded-full bg-[#43AA8B]/20 blur-[60px]" />
+            {/* Background effects */}
+            <div className="absolute w-full h-full">
+              {/* Glowing circle behind */}
+              <div className="absolute w-[80%] h-[80%] rounded-full bg-[#43AA8B]/20 blur-[60px]" />
+              
+              {/* Animated circles */}
+              <motion.div 
+                className="absolute top-10 -right-10 h-16 w-16 rounded-full border border-[#43AA8B]/30"
+                animate={{ 
+                  scale: [1, 1.2, 1],
+                  opacity: [0.3, 0.6, 0.3]
+                }}
+                transition={{ 
+                  repeat: Infinity,
+                  duration: 4,
+                }}
+              />
+              
+              <motion.div 
+                className="absolute -bottom-5 left-10 h-20 w-20 rounded-full border border-purple-500/30"
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                  opacity: [0.2, 0.5, 0.2]
+                }}
+                transition={{ 
+                  repeat: Infinity,
+                  duration: 5,
+                  delay: 1
+                }}
+              />
+            </div>
             
-            {/* Mockup image with local fallback */}
-            <div className="relative z-10 w-full max-w-lg mx-auto">
-              <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-                {/* Using the mockup.png image from public folder */}
+            {/* Mockup container with frosted effect */}
+            <div className="relative z-10 w-full max-w-lg">
+              
+              
+              {/* Mockup image with elegant border */}
+              <motion.div 
+                className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-gradient-to-b from-black/60 to-black/20 backdrop-blur-sm p-1"
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.7 }}
+              >
                 <img 
                   src="/mockup1.png" 
                   alt="Rado Platform" 
-                  className="w-full h-auto"
+                  className="w-full h-auto rounded-xl"
                   onError={(e) => {
-                    // Fallback in case image fails to load
                     e.currentTarget.style.display = 'none';
                     const container = e.currentTarget.parentElement;
                     if (container) {
@@ -223,38 +265,20 @@ const ComingSoon = () => {
                     }
                   }}
                 />
-              </div>
-              
-              {/* Floating elements */}
-              <motion.div 
-                className="absolute -top-4 -right-4 bg-black/90 backdrop-blur-sm border border-white/10 p-4 rounded-lg"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-[#43AA8B]/30 flex items-center justify-center">
-                    <CheckIcon className="h-4 w-4 text-[#43AA8B]" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">AI chatbot</p>
-                    <p className="text-xs text-gray-400">Pametna prijava</p>
-                  </div>
-                </div>
               </motion.div>
               
+              {/* WhatsApp integration badge */}
               <motion.div 
-                className="absolute -bottom-4 -left-4 bg-black/90 backdrop-blur-sm border border-white/10 p-4 rounded-lg"
-                animate={{ y: [0, 10, 0] }}
-                transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 0.5 }}
+                className="absolute -bottom-8 inset-x-0 flex justify-center"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
               >
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-purple-500/30 flex items-center justify-center">
-                    <SparkleIcon className="h-4 w-4 text-purple-500" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">Brze prijave</p>
-                    <p className="text-xs text-gray-400">Automatizacija procesa</p>
-                  </div>
+                <div className="bg-black/40 backdrop-blur-lg px-4 py-2 rounded-full border border-white/10 shadow-lg flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#25D366]" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                  </svg>
+                  <span className="text-white text-sm">WhatsApp integracija</span>
                 </div>
               </motion.div>
             </div>
