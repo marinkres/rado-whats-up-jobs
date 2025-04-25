@@ -150,7 +150,7 @@ export const NavBar = ({ activePage = 'home' }: NavBarProps) => {
           
           <Button 
             asChild
-            className="bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white"
+            className="bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white hidden md:inline-flex"
           >
             <Link to="https://cal.com/marindev-asjghd/30min" target="_blank">
               <span>{t('requestDemo')}</span>
