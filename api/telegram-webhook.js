@@ -9,7 +9,7 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 
 const MESSAGES = {
   hr: {
-    welcome: "Bok! Ja sam Rado 🤖\nZa nastavak odaberi jezik (choose language):",
+    welcome: "Bok! Ja sam Rado 👋\nZa nastavak odaberi jezik (choose language):",
     askName: "Kako se zoveš? (ime i prezime)",
     askLanguages: "Koje jezike govoriš?",
     askAvailability: "Kada si dostupan za rad?",
@@ -81,7 +81,7 @@ export default async function handler(req, res) {
         }
         // Zatim šalji onboarding pitanje
         try {
-          await sendTelegramMessage(chatId, MESSAGES[selectedLang].askName, { remove_keyboard: true });
+          await sendTelegramMessage(chatId, MESSAGES[selectedLang].askName);
         } catch (err) {
           console.error("Error sending onboarding question after language select:", err.message);
         }
@@ -505,7 +505,7 @@ async function handlePrijava(jobId, candidate_id, candidate, telegramId, chatId,
     let welcomeMsg = MESSAGES.hr.welcome;
     if (jobTitle || companyName) {
       welcomeMsg =
-        `Bok! Ja sam Rado 🤖\nPrijava za posao: ${jobTitle || "-"}${companyName ? ` u tvrtki: ${companyName}` : ""}\n\nZa nastavak odaberi jezik (choose language):`;
+        `Bok! Ja sam Rado 👋\nPrijava za posao: ${jobTitle || "-"}${companyName ? ` u tvrtki: ${companyName}` : ""}\n\nZa nastavak odaberi jezik (choose language):`;
     }
 
     console.log("Sending welcome message to user");
