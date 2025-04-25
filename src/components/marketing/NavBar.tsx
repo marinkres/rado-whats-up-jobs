@@ -38,58 +38,71 @@ export const NavBar = ({ activePage = 'home' }: NavBarProps) => {
         }}
       >
         <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-center bg-black/80 backdrop-blur-md border border-white/10 rounded-lg px-6 py-3 shadow-lg pointer-events-auto">
-            <Link to="/" className="flex items-center">
-              <img src="/radow.svg" alt="Rado Logo" className="h-8" />
-            </Link>
-            
-            <div className="hidden md:flex items-center space-x-6 ml-10 mr-auto">
-              <Link 
-                to="/" 
-                className={`${activePage === 'home' ? 'text-white font-medium' : 'text-gray-300'} hover:text-[#43AA8B] transition-colors`}
-              >
-                {t('home')}
-              </Link>
-              <Link 
-                to="/careers" 
-                className={`${activePage === 'careers' ? 'text-white font-medium' : 'text-gray-300'} hover:text-[#43AA8B] transition-colors`}
-              >
-                {t('careers')}
-              </Link>
-              <Link 
-                to="/pricing" 
-                className={`${activePage === 'pricing' ? 'text-white font-medium' : 'text-gray-300'} hover:text-[#43AA8B] transition-colors`}
-              >
-                {t('pricing')}
-              </Link>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <LanguageSwitch />
-              
-              <Button 
-                asChild
-                size="sm"
-                variant="outline" 
-                className="border border-white/20 text-white bg-white/5 hover:bg-white/10"
-              >
-                <Link to="https://dashboard.radojobs.eu/login">
-                  <span>{t('login')}</span>
-                </Link>
-              </Button>
-              
-              <Button 
-                asChild
-                size="sm"
-                className="bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white"
-              >
-                <Link to="https://cal.com/marindev-asjghd/30min" target="_blank">
-                  <span>{t('requestDemo')}</span>
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
+  {/* Mobile: ONLY logo + login */}
+  <div className="flex justify-between items-center bg-black/80 backdrop-blur-md border border-white/10 rounded-lg px-6 py-3 shadow-lg pointer-events-auto flex md:hidden">
+    <Link to="/" className="flex items-center">
+      <img src="/radow.svg" alt="Rado Logo" className="h-8" />
+    </Link>
+    <Button 
+      asChild
+      size="sm"
+      variant="outline" 
+      className="border border-white/20 text-white bg-white/5 hover:bg-white/10"
+    >
+      <Link to="https://dashboard.radojobs.eu/login">
+        <span>{t('login')}</span>
+      </Link>
+    </Button>
+  </div>
+  {/* Desktop: full nav */}
+  <div className="hidden md:flex justify-between items-center bg-black/80 backdrop-blur-md border border-white/10 rounded-lg px-6 py-3 shadow-lg pointer-events-auto">
+    <Link to="/" className="flex items-center">
+      <img src="/radow.svg" alt="Rado Logo" className="h-8" />
+    </Link>
+    <div className="flex items-center space-x-6 ml-10 mr-auto">
+      <Link 
+        to="/" 
+        className={`${activePage === 'home' ? 'text-white font-medium' : 'text-gray-300'} hover:text-[#43AA8B] transition-colors`}
+      >
+        {t('home')}
+      </Link>
+      <Link 
+        to="/careers" 
+        className={`${activePage === 'careers' ? 'text-white font-medium' : 'text-gray-300'} hover:text-[#43AA8B] transition-colors`}
+      >
+        {t('careers')}
+      </Link>
+      <Link 
+        to="/pricing" 
+        className={`${activePage === 'pricing' ? 'text-white font-medium' : 'text-gray-300'} hover:text-[#43AA8B] transition-colors`}
+      >
+        {t('pricing')}
+      </Link>
+    </div>
+    <div className="flex items-center gap-4">
+      <LanguageSwitch />
+      <Button 
+        asChild
+        size="sm"
+        variant="outline" 
+        className="border border-white/20 text-white bg-white/5 hover:bg-white/10"
+      >
+        <Link to="https://dashboard.radojobs.eu/login">
+          <span>{t('login')}</span>
+        </Link>
+      </Button>
+      <Button 
+        asChild
+        size="sm"
+        className="bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white"
+      >
+        <Link to="https://cal.com/marindev-asjghd/30min" target="_blank">
+          <span>{t('requestDemo')}</span>
+        </Link>
+      </Button>
+    </div>
+  </div>
+</div>
       </motion.div>
       
       {/* Static header */}
