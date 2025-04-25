@@ -298,28 +298,43 @@ export default async function handler(req, res) {
     }
 
     // 3b. Spremi ime kandidata ako je na tom koraku
-    if (candidate.language_choice && !candidate.name) {
-      // Pretpostavi da je korisnik upravo poslao ime
+    if (!candidate.name) {
       const enteredName = body.trim();
       if (enteredName.length > 1) {
         await supabase.from("candidates").update({ name: enteredName }).eq("id", candidate_id);
-        // Pošalji sljedeće pitanje (jezici)
         await sendTelegramMessage(chatId, MESSAGES[candidate.language_choice].askLanguages);
         return res.status(200).send("OK");
       }
     }
 
-    const lang = candidate.language_choice || "hr";
-
-    // 3b. Name input
-    if (!candidate.name) {
-      await supabase.from("candidates").update({ name: body }).eq("id", candidate_id);
-      try {
-        await sendTelegramMessage(chatId, MESSAGES[lang].askLanguages);
-      } catch (err) {
-        console.error("Telegram send error:", err);
+    // 3c. Spremi jezike
+    if (!candidate.languages) {
+      const enteredLanguages = body.trim();
+      if (enteredLanguages.length > 1) {
+        await supabase.from("candidates").update({ languages: enteredLanguages }).eq("id", candidate_id);
+        await sendTelegramMessage(chatId, MESSAGES[candidate.language_choice].askAvailability);
+        return res.status(200).send("OK");
       }
-      return res.status(200).send("OK");
+    }
+
+    // 3d. Spremi dostupnost
+    if (!candidate.availability) {
+      const enteredAvailability = body.trim();
+      if (enteredAvailability.length > 1) {
+        await supabase.from("candidates").update({ availability: enteredAvailability }).eq("id", candidate_id);
+        await sendTelegramMessage(chatId, MESSAGES[candidate.language_choice].askExperience);
+        return res.status(200).send("OK");
+      }
+    }
+
+    // 3e. Spremi iskustvo i završi onboarding
+    if (!candidate.experience) {
+      const enteredExperience = body.trim();
+      if (enteredExperience.length > 1) {
+        await supabase.from("candidates").update({ experience: enteredExperience }).eq("id", candidate_id);
+        await sendTelegramMessage(chatId, MESSAGES[candidate.language_choice].thanks);
+        return res.status(200).send("OK");
+      }
     }
 
     // 3c. Languages input
