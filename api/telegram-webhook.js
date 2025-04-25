@@ -71,12 +71,20 @@ export default async function handler(req, res) {
       selectedLang = callback.data === "lang_hr" ? "hr" : "en";
       if (candidate) {
         await supabase.from("candidates").update({ language_choice: selectedLang }).eq("id", candidate.id);
-        // Pošalji sljedeće pitanje na odabranom jeziku i makni tipkovnicu
-        await sendTelegramMessage(chatId, MESSAGES[selectedLang].askName, { remove_keyboard: true });
-        // Odgovori Telegramu na callback_query (makni "loading" efekt)
-        await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
-          callback_query_id: callback.id
-        });
+        // Prvo odgovori Telegramu na callback_query (ukloni loading)
+        try {
+          await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
+            callback_query_id: callback.id
+          });
+        } catch (err) {
+          console.error("Error answering callback_query:", err.message);
+        }
+        // Zatim šalji onboarding pitanje
+        try {
+          await sendTelegramMessage(chatId, MESSAGES[selectedLang].askName, { remove_keyboard: true });
+        } catch (err) {
+          console.error("Error sending onboarding question after language select:", err.message);
+        }
         return res.status(200).send("OK");
       }
     }
