@@ -113,7 +113,7 @@ const JobDetail = () => {
   useEffect(() => {
     if (job?.id) {
       // Create Telegram link directly in the component
-      const botUsername = "Radojobs_bot"; // Use the known bot username
+      const botUsername = "RadoJobsBot"; // Use the known bot username
       const directTelegramLink = `https://t.me/${botUsername}?start=${job.id}`;
       setTelegramLink(directTelegramLink);
       
@@ -128,7 +128,7 @@ const JobDetail = () => {
         .catch(error => {
           console.error("Failed to get Telegram link:", error);
           // Set a fallback link
-          const botUsername = "Radojobs_bot"; // Fallback username
+          const botUsername = "RadoJobsBot"; // Fallback username
           setTelegramLink(`https://t.me/${botUsername}?start=${job.id}`);
         });
       */

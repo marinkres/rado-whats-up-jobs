@@ -32,7 +32,7 @@ export default async function handler(req, res) {
       .from("employers")
       .update({ 
         telegram_enabled: true,
-        telegram_bot_username: "Radojobs_bot"
+        telegram_bot_username: "RadoJobsBot"
       });
     
     // Apply the appropriate filter

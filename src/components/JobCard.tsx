@@ -35,7 +35,7 @@ export function JobCard({ job, showApplyButtons = true }: JobCardProps) {
       setIsLoading(true);
       
       // Create Telegram link directly in the component
-      const botUsername = "Radojobs_bot"; // Use the known bot username
+      const botUsername = "RadoJobsBot"; // Use the known bot username
       const directTelegramLink = `https://t.me/${botUsername}?start=${job.id}`;
       setTelegramLink(directTelegramLink);
       

@@ -33,7 +33,7 @@ export default async function handler(req, res) {
     }
     
     // Get Telegram bot username - use environment variable or fallback to a default
-    const botUsername = process.env.TELEGRAM_BOT_USERNAME || "Radojobs_bot";
+    const botUsername = process.env.TELEGRAM_BOT_USERNAME || "RadoJobsBot";
     
     // Generate a deep link for Telegram
     const telegramLink = `https://t.me/${botUsername}?start=${job_id}`;
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
     console.error("Error generating Telegram deep link:", error);
     
     // Even if there's an error, still return a valid JSON response
-    const botUsername = process.env.TELEGRAM_BOT_USERNAME || "Radojobs_bot";
+    const botUsername = process.env.TELEGRAM_BOT_USERNAME || "RadoJobsBot";
     const fallbackLink = `https://t.me/${botUsername}?start=${job_id}`;
     
     return res.status(200).json({

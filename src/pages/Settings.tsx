@@ -292,7 +292,7 @@ const Settings = () => {
         .from("employers")
         .update({ 
           telegram_enabled: true,
-          telegram_bot_username: "Radojobs_bot" 
+          telegram_bot_username: "RadoJobsBot" 
         })
         .eq("id", employer.id);
         
@@ -302,7 +302,7 @@ const Settings = () => {
       setIntegrations(prev => ({
         ...prev,
         telegram_enabled: true,
-        telegram_bot_username: "Radojobs_bot"
+        telegram_bot_username: "RadoJobsBot"
       }));
       
       toast({
@@ -703,7 +703,7 @@ const Settings = () => {
                             <Input
                               id="telegram_bot_username"
                               name="telegram_bot_username"
-                              placeholder="Radojobs_bot"
+                              placeholder="RadoJobsBot"
                               className="pl-10"
                               value={integrations.telegram_bot_username}
                               onChange={(e) => setIntegrations(prev => ({ ...prev, telegram_bot_username: e.target.value }))}
