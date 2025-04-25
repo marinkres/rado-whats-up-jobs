@@ -79,7 +79,7 @@ export default async function handler(req, res) {
         } catch (err) {
           console.error("Error answering callback_query:", err.message);
         }
-        // Zatim šalji onboarding pitanje
+        // Zatim šalji onboarding pitanje za ime
         try {
           await sendTelegramMessage(chatId, MESSAGES[selectedLang].askName);
         } catch (err) {
@@ -293,6 +293,18 @@ export default async function handler(req, res) {
       };
       await sendTelegramMessage(chatId, MESSAGES.hr.welcome, langInlineKeyboard);
       return res.status(200).send("OK");
+    }
+
+    // 3b. Spremi ime kandidata ako je na tom koraku
+    if (candidate.language_choice && !candidate.name) {
+      // Pretpostavi da je korisnik upravo poslao ime
+      const enteredName = body.trim();
+      if (enteredName.length > 1) {
+        await supabase.from("candidates").update({ name: enteredName }).eq("id", candidate_id);
+        // Pošalji sljedeće pitanje (jezici)
+        await sendTelegramMessage(chatId, MESSAGES[candidate.language_choice].askLanguages);
+        return res.status(200).send("OK");
+      }
     }
 
     const lang = candidate.language_choice || "hr";
