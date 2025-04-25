@@ -5,35 +5,62 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
+  // Set CORS headers if needed
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
+  // Handle preflight requests (OPTIONS method)
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
+  if (req.method !== "POST" && req.method !== "GET") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { employer_id } = req.query;
+  // Allow both query params and body for flexibility
+  const employer_id = req.query.employer_id || (req.body && req.body.employer_id);
+  const employer_email = req.query.email || (req.body && req.body.email);
   
-  if (!employer_id) {
-    return res.status(400).json({ error: "Missing employer_id parameter" });
+  if (!employer_id && !employer_email) {
+    return res.status(400).json({ error: "Missing employer_id or email parameter" });
   }
 
   try {
-    // Update the employer record to enable Telegram
-    const { data, error } = await supabase
+    let updateQuery = supabase
       .from("employers")
       .update({ 
         telegram_enabled: true,
-        telegram_bot_username: "Radojobs_bot"  // Use your actual bot username
-      })
-      .eq("id", employer_id)
-      .select();
+        telegram_bot_username: "Radojobs_bot"
+      });
+    
+    // Apply the appropriate filter
+    if (employer_id) {
+      updateQuery = updateQuery.eq("id", employer_id);
+    } else {
+      updateQuery = updateQuery.eq("email", employer_email);
+    }
+    
+    // Execute the query
+    const { data, error } = await updateQuery.select();
     
     if (error) throw error;
     
+    // Add an additional query to check the schema of the employers table
+    const { data: schemaData, error: schemaError } = await supabase
+      .rpc('debug_get_table_info', { table_name: 'employers' });
+    
     return res.status(200).json({
       message: "Telegram integration enabled successfully",
-      data
+      data,
+      schema: schemaError ? null : schemaData
     });
   } catch (error) {
     console.error("Error enabling Telegram integration:", error);
-    return res.status(500).json({ error: "Failed to enable Telegram integration" });
+    return res.status(500).json({ 
+      error: "Failed to enable Telegram integration",
+      details: error.message
+    });
   }
 }

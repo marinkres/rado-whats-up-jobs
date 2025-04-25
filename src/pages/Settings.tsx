@@ -258,21 +258,26 @@ const Settings = () => {
   const enableTelegram = async () => {
     try {
       setSaving(true);
-      // Get the current employer ID
+      // Get the current user's email instead of user ID
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user?.id) throw new Error("User not authenticated");
+      if (!session?.user?.email) throw new Error("User not authenticated");
       
-      // Get employer ID
-      const { data: employer } = await supabase
+      // Get employer ID using email - this matches how you fetch the profile
+      const { data: employer, error } = await supabase
         .from("employers")
         .select("id")
-        .eq("auth_user_id", session.user.id)
+        .eq("email", session.user.email)
         .single();
         
-      if (!employer?.id) throw new Error("Employer not found");
+      if (error || !employer?.id) {
+        console.error("Error finding employer:", error);
+        throw new Error("Employer not found");
+      }
+      
+      console.log("Found employer ID:", employer.id);
       
       // Update the employer record directly
-      const { error } = await supabase
+      const { error: updateError } = await supabase
         .from("employers")
         .update({ 
           telegram_enabled: true,
@@ -280,7 +285,7 @@ const Settings = () => {
         })
         .eq("id", employer.id);
         
-      if (error) throw error;
+      if (updateError) throw updateError;
       
       // Update local state
       setIntegrations(prev => ({
