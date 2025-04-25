@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { Loader2, CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TelegramChatIdDialog } from "@/components/TelegramChatIdDialog";
 
 export default function TelegramDebug() {
   const [chatId, setChatId] = useState("");
@@ -17,6 +18,7 @@ export default function TelegramDebug() {
   const [resultLog, setResultLog] = useState("");
   const [activeTab, setActiveTab] = useState("webhook");
   const [deployedWebhook, setDeployedWebhook] = useState("");
+  const [showChatIdDialog, setShowChatIdDialog] = useState(false);
   
   useEffect(() => {
     // Set default webhook URL to current domain
@@ -136,11 +138,7 @@ export default function TelegramDebug() {
 
   const sendTestMessage = async () => {
     if (!chatId) {
-      toast({
-        title: "Error",
-        description: "Please provide a chat ID",
-        variant: "destructive",
-      });
+      setShowChatIdDialog(true);
       return;
     }
     
@@ -177,6 +175,26 @@ export default function TelegramDebug() {
       setLoading(false);
     }
   };
+
+  const handleSaveChatId = (newChatId: string) => {
+    setChatId(newChatId);
+    
+    // Save to localStorage for future use
+    localStorage.setItem('telegram_chat_id', newChatId);
+    
+    // Immediately send a test message with the new chat ID
+    if (newChatId) {
+      setTimeout(() => sendTestMessage(), 100);
+    }
+  };
+  
+  // Load saved chat ID from localStorage
+  useEffect(() => {
+    const savedChatId = localStorage.getItem('telegram_chat_id');
+    if (savedChatId) {
+      setChatId(savedChatId);
+    }
+  }, []);
 
   const getStatusDetails = () => {
     // Calculate webhook status
@@ -375,6 +393,12 @@ export default function TelegramDebug() {
           </Card>
         </TabsContent>
       </Tabs>
+      
+      <TelegramChatIdDialog 
+        open={showChatIdDialog} 
+        onOpenChange={setShowChatIdDialog} 
+        onSave={handleSaveChatId} 
+      />
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
 import { Calendar, User, Building, Mail, Phone, Globe, Bell, Shield, Lock, Save, Loader2, MapPin, Copy } from "lucide-react";
+import { TelegramChatIdDialog } from "@/components/TelegramChatIdDialog";
 
 // Skeleton loader component
 const Skeleton = ({ className = "" }) => (
@@ -49,6 +50,16 @@ const Settings = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
+  const [showChatIdDialog, setShowChatIdDialog] = useState(false);
+  const [telegramChatId, setTelegramChatId] = useState("");
+  
+  // Load saved chat ID from localStorage
+  useEffect(() => {
+    const savedChatId = localStorage.getItem('telegram_chat_id');
+    if (savedChatId) {
+      setTelegramChatId(savedChatId);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -311,40 +322,64 @@ const Settings = () => {
   };
 
   const testTelegramWebhook = async () => {
+    // If no chat ID is available, show the dialog
+    if (!telegramChatId) {
+      setShowChatIdDialog(true);
+      return;
+    }
+    
     try {
       setSaving(true);
       
       // First, set up the webhook
-      const setupResponse = await fetch(`/api/setup-telegram-webhook?webhook_url=${window.location.origin}/api/telegram-webhook`, {
+      const webhookUrl = window.location.origin + '/api/telegram-webhook';
+      console.log("Setting up webhook at URL:", webhookUrl);
+      
+      const setupResponse = await fetch(`/api/setup-telegram-webhook?webhook_url=${encodeURIComponent(webhookUrl)}`, {
         method: 'GET',
       });
       
       const setupData = await setupResponse.json();
       console.log("Webhook setup result:", setupData);
       
-      // Then get info about the webhook
-      const infoResponse = await fetch(`/api/test-telegram?chat_id=YOUR_CHAT_ID&message=Test message from RadoJobs at ${new Date().toLocaleTimeString()}`, {
+      if (setupData.error) {
+        throw new Error(`Webhook setup failed: ${setupData.error}`);
+      }
+      
+      // Then send a test message
+      console.log(`Sending test message to chat ID: ${telegramChatId}`);
+      const testResponse = await fetch(`/api/test-telegram?chat_id=${telegramChatId}&message=${encodeURIComponent("Test message from RadoJobs at " + new Date().toLocaleTimeString())}`, {
         method: 'GET',
       });
       
-      const infoData = await infoResponse.json();
-      console.log("Webhook test result:", infoData);
+      const testData = await testResponse.json();
+      console.log("Test message result:", testData);
       
-      toast({
-        title: "Telegram test completed",
-        description: "Check console for details and your Telegram for messages"
-      });
-      
+      if (testData.messageSent?.ok) {
+        toast({
+          title: "Telegram test uspješan!",
+          description: "Poruka je uspješno poslana na vaš Telegram.",
+        });
+      } else {
+        throw new Error("Failed to send test message");
+      }
     } catch (error) {
       console.error("Error testing Telegram webhook:", error);
       toast({
         title: "Greška",
-        description: "Došlo je do greške prilikom testiranja Telegram webhook-a.",
+        description: `Došlo je do greške: ${error.message}`,
         variant: "destructive"
       });
     } finally {
       setSaving(false);
     }
+  };
+  
+  const handleSaveChatId = (newChatId) => {
+    setTelegramChatId(newChatId);
+    localStorage.setItem('telegram_chat_id', newChatId);
+    // Immediately run the test after saving the chat ID
+    setTimeout(() => testTelegramWebhook(), 100);
   };
 
   return (
@@ -859,6 +894,11 @@ const Settings = () => {
           </Tabs>
         </div>
       </main>
+      <TelegramChatIdDialog 
+        open={showChatIdDialog} 
+        onOpenChange={setShowChatIdDialog} 
+        onSave={handleSaveChatId} 
+      />
     </div>
   );
 };

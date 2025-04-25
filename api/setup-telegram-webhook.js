@@ -23,40 +23,21 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Missing webhook_url parameter" });
   }
 
+  // Ensure the TELEGRAM_BOT_TOKEN is available
+  if (!TELEGRAM_BOT_TOKEN) {
+    console.error("TELEGRAM_BOT_TOKEN is not defined in environment variables");
+    return res.status(500).json({ error: "Telegram bot token is not configured" });
+  }
+
   try {
     console.log(`Setting up webhook with URL: ${webhook_url}`);
     console.log(`Using bot token: ${TELEGRAM_BOT_TOKEN ? TELEGRAM_BOT_TOKEN.substring(0, 10) + '...' : 'Not set'}`);
     
-    // First verify the bot token is valid by checking getMe
-    const getMeUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getMe`;
-    let botInfo;
-    
-    try {
-      const botResponse = await axios.get(getMeUrl);
-      botInfo = botResponse.data;
-      console.log("Bot info verified:", botInfo);
-      
-      if (!botInfo.ok) {
-        return res.status(400).json({
-          error: "Invalid bot token",
-          botInfo
-        });
-      }
-    } catch (botError) {
-      console.error("Error verifying bot token:", botError);
-      return res.status(400).json({
-        error: "Failed to verify bot token",
-        details: botError.message,
-        response: botError.response?.data
-      });
-    }
-
-    // If bot verification passed, try to set webhook
+    // Set webhook
     const apiUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook`;
-    const response = await axios.post(apiUrl, {
-      url: webhook_url,
-      allowed_updates: ["message"]
-    });
+    
+    // Make the request directly, no JSON body conversion
+    const response = await axios.get(`${apiUrl}?url=${encodeURIComponent(webhook_url)}&allowed_updates=["message"]`);
 
     console.log("Webhook setup response:", response.data);
 
@@ -67,8 +48,7 @@ export default async function handler(req, res) {
     return res.status(200).json({
       message: "Webhook setup attempt completed",
       setupResult: response.data,
-      webhookInfo: webhookInfo.data,
-      botInfo: botInfo
+      webhookInfo: webhookInfo.data
     });
   } catch (error) {
     console.error("Error in setup-telegram-webhook:", error);

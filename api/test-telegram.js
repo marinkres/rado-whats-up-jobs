@@ -14,9 +14,23 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Missing chat_id parameter" });
   }
 
+  // Ensure the TELEGRAM_BOT_TOKEN is available
+  if (!TELEGRAM_BOT_TOKEN) {
+    console.error("TELEGRAM_BOT_TOKEN is not defined in environment variables");
+    return res.status(500).json({ error: "Telegram bot token is not configured" });
+  }
+
   const textToSend = message || "Test message from Rado Jobs";
 
   try {
+    // Check if the placeholder chat_id is being used
+    if (chat_id === "YOUR_CHAT_ID") {
+      return res.status(400).json({
+        error: "Please provide a real Telegram chat ID",
+        message: "Replace 'YOUR_CHAT_ID' with your actual Telegram chat ID. You can get it by messaging @userinfobot on Telegram."
+      });
+    }
+
     // Send test message to Telegram
     const apiUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
     const response = await axios.post(apiUrl, {
@@ -38,6 +52,21 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error("Error in test-telegram:", error);
+    
+    // Handle common Telegram API errors more gracefully
+    if (error.response && error.response.data) {
+      const telegramError = error.response.data;
+      
+      // Chat not found error
+      if (telegramError.error_code === 400 && telegramError.description.includes("chat not found")) {
+        return res.status(400).json({
+          error: "Invalid chat ID",
+          message: "The provided chat ID doesn't exist or the bot doesn't have permission to send messages to this chat.",
+          details: telegramError
+        });
+      }
+    }
+    
     return res.status(500).json({
       error: "Failed to send test message",
       details: error.message,
