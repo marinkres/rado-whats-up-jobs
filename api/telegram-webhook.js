@@ -126,8 +126,25 @@ export default async function handler(req, res) {
 
   // 2. Check for deep link parameters when bot is started with /start command
   let jobId = null;
+  let jobTitle = null;
+  let companyName = null;
   const startCommand = body.match(/^\/start[\s_]+(.+)$/i);
-  
+  if (startCommand) {
+    jobId = startCommand[1];
+    // Pokušaj dohvatiti podatke o poslu iz baze
+    if (jobId) {
+      const { data: jobData, error: jobError } = await supabase
+        .from("jobs")
+        .select("id,title,company")
+        .eq("id", jobId)
+        .limit(1);
+      if (!jobError && jobData && jobData.length > 0) {
+        jobTitle = jobData[0].title;
+        companyName = jobData[0].company;
+      }
+    }
+  }
+
   // Pokreni onboarding za bilo koji /start
   if (body.match(/^\/start([\s_]+.+)?$/i)) {
     // Kreiraj kandidata ako ne postoji
@@ -136,7 +153,7 @@ export default async function handler(req, res) {
         .from("candidates")
         .insert([{ 
           telegram_id: telegramId, 
-          name: `${firstName} ${lastName}`.trim() || username || "", 
+          name: "", // NE popunjavaj ime iz Telegram profila, pusti korisnika da ga upiše
           created_at: new Date().toISOString() 
         }])
         .select();
@@ -167,7 +184,11 @@ export default async function handler(req, res) {
         ]
       ]
     };
-    await sendTelegramMessage(chatId, MESSAGES.hr.welcome, langInlineKeyboard);
+    let welcomeMsg = MESSAGES.hr.welcome;
+    if (jobTitle || companyName) {
+      welcomeMsg = `Bok! Ja sam Rado 👋\nPrijava za posao: ${jobTitle || "-"}${companyName ? ` u tvrtki: ${companyName}` : ""}\n\nZa nastavak odaberi jezik (choose language):`;
+    }
+    await sendTelegramMessage(chatId, welcomeMsg, langInlineKeyboard);
     return res.status(200).send("OK");
   }
 
@@ -250,7 +271,7 @@ export default async function handler(req, res) {
       .from("conversations")
       .select("id")
       .eq("candidate_id", candidate_id)
-      .eq("job_id", null)
+      .eq("job_id", jobId || null)
       .order("created_at", { ascending: false })
       .limit(1);
 
@@ -261,7 +282,7 @@ export default async function handler(req, res) {
         .from("conversations")
         .insert([{
           candidate_id,
-          job_id: null,
+          job_id: jobId || null,
           created_at: new Date().toISOString(),
           channel: "telegram",
           telegram_id: telegramId
@@ -293,7 +314,11 @@ export default async function handler(req, res) {
           ]
         ]
       };
-      await sendTelegramMessage(chatId, MESSAGES.hr.welcome, langInlineKeyboard);
+      let welcomeMsg = MESSAGES.hr.welcome;
+      if (jobTitle || companyName) {
+        welcomeMsg = `Bok! Ja sam Rado 👋\nPrijava za posao: ${jobTitle || "-"}${companyName ? ` u tvrtki: ${companyName}` : ""}\n\nZa nastavak odaberi jezik (choose language):`;
+      }
+      await sendTelegramMessage(chatId, welcomeMsg, langInlineKeyboard);
       return res.status(200).send("OK");
     }
 
