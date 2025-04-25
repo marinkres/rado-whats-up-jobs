@@ -146,10 +146,9 @@ export default async function handler(req, res) {
     }
     candidate_id = candidate.id;
 
-    // Resetiraj podatke za onboarding
+    // Resetiraj podatke za onboarding, ali NEMOJ dirati ime zbog NOT NULL constrainta
     await supabase.from("candidates").update({
       language_choice: null,
-      name: null,
       languages: null,
       availability: null,
       experience: null
