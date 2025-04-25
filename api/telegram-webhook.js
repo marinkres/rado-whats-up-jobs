@@ -33,7 +33,8 @@ export default async function handler(req, res) {
 
   console.log("Received Telegram webhook:", JSON.stringify(req.body, null, 2));
 
-  // First check if Telegram integration is enabled globally
+  // --- GLOBAL TELEGRAM TOGGLE privremeno isključen ---
+  /*
   try {
     const { data: settings, error: settingsError } = await supabase
       .from("settings")
@@ -49,6 +50,8 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error("Error checking global settings:", error);
   }
+  */
+  // --- KRAJ privremenog isključenja ---
 
   const update = req.body;
   
