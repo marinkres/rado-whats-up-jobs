@@ -86,6 +86,40 @@ export default async function handler(req, res) {
   let jobId = null;
   const startCommand = body.match(/^\/start[\s_]+(.+)$/i);
   
+  // Pokreni onboarding za bilo koji /start
+  if (body.match(/^\/start([\s_]+.+)?$/i)) {
+    // Kreiraj kandidata ako ne postoji
+    if (!candidate) {
+      const { data: newCandidate, error: newCandidateError } = await supabase
+        .from("candidates")
+        .insert([{ 
+          telegram_id: telegramId, 
+          name: `${firstName} ${lastName}`.trim() || username || "", 
+          created_at: new Date().toISOString() 
+        }])
+        .select();
+      if (newCandidateError || !newCandidate || newCandidate.length === 0) {
+        console.error("Supabase newCandidateError:", newCandidateError);
+        return res.status(500).send("Supabase error (candidate insert)");
+      }
+      candidate = newCandidate[0];
+    }
+    candidate_id = candidate.id;
+
+    // Resetiraj podatke za onboarding
+    await supabase.from("candidates").update({
+      language_choice: null,
+      name: null,
+      languages: null,
+      availability: null,
+      experience: null
+    }).eq("id", candidate_id);
+
+    // Pošalji poruku dobrodošlice i izbor jezika
+    await sendTelegramMessage(chatId, MESSAGES.hr.welcome);
+    return res.status(200).send("OK");
+  }
+
   if (startCommand) {
     // Extract job ID from deep link parameter
     jobId = startCommand[1];
