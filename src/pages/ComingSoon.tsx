@@ -2,8 +2,36 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion, useAnimation, useScroll } from "framer-motion";
-import { ChevronRight, Mail, MoveRight } from "lucide-react";
+import { ChevronRight, Mail, MoveRight, Globe } from "lucide-react";
 import { useInView } from "react-intersection-observer";
+import { LanguageProvider, useLanguage, Language } from "@/contexts/LanguageContext";
+
+// Enhanced language selector component
+const LanguageSwitch = () => {
+  const { language, setLanguage } = useLanguage();
+  
+  return (
+    <div className="flex items-center border border-white/10 rounded-lg overflow-hidden bg-black/30 backdrop-blur-sm">
+      <button
+        onClick={() => setLanguage('hr')}
+        className={`flex items-center px-2.5 py-1.5 text-xs transition-colors ${language === "hr" 
+          ? "bg-[#43AA8B]/20 text-[#43AA8B] font-medium" 
+          : "text-gray-400 hover:text-white"}`}
+      >
+        <span className="mr-1">🇭🇷</span> HR
+      </button>
+      <div className="h-3 w-px bg-white/10"></div>
+      <button
+        onClick={() => setLanguage('en')}
+        className={`flex items-center px-2.5 py-1.5 text-xs transition-colors ${language === "en" 
+          ? "bg-[#43AA8B]/20 text-[#43AA8B] font-medium" 
+          : "text-gray-400 hover:text-white"}`}
+      >
+        <span className="mr-1">🇬🇧</span> EN
+      </button>
+    </div>
+  );
+};
 
 // Counter animation component for statistics
 const AnimatedCounter = ({ value, suffix = "", className = "", duration = 2 }) => {
@@ -43,9 +71,10 @@ const AnimatedCounter = ({ value, suffix = "", className = "", duration = 2 }) =
   );
 };
 
-const ComingSoon = () => {
+const ComingSoonContent = () => {
   const [mounted, setMounted] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { t, language } = useLanguage();
   const { scrollY } = useScroll();
   
   // Track scroll position to determine when to show floating navbar
@@ -91,13 +120,19 @@ const ComingSoon = () => {
         }}
       >
         <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-center bg-black/80 backdrop-blur-md border border-white/10 rounded-full px-4 py-2 shadow-lg pointer-events-auto">
+          <div className="flex justify-between items-center bg-black/80 backdrop-blur-md border border-white/10 rounded-lg px-6 py-3 shadow-lg pointer-events-auto">
             <Link to="/" className="flex items-center">
               <img src="/radow.svg" alt="Rado Logo" className="h-8" />
             </Link>
             
+            <div className="hidden md:flex items-center space-x-6 ml-10 mr-auto">
+              <Link to="/" className="text-white hover:text-[#43AA8B] transition-colors font-medium">{t('home')}</Link>
+              <Link to="/integrations" className="text-gray-300 hover:text-[#43AA8B] transition-colors">{t('integrations')}</Link>
+              <Link to="/pricing" className="text-gray-300 hover:text-[#43AA8B] transition-colors">{t('pricing')}</Link>
+            </div>
+            
             <div className="flex items-center gap-4">
-              
+              <LanguageSwitch />
               
               <Button 
                 asChild
@@ -106,7 +141,7 @@ const ComingSoon = () => {
                 className="border border-white/20 text-white bg-white/5 hover:bg-white/10"
               >
                 <Link to="https://dashboard.radojobs.eu/login">
-                  <span>Prijava</span>
+                  <span>{t('login')}</span>
                 </Link>
               </Button>
               
@@ -118,7 +153,7 @@ const ComingSoon = () => {
                 <Link to="https://cal.com/marindev-asjghd/30min"
                 target="_blank"
                 >
-                  <span>Zatraži Demo</span>
+                  <span>{t('requestDemo')}</span>
                 </Link>
               </Button>
             </div>
@@ -130,27 +165,53 @@ const ComingSoon = () => {
       <div className="container mx-auto px-4 py-12 relative z-10">
         {/* Header - Original header that gets replaced by the floating navbar */}
         <header className="flex justify-between items-center mb-12 md:mb-20">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <img src="/radow.svg" alt="Rado Logo" className="h-10 md:h-12" />
-          </motion.div>
+          <div className="flex items-center">
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <img src="/radow.svg" alt="Rado Logo" className="h-10 md:h-12" />
+            </motion.div>
+            
+            <motion.div 
+              className="hidden md:flex items-center space-x-6 ml-10"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+            >
+              <Link to="/" className="text-white hover:text-[#43AA8B] transition-colors font-medium">{t('home')}</Link>
+              <Link to="/integrations" className="text-gray-300 hover:text-[#43AA8B] transition-colors">{t('integrations')}</Link>
+              <Link to="/pricing" className="text-gray-300 hover:text-[#43AA8B] transition-colors">{t('pricing')}</Link>
+            </motion.div>
+          </div>
           
           <motion.div
+            className="flex items-center gap-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
           >
+            <LanguageSwitch />
+            
             <Button 
               asChild
               variant="outline" 
               className="border border-white/20 text-white bg-white/5 backdrop-blur-sm hover:bg-white/10"
             >
               <Link to="https://dashboard.radojobs.eu/login">
-                <span>Prijava</span>
-                <ChevronRight className="ml-2 h-4 w-4" />
+                <span>{t('login')}</span>
+              </Link>
+            </Button>
+            
+            <Button 
+              asChild
+              className="bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white"
+            >
+              <Link to="https://cal.com/marindev-asjghd/30min"
+              target="_blank"
+              >
+                <span>{t('requestDemo')}</span>
               </Link>
             </Button>
           </motion.div>
@@ -166,14 +227,14 @@ const ComingSoon = () => {
             transition={{ duration: 0.7 }}
           >
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-              <span className="block">Revolucija u</span>
+              <span className="block">{t('revolutionIn')}</span>
               <span className="bg-gradient-to-r from-[#43AA8B] via-teal-400 to-emerald-400 text-transparent bg-clip-text">
-                zapošljavanju
+                {t('recruitment')}
               </span>
             </h1>
             
             <p className="text-lg md:text-xl text-gray-300 mb-10 max-w-lg">
-              Iskoristite snagu WhatsApp-a za povezivanje s idealnim kandidatima brže i učinkovitije nego ikad prije.
+              {t('heroDescription')}
             </p>
             
             {/* Feature tags */}
@@ -192,7 +253,7 @@ const ComingSoon = () => {
                 <Link to="https://cal.com/marindev-asjghd/30min"
                 target="_blank"
                 >
-                  Zatraži Demo
+                  {t('requestDemo')}
                   <MoveRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -298,12 +359,12 @@ const ComingSoon = () => {
         >
           <div className="max-w-5xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-8">
-              "Naš tim radi <span className="text-[#43AA8B]">brže i pametnije</span> a kandidatima pruža iskustvo koje se pamti."
+              <div dangerouslySetInnerHTML={{ __html: t('testimonialTitle').replace('brže i pametnije', '<span class="text-[#43AA8B]">brže i pametnije</span>').replace('faster and smarter', '<span class="text-[#43AA8B]">faster and smarter</span>') }} />
             </h2>
             
             <div className="text-center mb-12">
               <p className="text-lg text-gray-300">
-                Pomažemo poslodavcima da popune pozicije bez napora, za manje od 5 dana
+                {t('testimonialDescription')}
               </p>
             </div>
             
@@ -314,7 +375,7 @@ const ComingSoon = () => {
                     <AnimatedCounter value={98} suffix="%" className="inline" />
                   </span>
                 </p>
-                <p className="text-sm text-gray-400 mt-2">Zadovoljstvo kandidata</p>
+                <p className="text-sm text-gray-400 mt-2">{t('candidateSatisfaction')}</p>
               </div>
               
               <div className="text-center">
@@ -323,24 +384,24 @@ const ComingSoon = () => {
                     <AnimatedCounter value={77} suffix="%" className="inline" />
                   </span>
                 </p>
-                <p className="text-sm text-gray-400 mt-2">Više prijava</p>
+                <p className="text-sm text-gray-400 mt-2">{t('moreApplications')}</p>
               </div>
               
               <div className="text-center">
                 <p className="text-4xl md:text-5xl font-bold">
                   <span className="text-purple-500">
                     <AnimatedCounter value={5} suffix="x" className="inline" />
-                    <span className="text-purple-500 ml-1 text-2xl">brže</span>
+                    <span className="text-purple-500 ml-1 text-2xl">{t('faster')}</span>
                   </span>
                 </p>
-                <p className="text-sm text-gray-400 mt-2">Od prijave do posla</p>
+                <p className="text-sm text-gray-400 mt-2">{t('fasterJobs')}</p>
               </div>
               
               <div className="text-center">
                 <p className="text-4xl md:text-5xl font-bold text-gray-100">
                   <AnimatedCounter value={520} suffix="h" className="inline" duration={2.5} />
                 </p>
-                <p className="text-sm text-gray-400 mt-2">Ušteđeno u 90 dana</p>
+                <p className="text-sm text-gray-400 mt-2">{t('timesSaved')}</p>
               </div>
             </div>
           </div>
@@ -355,11 +416,11 @@ const ComingSoon = () => {
             transition={{ duration: 0.7 }}
           >
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              <span className="text-gray-100">Kako naši korisnici zapošljavaju </span>
-              <span className="text-[#43AA8B] font-bold">5x brže</span>
+              <span className="text-gray-100">{t('howItWorksTitle').replace('5x', '')}</span>
+              <span className="text-[#43AA8B] font-bold"> 5x {t('faster')}</span>
             </h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Naši klijenti zapošljavaju kandidate unutar 5 dana rada s nama. Evo kako...
+              {t('howItWorksDescription')}
             </p>
           </motion.div>
 
@@ -371,8 +432,8 @@ const ComingSoon = () => {
             {/* Step 1 */}
             <TimelineCard 
               number="1"
-              title="Prijave putem WhatsApp-a"
-              description="Automatizirano bez životopisa, bez motivacijskih pisama, kandidati se mogu prijaviti za 2 minute na platformama koje svakodnevno koriste."
+              title={t('step1Title')}
+              description={t('step1Description')}
               alignment="right"
               delay={0}
               animation="chat"
@@ -381,8 +442,8 @@ const ComingSoon = () => {
             {/* Step 2 */}
             <TimelineCard 
               number="2"
-              title="Automatska predkvalifikacija"
-              description="Primajte samo kvalificirane kandidate, pustite da naš softver obavi težak posao - nema više čitanja životopisa!"
+              title={t('step2Title')}
+              description={t('step2Description')}
               alignment="left"
               delay={0.2}
 
@@ -392,8 +453,8 @@ const ComingSoon = () => {
             {/* Step 3 - Updated from the image */}
             <TimelineCard 
               number="3"
-              title="Komunikacija izravno u chatu"
-              description="Skratite vrijeme potrebno za zapošljavanje i razgovarajte izravno s kandidatima. Nema više čekanja na e-mail."
+              title={t('step3Title')}
+              description={t('step3Description')}
               alignment="right"
               delay={0.4}
               animation="messages"
@@ -402,8 +463,8 @@ const ComingSoon = () => {
             {/* Step 4 - Added from the image */}
             <TimelineCard 
               number="4"
-              title="Do intervjua jednim klikom"
-              description="Kandidati mogu rezervirati svoje najbolje vrijeme jednim klikom na svoj chat, sinkroniziranim izravno u vaš kalendar."
+              title={t('step4Title')}
+              description={t('step4Description')}
               alignment="left"
               delay={0.6}
               animation="calendar"
@@ -421,11 +482,11 @@ const ComingSoon = () => {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-5xl font-bold mb-4">
-                <span className="text-gray-100">Moćan i jednostavan </span>
-                <span className="text-[#43AA8B]">dashboard</span>
+                <span className="text-gray-100">{t('dashboardTitle1')} </span>
+                <span className="text-[#43AA8B]">{t('dashboardTitle2')}</span>
               </h2>
               <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                Pratite sve svoje oglase i prijave na jednom mjestu uz naše intuitivno sučelje
+                {t('dashboardDescription')}
               </p>
             </div>
             
@@ -458,7 +519,7 @@ const ComingSoon = () => {
                     <Link to="https://cal.com/marindev-asjghd/30min"
                 target="_blank"
                 >
-                  Zatraži Demo
+                  {t('requestDemo')}
                 </Link>
                   </Button>
                 </div>
@@ -479,49 +540,58 @@ const ComingSoon = () => {
             <div className="flex flex-col items-center md:items-start gap-4 md:w-1/4">
               <img src="/radow.svg" alt="Rado Logo" className="h-8 mb-2" />
               <div className="flex gap-4">
-          <SocialLink icon={<TwitterIcon />} href="#" />
-          <SocialLink icon={<LinkedInIcon />} href="#" />
+            <SocialLink icon={<TwitterIcon />} href="#" />
+            <SocialLink icon={<LinkedInIcon />} href="#" />
               </div>
             </div>
             {/* Links */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 flex-1">
               <div>
-          <h4 className="font-semibold text-white mb-2">Glavno</h4>
-          <ul className="space-y-1">
-            <li><Link to="/" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Početna</Link></li>
-            <li><Link to="https://dashboard.radojobs.eu/login" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Prijava</Link></li>
-            <li><Link to="/integrations" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Integracije</Link></li>
-          </ul>
+            <h4 className="font-semibold text-white mb-2">{t('mainLinks')}</h4>
+            <ul className="space-y-1">
+              <li><Link to="/" className="text-gray-400 hover:text-[#43AA8B] transition-colors">{t('home')}</Link></li>
+              <li><Link to="https://dashboard.radojobs.eu/login" className="text-gray-400 hover:text-[#43AA8B] transition-colors">{t('login')}</Link></li>
+              <li><Link to="/integrations" className="text-gray-400 hover:text-[#43AA8B] transition-colors">{t('integrations')}</Link></li>
+            </ul>
               </div>
               <div>
-          <h4 className="font-semibold text-white mb-2">Ostalo</h4>
-          <ul className="space-y-1">
-            <li><Link to="/careers" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Karijere</Link></li>
-            <li><Link to="/pricing" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Cijene</Link></li>
-          </ul>
+            <h4 className="font-semibold text-white mb-2">{t('other')}</h4>
+            <ul className="space-y-1">
+              <li><Link to="/careers" className="text-gray-400 hover:text-[#43AA8B] transition-colors">{t('careers')}</Link></li>
+              <li><Link to="/pricing" className="text-gray-400 hover:text-[#43AA8B] transition-colors">{t('pricing')}</Link></li>
+            </ul>
               </div>
               <div>
-          <h4 className="font-semibold text-white mb-2">Korisno</h4>
-          <ul className="space-y-1">
-            <li><Link to="/privacy-policy" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Politika privatnosti</Link></li>
-            <li><Link to="/terms-of-use" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Uvjeti korištenja</Link></li>
-            <li><Link to="/changelog" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Dnevnik promjena</Link></li>
-          </ul>
+            <h4 className="font-semibold text-white mb-2">{t('useful')}</h4>
+            <ul className="space-y-1">
+              <li><Link to="/privacy-policy" className="text-gray-400 hover:text-[#43AA8B] transition-colors">{t('privacyPolicy')}</Link></li>
+              <li><Link to="/terms-of-use" className="text-gray-400 hover:text-[#43AA8B] transition-colors">{t('termsOfUse')}</Link></li>
+              <li><Link to="/changelog" className="text-gray-400 hover:text-[#43AA8B] transition-colors">{t('changelog')}</Link></li>
+            </ul>
               </div>
               <div>
-          <h4 className="font-semibold text-white mb-2">Pomoć</h4>
-          <ul className="space-y-1">
-            <li><Link to="/support" className="text-gray-400 hover:text-[#43AA8B] transition-colors">Podrška</Link></li>
-          </ul>
+            <h4 className="font-semibold text-white mb-2">{t('help')}</h4>
+            <ul className="space-y-1">
+              <li><Link to="/support" className="text-gray-400 hover:text-[#43AA8B] transition-colors">{t('support')}</Link></li>
+            </ul>
               </div>
             </div>
           </div>
           <div className="mt-8 text-sm text-gray-400">
-            © {new Date().getFullYear()} Rado. Sva prava pridržana.
+            © {new Date().getFullYear()} Rado. {t('allRightsReserved')}
           </div>
         </motion.footer>
       </div>
     </div>
+  );
+};
+
+// Main component that wraps everything with the language provider
+const ComingSoon = () => {
+  return (
+    <LanguageProvider>
+      <ComingSoonContent />
+    </LanguageProvider>
   );
 };
 
