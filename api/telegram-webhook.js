@@ -31,6 +31,25 @@ export default async function handler(req, res) {
     return res.status(405).send("Method Not Allowed");
   }
 
+  console.log("Received Telegram webhook:", JSON.stringify(req.body, null, 2));
+
+  // First check if Telegram integration is enabled globally
+  try {
+    const { data: settings, error: settingsError } = await supabase
+      .from("settings")
+      .select("telegram_enabled")
+      .single();
+    
+    if (settingsError) {
+      console.error("Error checking global Telegram settings:", settingsError);
+    } else if (!settings?.telegram_enabled) {
+      console.warn("Telegram integration is globally disabled");
+      return res.status(200).send("Telegram integration is disabled");
+    }
+  } catch (error) {
+    console.error("Error checking global settings:", error);
+  }
+
   const update = req.body;
   
   // Telegram webhook verification
@@ -45,12 +64,19 @@ export default async function handler(req, res) {
   const lastName = update.message.from.last_name || "";
   const username = update.message.from.username || "";
 
+  console.log(`Received message from user ${telegramId}: ${body}`);
+
   // 1. Find candidate by Telegram ID
   let { data: candidates, error: candidateError } = await supabase
     .from("candidates")
     .select("*")
     .eq("telegram_id", telegramId)
     .limit(1);
+
+  if (candidateError) {
+    console.error("Error fetching candidate:", candidateError);
+    return res.status(500).send("Database error");
+  }
 
   let candidate_id;
   let candidate = candidates && candidates.length > 0 ? candidates[0] : null;
@@ -62,9 +88,11 @@ export default async function handler(req, res) {
   if (startCommand) {
     // Extract job ID from deep link parameter
     jobId = startCommand[1];
+    console.log(`Start command detected with job ID: ${jobId}`);
     
     // Create candidate if doesn't exist
     if (!candidate) {
+      console.log(`Creating new candidate for telegram ID: ${telegramId}`);
       const { data: newCandidate, error: newCandidateError } = await supabase
         .from("candidates")
         .insert([{ 
@@ -74,17 +102,31 @@ export default async function handler(req, res) {
         }])
         .select();
       
-      if (newCandidateError || !newCandidate || newCandidate.length === 0) {
+      if (newCandidateError) {
         console.error("Supabase newCandidateError:", newCandidateError);
         return res.status(500).send("Supabase error (candidate insert)");
       }
+      
+      if (!newCandidate || newCandidate.length === 0) {
+        console.error("No candidate was created");
+        return res.status(500).send("Failed to create candidate");
+      }
+      
       candidate = newCandidate[0];
+      console.log(`New candidate created with ID: ${candidate.id}`);
     }
+    
     candidate_id = candidate.id;
     
     // Process as if it was a PRIJAVA:jobId command
-    await handlePrijava(jobId, candidate_id, candidate, telegramId, chatId, body, res);
-    return;
+    try {
+      await handlePrijava(jobId, candidate_id, candidate, telegramId, chatId, body, res);
+      console.log(`Successfully processed job application for job ID: ${jobId}`);
+    } catch (error) {
+      console.error("Error processing job application:", error);
+      await sendTelegramMessage(chatId, "Došlo je do greške prilikom obrade prijave. Molimo pokušajte ponovno.");
+    }
+    return res.status(200).send("OK");
   }
 
   // 3. Handle "PRIJAVA" or "PRIJAVA:{job_id}" command
@@ -224,113 +266,180 @@ export default async function handler(req, res) {
 
 // Helper function to handle job applications
 async function handlePrijava(jobId, candidate_id, candidate, telegramId, chatId, body, res) {
-  // Get job title and company name
-  let jobTitle = "";
-  let companyName = "";
-  if (jobId) {
-    const { data: job } = await supabase
-      .from("job_listings")
-      .select("title, employer_id")
-      .eq("id", jobId)
-      .single();
+  console.log(`Beginning job application process for job ID: ${jobId}, candidate ID: ${candidate_id}`);
+  
+  try {
+    // Get job details and check if the employer has Telegram enabled
+    let jobTitle = "";
+    let companyName = "";
+    let telegramEnabled = false;
     
-    if (job) {
-      jobTitle = job.title || "";
-      if (job.employer_id) {
-        const { data: employer } = await supabase
-          .from("employers")
-          .select("company_name")
-          .eq("id", job.employer_id)
-          .single();
-        if (employer) {
-          companyName = employer.company_name || "";
+    if (jobId) {
+      const { data: job, error } = await supabase
+        .from("job_listings")
+        .select("title, employer_id")
+        .eq("id", jobId)
+        .single();
+      
+      if (error) {
+        console.error("Error fetching job details:", error);
+      } else if (job) {
+        jobTitle = job.title || "Nepoznati posao";
+        
+        if (job.employer_id) {
+          const { data: employer, error: empError } = await supabase
+            .from("employers")
+            .select("company_name, telegram_enabled")
+            .eq("id", job.employer_id)
+            .single();
+          
+          if (empError) {
+            console.error("Error fetching employer:", empError);
+          } else if (employer) {
+            companyName = employer.company_name || "";
+            telegramEnabled = employer.telegram_enabled === true;
+            
+            if (!telegramEnabled) {
+              console.warn(`Employer ${job.employer_id} has Telegram integration disabled`);
+              await sendTelegramMessage(chatId, "Nažalost, poslodavac trenutno ne prima prijave putem Telegrama. Molimo kontaktirajte poslodavca drugim putem.");
+              return res.status(200).send("OK");
+            }
+          }
         }
       }
     }
-  }
 
-  // Check if conversation already exists
-  let conversation_id = null;
-  if (jobId) {
-    const { data: existingConv } = await supabase
-      .from("conversations")
-      .select("id")
-      .eq("candidate_id", candidate_id)
-      .eq("job_id", jobId)
-      .order("created_at", { ascending: false })
-      .limit(1);
-    if (existingConv && existingConv.length > 0) {
-      conversation_id = existingConv[0].id;
+    console.log(`Job info retrieved - Title: ${jobTitle}, Company: ${companyName}`);
+
+    // Check if conversation already exists
+    let conversation_id = null;
+    if (jobId) {
+      const { data: existingConv, error } = await supabase
+        .from("conversations")
+        .select("id")
+        .eq("candidate_id", candidate_id)
+        .eq("job_id", jobId)
+        .order("created_at", { ascending: false })
+        .limit(1);
+      
+      if (error) {
+        console.error("Error checking existing conversation:", error);
+      } else if (existingConv && existingConv.length > 0) {
+        conversation_id = existingConv[0].id;
+        console.log(`Found existing conversation: ${conversation_id}`);
+      }
     }
-  }
-  
-  // If no conversation exists, create one
-  if (!conversation_id) {
-    const { data: newConv } = await supabase
-      .from("conversations")
-      .insert([{ 
-        candidate_id, 
-        job_id: jobId, 
-        created_at: new Date().toISOString(),
-        channel: "telegram"
-      }])
-      .select();
-    conversation_id = newConv && newConv.length > 0 ? newConv[0].id : null;
-  }
-
-  // Save message
-  await supabase.from("messages").insert([
-    {
-      conversation_id,
-      sender: "candidate",
-      content: body,
-      sent_at: new Date().toISOString(),
-    },
-  ]);
-
-  // Create application record if not exists
-  if (jobId && candidate_id) {
-    const { data: existingApp } = await supabase
-      .from("applications")
-      .select("id")
-      .eq("candidate_id", candidate_id)
-      .eq("job_id", jobId)
-      .limit(1);
     
-    if (!existingApp || existingApp.length === 0) {
-      await supabase
-        .from("applications")
-        .insert([
-          {
-            candidate_id,
-            job_id: jobId,
-            status: "pending",
-            created_at: new Date().toISOString(),
-            message: "Prijava putem Telegrama",
-          },
-        ]);
+    // If no conversation exists, create one
+    if (!conversation_id) {
+      console.log("Creating new conversation");
+      const { data: newConv, error } = await supabase
+        .from("conversations")
+        .insert([{ 
+          candidate_id, 
+          job_id: jobId, 
+          created_at: new Date().toISOString(),
+          channel: "telegram"
+        }])
+        .select();
+      
+      if (error) {
+        console.error("Error creating conversation:", error);
+        throw new Error("Failed to create conversation");
+      }
+      
+      conversation_id = newConv && newConv.length > 0 ? newConv[0].id : null;
+      console.log(`New conversation created with ID: ${conversation_id}`);
     }
-  }
 
-  // Welcome message with job and company info
-  let welcomeMsg = MESSAGES.hr.welcome;
-  if (jobTitle || companyName) {
-    welcomeMsg =
-      `Bok! Ja sam Rado 🤖\nPrijava za posao: ${jobTitle || "-"}${companyName ? ` u tvrtki: ${companyName}` : ""}\n\nZa nastavak odaberi jezik (choose language):\n1️⃣ Hrvatski\n2️⃣ English`;
-  }
+    if (!conversation_id) {
+      throw new Error("Failed to get or create conversation ID");
+    }
 
-  try {
+    // Save message
+    const { error: msgError } = await supabase.from("messages").insert([
+      {
+        conversation_id,
+        sender: "candidate",
+        content: body,
+        sent_at: new Date().toISOString(),
+      },
+    ]);
+    
+    if (msgError) {
+      console.error("Error saving message:", msgError);
+    } else {
+      console.log("Message saved to conversation");
+    }
+
+    // Create application record if not exists
+    if (jobId && candidate_id) {
+      console.log("Checking for existing application");
+      const { data: existingApp, error: appCheckError } = await supabase
+        .from("applications")
+        .select("id")
+        .eq("candidate_id", candidate_id)
+        .eq("job_id", jobId)
+        .limit(1);
+      
+      if (appCheckError) {
+        console.error("Error checking application:", appCheckError);
+      } else if (!existingApp || existingApp.length === 0) {
+        console.log("Creating new application");
+        const { error: appCreateError } = await supabase
+          .from("applications")
+          .insert([
+            {
+              candidate_id,
+              job_id: jobId,
+              status: "pending",
+              created_at: new Date().toISOString(),
+              message: "Prijava putem Telegrama",
+            },
+          ]);
+        
+        if (appCreateError) {
+          console.error("Error creating application:", appCreateError);
+        } else {
+          console.log("New application created successfully");
+        }
+      } else {
+        console.log(`Application already exists with ID: ${existingApp[0].id}`);
+      }
+    }
+
+    // Welcome message with job and company info
+    let welcomeMsg = MESSAGES.hr.welcome;
+    if (jobTitle || companyName) {
+      welcomeMsg =
+        `Bok! Ja sam Rado 🤖\nPrijava za posao: ${jobTitle || "-"}${companyName ? ` u tvrtki: ${companyName}` : ""}\n\nZa nastavak odaberi jezik (choose language):\n1️⃣ Hrvatski\n2️⃣ English`;
+    }
+
+    console.log("Sending welcome message to user");
     await sendTelegramMessage(chatId, welcomeMsg);
-  } catch (err) {
-    console.error("Telegram send error:", err);
+    console.log("Welcome message sent");
+    
+  } catch (error) {
+    console.error("Error in handlePrijava:", error);
+    throw error; // Re-throw to be handled by the caller
   }
-  return res.status(200).send("OK");
 }
 
 async function sendTelegramMessage(chatId, text) {
-  const apiUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-  await axios.post(apiUrl, {
-    chat_id: chatId,
-    text: text
-  });
+  try {
+    console.log(`Sending message to chat ID: ${chatId}`);
+    const apiUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+    const response = await axios.post(apiUrl, {
+      chat_id: chatId,
+      text: text
+    });
+    console.log("Message sent successfully:", response.data.ok);
+    return response.data;
+  } catch (error) {
+    console.error("Error sending Telegram message:", error.message);
+    if (error.response) {
+      console.error("Response data:", error.response.data);
+    }
+    throw error;
+  }
 }

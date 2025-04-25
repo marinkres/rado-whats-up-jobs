@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CalendarClock, MapPin, Building, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/lib/supabase"; // Add this import
 
 interface JobCardProps {
   job: {
@@ -40,20 +41,6 @@ export function JobCard({ job, showApplyButtons = true }: JobCardProps) {
       
       console.log("Created Telegram link directly:", directTelegramLink);
       setIsLoading(false);
-      
-      // Skip the API call for now since it's not working in development
-      /*
-      fetch(`/api/telegram-deeplink?job_id=${job.id}`)
-        .then(async response => {
-          // ...existing code...
-        })
-        .catch(error => {
-          console.error("Failed to get Telegram link:", error);
-          const botUsername = "Radojobs_bot"; // Fallback username
-          setTelegramLink(`https://t.me/${botUsername}?start=${job.id}`);
-        })
-        .finally(() => setIsLoading(false));
-      */
     }
   }, [job.id, showApplyButtons]);
 
@@ -118,6 +105,20 @@ export function JobCard({ job, showApplyButtons = true }: JobCardProps) {
             onClick={(e) => {
               e.preventDefault();
               if (telegramLink) {
+                // For mobile devices, use telegram:// URI scheme which works better
+                const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                if (isMobile) {
+                  // Extract the bot username and start parameter
+                  const regex = /https:\/\/t\.me\/([^?]+)\?start=(.+)/;
+                  const matches = telegramLink.match(regex);
+                  if (matches && matches.length >= 3) {
+                    const username = matches[1];
+                    const startParam = matches[2];
+                    window.location.href = `telegram://resolve?domain=${username}&start=${startParam}`;
+                    return;
+                  }
+                }
+                // Fallback to standard link for desktop
                 window.open(telegramLink, '_blank');
               }
             }}

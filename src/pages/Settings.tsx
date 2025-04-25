@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
-import { Calendar, User, Building, Mail, Phone, Globe, Bell, Shield, Lock, Save, Loader2, MapPin } from "lucide-react";
+import { Calendar, User, Building, Mail, Phone, Globe, Bell, Shield, Lock, Save, Loader2, MapPin, Copy } from "lucide-react";
 
 // Skeleton loader component
 const Skeleton = ({ className = "" }) => (
@@ -250,6 +250,56 @@ const Settings = () => {
         variant: "destructive"
       });
       console.error("Error changing password:", error.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const enableTelegram = async () => {
+    try {
+      setSaving(true);
+      // Get the current employer ID
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user?.id) throw new Error("User not authenticated");
+      
+      // Get employer ID
+      const { data: employer } = await supabase
+        .from("employers")
+        .select("id")
+        .eq("auth_user_id", session.user.id)
+        .single();
+        
+      if (!employer?.id) throw new Error("Employer not found");
+      
+      // Update the employer record directly
+      const { error } = await supabase
+        .from("employers")
+        .update({ 
+          telegram_enabled: true,
+          telegram_bot_username: "Radojobs_bot" 
+        })
+        .eq("id", employer.id);
+        
+      if (error) throw error;
+      
+      // Update local state
+      setIntegrations(prev => ({
+        ...prev,
+        telegram_enabled: true,
+        telegram_bot_username: "Radojobs_bot"
+      }));
+      
+      toast({
+        title: "Telegram integracija omogućena",
+        description: "Sada možete primati prijave putem Telegrama."
+      });
+    } catch (error) {
+      console.error("Error enabling Telegram:", error);
+      toast({
+        title: "Greška",
+        description: "Došlo je do greške pri omogućavanju Telegram integracije.",
+        variant: "destructive"
+      });
     } finally {
       setSaving(false);
     }
@@ -511,6 +561,136 @@ const Settings = () => {
                     <div className="p-4 border-t border-gray-100 dark:border-gray-700/50 flex justify-end">
                       <Button 
                         onClick={saveNotifications} 
+                        disabled={saving}
+                        className="bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white"
+                      >
+                        {saving ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Spremanje...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="mr-2 h-4 w-4" />
+                            Spremi postavke
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="integrations" className="mt-0">
+                  <Card className="backdrop-blur-sm bg-white/70 dark:bg-gray-800/70 border border-gray-200 dark:border-gray-700/50 shadow-sm overflow-hidden">
+                    <div className="p-6 border-b border-gray-100 dark:border-gray-700/50">
+                      <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+                        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.198l-1.67 8.03c-.123.595-.45.738-.907.46l-2.507-1.885-1.209 1.188c-.16.158-.297.297-.594.297l.216-2.244 4.082-3.764c.275-.248-.056-.374-.43-.145l-5.035 3.23-2.158-.69c-.594-.197-.608-.596.13-.883l8.413-3.32c.498-.19.931.114.75.826z"/>
+                        </svg>
+                        Telegram integracija
+                      </h2>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Omogućite komunikaciju s kandidatima putem Telegrama
+                      </p>
+                    </div>
+                    <div className="p-6 space-y-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="telegram_enabled" className="font-medium text-gray-800 dark:text-gray-100">
+                            Omogući Telegram
+                          </Label>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Omogućite komunikaciju s kandidatima putem Telegrama
+                          </p>
+                        </div>
+                        <Switch
+                          id="telegram_enabled"
+                          name="telegram_enabled"
+                          checked={integrations.telegram_enabled}
+                          onCheckedChange={(checked) => setIntegrations(prev => ({ ...prev, telegram_enabled: checked }))}
+                          className="data-[state=checked]:bg-[#43AA8B]"
+                        />
+                      </div>
+
+                      {integrations.telegram_enabled && (
+                        <div className="space-y-2">
+                          <Label htmlFor="telegram_bot_username">Telegram Bot korisničko ime</Label>
+                          <div className="relative">
+                            <svg 
+                              className="absolute left-3 top-3 h-4 w-4 text-blue-500" 
+                              viewBox="0 0 24 24" 
+                              fill="currentColor"
+                            >
+                              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.198l-1.67 8.03c-.123.595-.45.738-.907.46l-2.507-1.885-1.209 1.188c-.16.158-.297.297-.594.297l.216-2.244 4.082-3.764c.275-.248-.056-.374-.43-.145l-5.035 3.23-2.158-.69c-.594-.197-.608-.596.13-.883l8.413-3.32c.498-.19.931.114.75.826z"/>
+                            </svg>
+                            <Input
+                              id="telegram_bot_username"
+                              name="telegram_bot_username"
+                              placeholder="Radojobs_bot"
+                              className="pl-10"
+                              value={integrations.telegram_bot_username}
+                              onChange={(e) => setIntegrations(prev => ({ ...prev, telegram_bot_username: e.target.value }))}
+                            />
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            Korisničko ime vašeg Telegram bota (bez @ znaka)
+                          </p>
+                        </div>
+                      )}
+
+                      <div className="pt-4 border-t border-gray-100 dark:border-gray-700/50">
+                        <h3 className="text-md font-semibold text-gray-800 dark:text-gray-200 mb-2">Webhook postavke</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                          Za pravilno funkcioniranje Telegram integracije, potrebno je postaviti webhook URL za vaš bot.
+                        </p>
+                        
+                        <div className="bg-gray-50 dark:bg-gray-900/50 p-3 rounded border border-gray-200 dark:border-gray-700 mb-3">
+                          <code className="text-sm text-gray-700 dark:text-gray-300 break-all">{integrations.webhook_url}</code>
+                        </div>
+                        
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => {
+                            navigator.clipboard.writeText(integrations.webhook_url);
+                            toast({
+                              title: "Kopirano",
+                              description: "Webhook URL kopiran u međuspremnik",
+                            });
+                          }}
+                          className="w-full"
+                        >
+                          <Copy className="h-4 w-4 mr-2" />
+                          Kopiraj webhook URL
+                        </Button>
+                        
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+                          Postavite webhook URL u Telegram BotFather ili koristite API za postavljanje webhooka.
+                        </p>
+                      </div>
+
+                      <Button 
+                        onClick={enableTelegram}
+                        disabled={integrations.telegram_enabled || saving}
+                        className="mt-2"
+                      >
+                        {saving ? (
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        ) : (
+                          <svg 
+                            className="h-4 w-4 mr-2 text-blue-500" 
+                            viewBox="0 0 24 24" 
+                            fill="currentColor"
+                          >
+                            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.198l-1.67 8.03c-.123.595-.45.738-.907.46l-2.507-1.885-1.209 1.188c-.16.158-.297.297-.594.297l.216-2.244 4.082-3.764c.275-.248-.056-.374-.43-.145l-5.035 3.23-2.158-.69c-.594-.197-.608-.596.13-.883l8.413-3.32c.498-.19.931.114.75.826z"/>
+                          </svg>
+                        )}
+                        Brzo omogući Telegram
+                      </Button>
+                    </div>
+                    <div className="p-4 border-t border-gray-100 dark:border-gray-700/50 flex justify-end">
+                      <Button 
+                        onClick={saveIntegrations} 
                         disabled={saving}
                         className="bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white"
                       >
