@@ -131,16 +131,27 @@ export default async function handler(req, res) {
   const startCommand = body.match(/^\/start[\s_]+(.+)$/i);
   if (startCommand) {
     jobId = startCommand[1];
-    // Pokušaj dohvatiti podatke o poslu iz baze
+    // Pokušaj dohvatiti podatke o poslu iz baze (job_listings + employers)
     if (jobId) {
       const { data: jobData, error: jobError } = await supabase
-        .from("jobs")
-        .select("id,title,company")
+        .from("job_listings")
+        .select("id,title,employer_id,employers (company_name)")
         .eq("id", jobId)
         .limit(1);
       if (!jobError && jobData && jobData.length > 0) {
         jobTitle = jobData[0].title;
-        companyName = jobData[0].company;
+        companyName = jobData[0].employers?.company_name || null;
+      }
+      // Ako nema relacije, fallback na dodatni upit
+      if (!companyName && jobData && jobData[0]?.employer_id) {
+        const { data: empData, error: empError } = await supabase
+          .from("employers")
+          .select("company_name")
+          .eq("id", jobData[0].employer_id)
+          .limit(1);
+        if (!empError && empData && empData.length > 0) {
+          companyName = empData[0].company_name;
+        }
       }
     }
   }
