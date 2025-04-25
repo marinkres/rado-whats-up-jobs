@@ -9,7 +9,7 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 
 const MESSAGES = {
   hr: {
-    welcome: "Bok! Ja sam Rado 🤖\nZa nastavak odaberi jezik (choose language):\n1️⃣ Hrvatski\n2️⃣ English",
+    welcome: "Bok! Ja sam Rado 🤖\nZa nastavak odaberi jezik (choose language):",
     askName: "Kako se zoveš? (ime i prezime)",
     askLanguages: "Koje jezike govoriš?",
     askAvailability: "Kada si dostupan za rad?",
@@ -17,7 +17,7 @@ const MESSAGES = {
     thanks: "Hvala na prijavi! Poslodavac će te kontaktirati čim prije. Sretno! 🍀",
   },
   en: {
-    welcome: "Hi! I'm Rado 🤖\nPlease choose your language:\n1️⃣ Hrvatski\n2️⃣ English",
+    welcome: "Hi! I'm Rado 🤖\nPlease choose your language:",
     askName: "What's your full name?",
     askLanguages: "Which languages do you speak?",
     askAvailability: "When are you available to work?",
@@ -54,7 +54,36 @@ export default async function handler(req, res) {
   // --- KRAJ privremenog isključenja ---
 
   const update = req.body;
-  
+
+  // 1. Handle callback_query for inline language selection
+  if (update.callback_query) {
+    const callback = update.callback_query;
+    const chatId = callback.message.chat.id;
+    const telegramId = chatId.toString();
+    const candidateRes = await supabase
+      .from("candidates")
+      .select("*")
+      .eq("telegram_id", telegramId)
+      .limit(1);
+    const candidate = candidateRes.data && candidateRes.data.length > 0 ? candidateRes.data[0] : null;
+    let selectedLang = null;
+    if (callback.data === "lang_hr" || callback.data === "lang_en") {
+      selectedLang = callback.data === "lang_hr" ? "hr" : "en";
+      if (candidate) {
+        await supabase.from("candidates").update({ language_choice: selectedLang }).eq("id", candidate.id);
+        // Pošalji sljedeće pitanje na odabranom jeziku i makni tipkovnicu
+        await sendTelegramMessage(chatId, MESSAGES[selectedLang].askName, { remove_keyboard: true });
+        // Odgovori Telegramu na callback_query (makni "loading" efekt)
+        await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
+          callback_query_id: callback.id
+        });
+        return res.status(200).send("OK");
+      }
+    }
+    // Ako callback_query nije za jezik, ignoriraj
+    return res.status(200).send("OK");
+  }
+
   // Telegram webhook verification
   if (!update || !update.message) {
     return res.status(200).send("OK");
@@ -120,17 +149,16 @@ export default async function handler(req, res) {
 
     // Pošalji poruku dobrodošlice i izbor jezika
     // Prikaži gumbove za odabir jezika
-    const langKeyboard = {
-      keyboard: [
+    // Inline gumbi za odabir jezika
+    const langInlineKeyboard = {
+      inline_keyboard: [
         [
-          { text: "🇭🇷 Hrvatski" },
-          { text: "🇬🇧 English" }
+          { text: "🇭🇷 Hrvatski", callback_data: "lang_hr" },
+          { text: "🇬🇧 English", callback_data: "lang_en" }
         ]
-      ],
-      resize_keyboard: true,
-      one_time_keyboard: true
+      ]
     };
-    await sendTelegramMessage(chatId, MESSAGES.hr.welcome, langKeyboard);
+    await sendTelegramMessage(chatId, MESSAGES.hr.welcome, langInlineKeyboard);
     return res.status(200).send("OK");
   }
 
@@ -247,36 +275,16 @@ export default async function handler(req, res) {
 
     // 3a. Language selection
     if (!candidate.language_choice) {
-      let lang = null;
-      if (body === "1" || body.toLowerCase() === "hr" || body.toLowerCase() === "hrvatski") lang = "hr";
-      if (body === "2" || body.toLowerCase() === "en" || body.toLowerCase() === "english") lang = "en";
-      if (!lang) {
-        // Ask for language again
-        try {
-          // Prikaži gumbove za odabir jezika
-          const langKeyboard = {
-            keyboard: [
-              [
-                { text: "🇭🇷 Hrvatski" },
-                { text: "🇬🇧 English" }
-              ]
-            ],
-            resize_keyboard: true,
-            one_time_keyboard: true
-          };
-          await sendTelegramMessage(chatId, MESSAGES.hr.welcome, langKeyboard);
-        } catch (err) {
-          console.error("Telegram send error:", err);
-        }
-        return res.status(200).send("OK");
-      }
-      await supabase.from("candidates").update({ language_choice: lang }).eq("id", candidate_id);
-      
-      try {
-        await sendTelegramMessage(chatId, MESSAGES[lang].askName);
-      } catch (err) {
-        console.error("Telegram send error:", err);
-      }
+      // Prikaži inline gumbove za odabir jezika (samo kroz callback_query)
+      const langInlineKeyboard = {
+        inline_keyboard: [
+          [
+            { text: "🇭🇷 Hrvatski", callback_data: "lang_hr" },
+            { text: "🇬🇧 English", callback_data: "lang_en" }
+          ]
+        ]
+      };
+      await sendTelegramMessage(chatId, MESSAGES.hr.welcome, langInlineKeyboard);
       return res.status(200).send("OK");
     }
 
@@ -490,7 +498,7 @@ async function handlePrijava(jobId, candidate_id, candidate, telegramId, chatId,
     let welcomeMsg = MESSAGES.hr.welcome;
     if (jobTitle || companyName) {
       welcomeMsg =
-        `Bok! Ja sam Rado 🤖\nPrijava za posao: ${jobTitle || "-"}${companyName ? ` u tvrtki: ${companyName}` : ""}\n\nZa nastavak odaberi jezik (choose language):\n1️⃣ Hrvatski\n2️⃣ English`;
+        `Bok! Ja sam Rado 🤖\nPrijava za posao: ${jobTitle || "-"}${companyName ? ` u tvrtki: ${companyName}` : ""}\n\nZa nastavak odaberi jezik (choose language):`;
     }
 
     console.log("Sending welcome message to user");
