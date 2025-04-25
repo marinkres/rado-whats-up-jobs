@@ -70,21 +70,23 @@ export default async function handler(req, res) {
     if (callback.data === "lang_hr" || callback.data === "lang_en") {
       selectedLang = callback.data === "lang_hr" ? "hr" : "en";
       if (candidate) {
-        await supabase.from("candidates").update({ language_choice: selectedLang }).eq("id", candidate.id);
-        // Prvo odgovori Telegramu na callback_query (ukloni loading)
+        console.log("[CBQ] Language selected:", selectedLang, "for candidate:", candidate.id);
+        // 1. Odmah makni loading (answerCallbackQuery)
         try {
           await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
             callback_query_id: callback.id
           });
+          console.log("[CBQ] Loading removed (answerCallbackQuery sent)");
         } catch (err) {
-          console.error("Error answering callback_query:", err.message);
+          console.error("[CBQ] Error answering callback_query:", err.message);
         }
-        // Zatim šalji onboarding pitanje za ime
-        try {
-          await sendTelegramMessage(chatId, MESSAGES[selectedLang].askName);
-        } catch (err) {
-          console.error("Error sending onboarding question after language select:", err.message);
-        }
+        // 2. Upis u bazu i slanje poruke paralelno (bez await)
+        supabase.from("candidates").update({ language_choice: selectedLang }).eq("id", candidate.id)
+          .then(() => console.log("[CBQ] Language saved to DB"))
+          .catch(e => console.error("[CBQ] Error saving language to DB:", e.message));
+        sendTelegramMessage(chatId, MESSAGES[selectedLang].askName)
+          .then(() => console.log("[CBQ] Sent askName message"))
+          .catch(e => console.error("[CBQ] Error sending askName message:", e.message));
         return res.status(200).send("OK");
       }
     }
