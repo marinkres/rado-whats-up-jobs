@@ -119,7 +119,18 @@ export default async function handler(req, res) {
     }).eq("id", candidate_id);
 
     // Pošalji poruku dobrodošlice i izbor jezika
-    await sendTelegramMessage(chatId, MESSAGES.hr.welcome);
+    // Prikaži gumbove za odabir jezika
+    const langKeyboard = {
+      keyboard: [
+        [
+          { text: "🇭🇷 Hrvatski" },
+          { text: "🇬🇧 English" }
+        ]
+      ],
+      resize_keyboard: true,
+      one_time_keyboard: true
+    };
+    await sendTelegramMessage(chatId, MESSAGES.hr.welcome, langKeyboard);
     return res.status(200).send("OK");
   }
 
@@ -224,7 +235,18 @@ export default async function handler(req, res) {
       if (!lang) {
         // Ask for language again
         try {
-          await sendTelegramMessage(chatId, MESSAGES.hr.welcome);
+          // Prikaži gumbove za odabir jezika
+          const langKeyboard = {
+            keyboard: [
+              [
+                { text: "🇭🇷 Hrvatski" },
+                { text: "🇬🇧 English" }
+              ]
+            ],
+            resize_keyboard: true,
+            one_time_keyboard: true
+          };
+          await sendTelegramMessage(chatId, MESSAGES.hr.welcome, langKeyboard);
         } catch (err) {
           console.error("Telegram send error:", err);
         }
@@ -463,14 +485,19 @@ async function handlePrijava(jobId, candidate_id, candidate, telegramId, chatId,
   }
 }
 
-async function sendTelegramMessage(chatId, text) {
+// Omogućava slanje poruke s opcionalnim reply_markup (gumbovi)
+async function sendTelegramMessage(chatId, text, replyMarkup = null) {
   try {
     console.log(`Sending message to chat ID: ${chatId}`);
     const apiUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-    const response = await axios.post(apiUrl, {
+    const payload = {
       chat_id: chatId,
       text: text
-    });
+    };
+    if (replyMarkup) {
+      payload.reply_markup = replyMarkup;
+    }
+    const response = await axios.post(apiUrl, payload);
     console.log("Message sent successfully:", response.data.ok);
     return response.data;
   } catch (error) {
