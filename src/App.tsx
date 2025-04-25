@@ -19,6 +19,7 @@ import EditJob from "./pages/EditJob";
 import Sidebar from "@/components/Sidebar"; 
 import ComingSoon from "./pages/ComingSoon";
 import Pricing from "./pages/Pricing"; // Import the Pricing component
+import TelegramDebug from "./pages/TelegramDebug"; // Import the TelegramDebug component
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -95,6 +96,7 @@ const App = () => (
                 <Route path="/applications" element={<Applications />} />
                 <Route path="/applications/:id" element={<ApplicationDetail />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="/telegram-debug" element={<TelegramDebug />} />
               </Route>
             </Route>
 

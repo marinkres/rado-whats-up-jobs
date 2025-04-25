@@ -310,6 +310,43 @@ const Settings = () => {
     }
   };
 
+  const testTelegramWebhook = async () => {
+    try {
+      setSaving(true);
+      
+      // First, set up the webhook
+      const setupResponse = await fetch(`/api/setup-telegram-webhook?webhook_url=${window.location.origin}/api/telegram-webhook`, {
+        method: 'GET',
+      });
+      
+      const setupData = await setupResponse.json();
+      console.log("Webhook setup result:", setupData);
+      
+      // Then get info about the webhook
+      const infoResponse = await fetch(`/api/test-telegram?chat_id=YOUR_CHAT_ID&message=Test message from RadoJobs at ${new Date().toLocaleTimeString()}`, {
+        method: 'GET',
+      });
+      
+      const infoData = await infoResponse.json();
+      console.log("Webhook test result:", infoData);
+      
+      toast({
+        title: "Telegram test completed",
+        description: "Check console for details and your Telegram for messages"
+      });
+      
+    } catch (error) {
+      console.error("Error testing Telegram webhook:", error);
+      toast({
+        title: "Greška",
+        description: "Došlo je do greške prilikom testiranja Telegram webhook-a.",
+        variant: "destructive"
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       <main className="md:pl-72 transition-all duration-300">
@@ -692,6 +729,27 @@ const Settings = () => {
                         )}
                         Brzo omogući Telegram
                       </Button>
+
+                      <div className="space-y-3 mt-4">
+                        <Button 
+                          onClick={testTelegramWebhook}
+                          variant="outline"
+                          disabled={saving}
+                        >
+                          {saving ? (
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          ) : (
+                            <svg 
+                              className="h-4 w-4 mr-2 text-blue-500" 
+                              viewBox="0 0 24 24" 
+                              fill="currentColor"
+                            >
+                              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.198l-1.67 8.03c-.123.595-.45.738-.907.46l-2.507-1.885-1.209 1.188c-.16.158-.297.297-.594.297l.216-2.244 4.082-3.764c.275-.248-.056-.374-.43-.145l-5.035 3.23-2.158-.69c-.594-.197-.608-.596.13-.883l8.413-3.32c.498-.19.931.114.75.826z"/>
+                            </svg>
+                          )}
+                          Test Telegram Webhook
+                        </Button>
+                      </div>
                     </div>
                     <div className="p-4 border-t border-gray-100 dark:border-gray-700/50 flex justify-end">
                       <Button 
