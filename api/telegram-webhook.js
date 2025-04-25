@@ -267,13 +267,17 @@ export default async function handler(req, res) {
     candidate_id = candidate.id;
 
     let conversation_id = null;
-    let { data: conversations } = await supabase
+    let query = supabase
       .from("conversations")
       .select("id")
-      .eq("candidate_id", candidate_id)
-      .eq("job_id", jobId || null)
-      .order("created_at", { ascending: false })
-      .limit(1);
+      .eq("candidate_id", candidate_id);
+    if (jobId) {
+      query = query.eq("job_id", jobId);
+    } else {
+      query = query.is("job_id", null);
+    }
+    query = query.order("created_at", { ascending: false }).limit(1);
+    let { data: conversations } = await query;
 
     if (conversations && conversations.length > 0) {
       conversation_id = conversations[0].id;
