@@ -208,14 +208,32 @@ export default async function handler(req, res) {
   if (candidate) {
     candidate_id = candidate.id;
 
-    // Find latest conversation
+    let conversation_id = null;
     let { data: conversations } = await supabase
       .from("conversations")
       .select("id")
       .eq("candidate_id", candidate_id)
+      .eq("job_id", null)
       .order("created_at", { ascending: false })
       .limit(1);
-    const conversation_id = conversations && conversations.length > 0 ? conversations[0].id : null;
+
+    if (conversations && conversations.length > 0) {
+      conversation_id = conversations[0].id;
+    } else {
+      const { data: newConv, error } = await supabase
+        .from("conversations")
+        .insert([{
+          candidate_id,
+          job_id: null,
+          created_at: new Date().toISOString(),
+          channel: "telegram",
+          telegram_id: telegramId
+        }])
+        .select();
+      if (!error && newConv && newConv.length > 0) {
+        conversation_id = newConv[0].id;
+      }
+    }
 
     // Save message
     await supabase.from("messages").insert([
