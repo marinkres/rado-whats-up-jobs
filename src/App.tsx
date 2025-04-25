@@ -19,6 +19,7 @@ import EditJob from "./pages/EditJob";
 import Sidebar from "@/components/Sidebar"; 
 import ComingSoon from "./pages/ComingSoon";
 import Pricing from "./pages/Pricing"; // Import the Pricing component
+import Careers from "./pages/Careers"; 
 import TelegramDebug from "./pages/TelegramDebug"; // Import the TelegramDebug component
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -71,6 +72,14 @@ const App = () => (
             <Route path="/pricing" element={
               <>
                 <Pricing />
+                <Toaster />
+                <Sonner />
+              </>
+            } />
+            {/* Add Pricing route here - similar to login/signup */}
+            <Route path="/careers" element={
+              <>
+                <Careers />
                 <Toaster />
                 <Sonner />
               </>

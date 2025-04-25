@@ -6,7 +6,7 @@ import { LanguageSwitch } from "./LanguageSwitch";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface NavBarProps {
-  activePage?: 'home' | 'pricing' | 'integrations';
+  activePage?: 'home' | 'pricing' | 'careers';
 }
 
 export const NavBar = ({ activePage = 'home' }: NavBarProps) => {
@@ -51,10 +51,10 @@ export const NavBar = ({ activePage = 'home' }: NavBarProps) => {
                 {t('home')}
               </Link>
               <Link 
-                to="/integrations" 
-                className={`${activePage === 'integrations' ? 'text-white font-medium' : 'text-gray-300'} hover:text-[#43AA8B] transition-colors`}
+                to="/careers" 
+                className={`${activePage === 'careers' ? 'text-white font-medium' : 'text-gray-300'} hover:text-[#43AA8B] transition-colors`}
               >
-                {t('integrations')}
+                {t('careers')}
               </Link>
               <Link 
                 to="/pricing" 
@@ -116,10 +116,10 @@ export const NavBar = ({ activePage = 'home' }: NavBarProps) => {
               {t('home')}
             </Link>
             <Link 
-              to="/integrations" 
-              className={`${activePage === 'integrations' ? 'text-white font-medium' : 'text-gray-300'} hover:text-[#43AA8B] transition-colors`}
+              to="/careers" 
+              className={`${activePage === 'careers' ? 'text-white font-medium' : 'text-gray-300'} hover:text-[#43AA8B] transition-colors`}
             >
-              {t('integrations')}
+              {t('careers')}
             </Link>
             <Link 
               to="/pricing" 
