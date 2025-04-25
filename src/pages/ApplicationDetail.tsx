@@ -149,6 +149,12 @@ const ApplicationDetail = () => {
         return;
       }
       
+      // Determine channel based on candidate data
+      let channel = 'whatsapp'; // Default
+      if (application.candidates?.telegram_id) {
+        channel = 'telegram';
+      }
+      
       // If no conversation exists, create one
       const { data: newConversation, error: createError } = await supabase
         .from('conversations')
@@ -156,6 +162,8 @@ const ApplicationDetail = () => {
           candidate_id: application.candidate_id,
           job_id: application.job_id,
           phone: application.candidates?.phone || null,
+          telegram_id: application.candidates?.telegram_id || null,
+          channel: channel,
           created_at: new Date().toISOString(),
         })
         .select('id')

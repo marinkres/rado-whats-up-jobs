@@ -38,6 +38,13 @@ const Settings = () => {
     new_password: "",
     confirm_password: ""
   });
+
+  const [integrations, setIntegrations] = useState({
+    whatsapp_enabled: true,
+    telegram_enabled: false,
+    telegram_bot_username: "",
+    webhook_url: ""
+  });
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -74,6 +81,13 @@ const Settings = () => {
               message_alerts: employer.message_alerts !== false,
               marketing_emails: employer.marketing_emails === true
             });
+            
+            setIntegrations({
+              whatsapp_enabled: employer.whatsapp_enabled !== false,
+              telegram_enabled: employer.telegram_enabled === true,
+              telegram_bot_username: employer.telegram_bot_username || "",
+              webhook_url: window.location.origin + "/api/telegram-webhook"
+            });
           }
         }
       } catch (error) {
@@ -98,6 +112,14 @@ const Settings = () => {
   const handleSecurityChange = (e) => {
     const { name, value } = e.target;
     setSecurity(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleIntegrationsChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setIntegrations(prev => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
+    }));
   };
 
   const saveProfile = async () => {
@@ -158,6 +180,36 @@ const Settings = () => {
         variant: "destructive"
       });
       console.error("Error saving notifications:", error.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveIntegrations = async () => {
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from("employers")
+        .update({
+          whatsapp_enabled: integrations.whatsapp_enabled,
+          telegram_enabled: integrations.telegram_enabled,
+          telegram_bot_username: integrations.telegram_bot_username,
+        })
+        .eq("email", profile.email);
+
+      if (error) throw error;
+      
+      toast({
+        title: "Integracije ažurirane",
+        description: "Vaše postavke integracija su uspješno spremljene.",
+      });
+    } catch (error) {
+      toast({
+        title: "Greška",
+        description: "Došlo je do greške prilikom spremanja postavki integracija.",
+        variant: "destructive"
+      });
+      console.error("Error saving integrations:", error.message);
     } finally {
       setSaving(false);
     }
@@ -239,6 +291,13 @@ const Settings = () => {
                 Obavijesti
               </TabsTrigger>
               <TabsTrigger 
+                value="integrations" 
+                className="data-[state=active]:bg-[#43AA8B]/10 data-[state=active]:text-[#43AA8B]"
+              >
+                <Shield className="h-4 w-4 mr-2" />
+                Integracije
+              </TabsTrigger>
+              <TabsTrigger 
                 value="security" 
                 className="data-[state=active]:bg-[#43AA8B]/10 data-[state=active]:text-[#43AA8B]"
               >
@@ -250,93 +309,75 @@ const Settings = () => {
             {loading ? (
               <Card className="p-6 backdrop-blur-sm bg-white/70 dark:bg-gray-800/70 border border-gray-200 dark:border-gray-700/50 shadow-sm">
                 <div className="space-y-4">
-                  {Array(5).fill(0).map((_, i) => (
-                    <div key={i} className="space-y-2">
-                      <Skeleton className="h-5 w-32" />
-                      <Skeleton className="h-10 w-full" />
-                    </div>
-                  ))}
+                  {/* Skeleton loader for profile fields */}
+                  <Skeleton className="h-10 w-full mb-4" />
+                  <Skeleton className="h-10 w-full mb-4" />
+                  <Skeleton className="h-10 w-full mb-4" />
+                  <Skeleton className="h-10 w-full mb-4" />
+                  <Skeleton className="h-24 w-full mb-4" />
                 </div>
               </Card>
             ) : (
               <>
                 <TabsContent value="profile" className="mt-0">
-                  <Card className="backdrop-blur-sm bg-white/70 dark:bg-gray-800/70 border border-gray-200 dark:border-gray-700/50 shadow-sm overflow-hidden">
-                    <div className="p-6 border-b border-gray-100 dark:border-gray-700/50">
-                      <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
-                        <Building className="h-5 w-5" />
-                        Informacije o tvrtki
-                      </h2>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Uredite osnovne informacije o vašoj tvrtki
-                      </p>
-                    </div>
-                    <div className="p-6 space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label htmlFor="company_name">Naziv tvrtke</Label>
-                          <div className="relative">
-                            <Building className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                            <Input
-                              id="company_name"
-                              name="company_name"
-                              placeholder="Unesite naziv tvrtke"
-                              className="pl-10"
-                              value={profile.company_name}
-                              onChange={handleProfileChange}
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="email">Email adresa</Label>
-                          <div className="relative">
-                            <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                            <Input
-                              id="email"
-                              name="email"
-                              placeholder="Email adresa"
-                              className="pl-10"
-                              value={profile.email}
-                              disabled
-                            />
-                          </div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Email adresu ne možete promijeniti
-                          </p>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="phone">Kontakt telefon</Label>
-                          <div className="relative">
-                            <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                            <Input
-                              id="phone"
-                              name="phone"
-                              placeholder="Kontakt telefon"
-                              className="pl-10"
-                              value={profile.phone}
-                              onChange={handleProfileChange}
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="website">Web stranica</Label>
-                          <div className="relative">
-                            <Globe className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                            <Input
-                              id="website"
-                              name="website"
-                              placeholder="https://example.com"
-                              className="pl-10"
-                              value={profile.website}
-                              onChange={handleProfileChange}
-                            />
-                          </div>
+                  <Card className="p-6 backdrop-blur-sm bg-white/70 dark:bg-gray-800/70 border border-gray-200 dark:border-gray-700/50 shadow-sm">
+                    <div className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="company_name">Naziv tvrtke</Label>
+                        <div className="relative">
+                          <Building className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                          <Input
+                            id="company_name"
+                            name="company_name"
+                            placeholder="Naziv tvrtke"
+                            className="pl-10"
+                            value={profile.company_name}
+                            onChange={handleProfileChange}
+                          />
                         </div>
                       </div>
-                      
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                          <Input
+                            id="email"
+                            name="email"
+                            placeholder="Email"
+                            className="pl-10"
+                            value={profile.email}
+                            disabled
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="phone">Telefon</Label>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                          <Input
+                            id="phone"
+                            name="phone"
+                            placeholder="Kontakt telefon"
+                            className="pl-10"
+                            value={profile.phone}
+                            onChange={handleProfileChange}
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="website">Web stranica</Label>
+                        <div className="relative">
+                          <Globe className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                          <Input
+                            id="website"
+                            name="website"
+                            placeholder="https://example.com"
+                            className="pl-10"
+                            value={profile.website}
+                            onChange={handleProfileChange}
+                          />
+                        </div>
+                      </div>
                       <div className="space-y-2">
                         <Label htmlFor="address">Adresa</Label>
                         <div className="relative">
@@ -351,7 +392,6 @@ const Settings = () => {
                           />
                         </div>
                       </div>
-                      
                       <div className="space-y-2">
                         <Label htmlFor="description">Opis tvrtke</Label>
                         <Textarea

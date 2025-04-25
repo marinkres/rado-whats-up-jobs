@@ -44,6 +44,7 @@ const JobDetail = () => {
   const [activeTab, setActiveTab] = useState("details");
   const [showQRCode, setShowQRCode] = useState(false);
   const [copying, setCopying] = useState(false);
+  const [telegramLink, setTelegramLink] = useState("");
 
   useEffect(() => {
     const fetchJob = async () => {
@@ -107,6 +108,32 @@ const JobDetail = () => {
     
     fetchJob();
   }, [id, navigate]);
+
+  // Modified Telegram link generation - use direct link construction instead of API
+  useEffect(() => {
+    if (job?.id) {
+      // Create Telegram link directly in the component
+      const botUsername = "Radojobs_bot"; // Use the known bot username
+      const directTelegramLink = `https://t.me/${botUsername}?start=${job.id}`;
+      setTelegramLink(directTelegramLink);
+      
+      console.log("Created Telegram link directly:", directTelegramLink);
+      
+      // Skip the API call for now since it's not working in development
+      /*
+      fetch(`/api/telegram-deeplink?job_id=${job.id}`)
+        .then(async response => {
+          // ...existing code...
+        })
+        .catch(error => {
+          console.error("Failed to get Telegram link:", error);
+          // Set a fallback link
+          const botUsername = "Radojobs_bot"; // Fallback username
+          setTelegramLink(`https://t.me/${botUsername}?start=${job.id}`);
+        });
+      */
+    }
+  }, [job]);
 
   const goBack = () => {
     navigate('/jobs');
@@ -265,16 +292,34 @@ const JobDetail = () => {
                             variant="outline"
                             size="sm"
                             className="border-gray-200 bg-green-600 hover:bg-green-700 hover:text-white text-white dark:border-gray-700"
-                            asChild
+                            onClick={(e) => {
+                              e.preventDefault();
+                              window.open(getWhatsAppLink(), '_blank');
+                            }}
                           >
-                            <a 
-                              href={getWhatsAppLink()}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <Share2 className="h-4 w-4 mr-1" />
+                            <span className="md:inline">WhatsApp</span>
+                          </Button>
+                          
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-gray-200 bg-blue-500 hover:bg-blue-600 hover:text-white text-white dark:border-gray-700"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              if (telegramLink) {
+                                window.open(telegramLink, '_blank');
+                              }
+                            }}
+                          >
+                            <svg 
+                              className="h-4 w-4 mr-1" 
+                              viewBox="0 0 24 24" 
+                              fill="currentColor"
                             >
-                              <Share2 className="h-4 w-4 mr-1" />
-                              <span className="md:inline">WhatsApp</span>
-                            </a>
+                              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.198l-1.67 8.03c-.123.595-.45.738-.907.46l-2.507-1.885-1.209 1.188c-.16.158-.297.297-.594.297l.216-2.244 4.082-3.764c.275-.248-.056-.374-.43-.145l-5.035 3.23-2.158-.69c-.594-.197-.608-.596.13-.883l8.413-3.32c.498-.19.931.114.75.826z"/>
+                            </svg>
+                            <span className="md:inline">Telegram</span>
                           </Button>
                         </div>
                       </div>

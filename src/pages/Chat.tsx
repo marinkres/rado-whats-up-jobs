@@ -124,7 +124,7 @@ const Chat = () => {
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !selectedConversation) return;
-
+    
     // Create a message object based on the database schema
     const message = {
       conversation_id: selectedConversation.id,
@@ -132,7 +132,7 @@ const Chat = () => {
       content: newMessage,
       sent_at: new Date().toISOString(), // Using 'sent_at' instead of 'created_at'
     };
-
+  
     try {
       // Optimistically update UI
       setMessages(prev => [...prev, message]);
@@ -141,6 +141,39 @@ const Chat = () => {
       // Send to API
       const { error } = await supabase.from('messages').insert([message]);
       if (error) throw error;
+      
+      // Send via appropriate channel based on conversation settings
+      const channel = selectedConversation.channel || 'whatsapp'; // Default to WhatsApp
+      
+      if (channel === 'telegram') {
+        // Send via Telegram API
+        const telegramResponse = await fetch('/api/send-telegram', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: newMessage,
+            candidate_id: selectedConversation.candidate_id
+          })
+        });
+        
+        if (!telegramResponse.ok) {
+          throw new Error('Failed to send Telegram message');
+        }
+      } else {
+        // Send via WhatsApp API
+        const whatsappResponse = await fetch('/api/send-whatsapp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: newMessage,
+            candidate_id: selectedConversation.candidate_id
+          })
+        });
+        
+        if (!whatsappResponse.ok) {
+          throw new Error('Failed to send WhatsApp message');
+        }
+      }
     } catch (error) {
       console.error('Error sending message:', error);
     }
@@ -307,6 +340,9 @@ const Chat = () => {
                         ? messages[messages.length - 1]?.content 
                         : "Kliknite za prikaz poruka";
                       
+                      // Determine channel icon
+                      const channel = conversation.channel || 'whatsapp';
+                      
                       return (
                         <div 
                           key={conversation.id}
@@ -324,9 +360,30 @@ const Chat = () => {
                             }
                           }}
                         >
-                          {/* User avatar */}
-                          <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-800/30 flex items-center justify-center text-[#43AA8B]">
-                            <User className="h-5 w-5" />
+                          {/* User avatar with channel icon */}
+                          <div className="relative">
+                            <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-800/30 flex items-center justify-center text-[#43AA8B]">
+                              <User className="h-5 w-5" />
+                            </div>
+                            <div className="absolute -bottom-1 -right-1 rounded-full bg-white dark:bg-gray-800 p-0.5">
+                              {channel === 'telegram' ? (
+                                <svg 
+                                  className="h-4 w-4 text-blue-500" 
+                                  viewBox="0 0 24 24" 
+                                  fill="currentColor"
+                                >
+                                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.198l-1.67 8.03c-.123.595-.45.738-.907.46l-2.507-1.885-1.209 1.188c-.16.158-.297.297-.594.297l.216-2.244 4.082-3.764c.275-.248-.056-.374-.43-.145l-5.035 3.23-2.158-.69c-.594-.197-.608-.596.13-.883l8.413-3.32c.498-.19.931.114.75.826z"/>
+                                </svg>
+                              ) : (
+                                <svg 
+                                  className="h-4 w-4 text-[#25D366]" 
+                                  viewBox="0 0 24 24" 
+                                  fill="currentColor"
+                                >
+                                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.297-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                </svg>
+                              )}
+                            </div>
                           </div>
                           
                           {/* Conversation details */}

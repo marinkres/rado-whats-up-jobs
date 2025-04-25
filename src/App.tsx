@@ -18,6 +18,7 @@ import JobDetail from "./pages/JobDetail";
 import EditJob from "./pages/EditJob";
 import Sidebar from "@/components/Sidebar"; 
 import ComingSoon from "./pages/ComingSoon";
+import Pricing from "./pages/Pricing"; // Import the Pricing component
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -61,6 +62,14 @@ const App = () => (
             <Route path="/signup" element={
               <>
                 <Signup />
+                <Toaster />
+                <Sonner />
+              </>
+            } />
+            {/* Add Pricing route here - similar to login/signup */}
+            <Route path="/pricing" element={
+              <>
+                <Pricing />
                 <Toaster />
                 <Sonner />
               </>

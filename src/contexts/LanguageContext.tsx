@@ -54,6 +54,24 @@ export interface TranslationContent {
   changelog: string;
   support: string;
   allRightsReserved: string;
+
+  // Pricing page
+  pricingTitle: string;
+  pricingSubtitle: string;
+  monthly: string;
+  annual: string;
+  yearlyDiscount: string;
+  startFreeTrial: string;
+  requestQuote: string;
+  compareFeatures: string;
+  features: string;
+  activeJobOpenings: string;
+  monthlyApplications: string;
+  unlimited: string;
+  basic: string;
+  advanced: string;
+  custom: string;
+  frequently_asked_questions: string;
 }
 
 export const translations: Record<Language, TranslationContent> = {
@@ -108,7 +126,25 @@ export const translations: Record<Language, TranslationContent> = {
     termsOfUse: 'Uvjeti korištenja',
     changelog: 'Dnevnik promjena',
     support: 'Podrška',
-    allRightsReserved: 'Sva prava pridržana'
+    allRightsReserved: 'Sva prava pridržana',
+
+    // Pricing page
+    pricingTitle: 'Jednostavno i transparentno određivanje cijena',
+    pricingSubtitle: 'Odaberite plan koji odgovara vašim potrebama. Svi planovi dolaze s besplatnim probnim razdobljem bez kreditne kartice.',
+    monthly: 'Mjesečno',
+    annual: 'Godišnje',
+    yearlyDiscount: '-20%',
+    startFreeTrial: 'Započni besplatnu probu',
+    requestQuote: 'Zatražite ponudu',
+    compareFeatures: 'Usporedite značajke',
+    features: 'Značajke',
+    activeJobOpenings: 'Aktivna zapošljavanja',
+    monthlyApplications: 'Mjesečne prijave',
+    unlimited: 'Neograničeno',
+    basic: 'Osnovna',
+    advanced: 'Napredna',
+    custom: 'Prilagođena',
+    frequently_asked_questions: 'Često postavljana pitanja',
   },
   en: {
     // Navigation
@@ -161,7 +197,25 @@ export const translations: Record<Language, TranslationContent> = {
     termsOfUse: 'Terms of Use',
     changelog: 'Changelog',
     support: 'Support',
-    allRightsReserved: 'All rights reserved'
+    allRightsReserved: 'All rights reserved',
+
+    // Pricing page
+    pricingTitle: 'Simple & transparent pricing',
+    pricingSubtitle: 'Choose a plan that fits your needs. All plans come with a free trial period, no credit card required.',
+    monthly: 'Monthly',
+    annual: 'Annual',
+    yearlyDiscount: '-20%',
+    startFreeTrial: 'Start free trial',
+    requestQuote: 'Request a quote',
+    compareFeatures: 'Compare features',
+    features: 'Features',
+    activeJobOpenings: 'Active job openings',
+    monthlyApplications: 'Monthly applications',
+    unlimited: 'Unlimited',
+    basic: 'Basic',
+    advanced: 'Advanced',
+    custom: 'Custom',
+    frequently_asked_questions: 'Frequently Asked Questions',
   }
 };
 
