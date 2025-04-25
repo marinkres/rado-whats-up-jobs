@@ -80,15 +80,52 @@ export default async function handler(req, res) {
         } catch (err) {
           console.error("[CBQ] Error answering callback_query:", err.message);
         }
-        // 2. Upis u bazu i slanje poruke paralelno (bez await)
+        // 2. Upis jezika u bazu
         supabase.from("candidates").update({ language_choice: selectedLang }).eq("id", candidate.id)
           .then(() => console.log("[CBQ] Language saved to DB"))
           .catch(e => console.error("[CBQ] Error saving language to DB:", e.message));
-        sendTelegramMessage(chatId, MESSAGES[selectedLang].askName)
-          .then(() => console.log("[CBQ] Sent askName message"))
-          .catch(e => console.error("[CBQ] Error sending askName message:", e.message));
+        // 3. Dohvati aktivne poslove iz baze i ponudi korisniku izbor
+        const { data: jobs, error: jobsError } = await supabase
+          .from("job_listings")
+          .select("id, title")
+          .eq("status", "active")
+          .order("created_at", { ascending: false })
+          .limit(10); // ograniči na 10
+        if (jobsError || !jobs || jobs.length === 0) {
+          await sendTelegramMessage(chatId, selectedLang === "hr" ? "Nema trenutno otvorenih poslova." : "No active jobs at the moment.");
+          return res.status(200).send("OK");
+        }
+        // Pripremi inline keyboard s poslovima
+        const jobKeyboard = {
+          inline_keyboard: jobs.map(job => [{
+            text: job.title,
+            callback_data: `job_select:${job.id}`
+          }])
+        };
+        await sendTelegramMessage(
+          chatId,
+          selectedLang === "hr"
+            ? "Za koji posao se želiš prijaviti? Odaberi s popisa:"
+            : "Which job would you like to apply for? Please choose:",
+          jobKeyboard
+        );
         return res.status(200).send("OK");
       }
+    }
+    // Handler za izbor posla
+    if (callback.data && callback.data.startsWith("job_select:")) {
+      const selectedJobId = callback.data.split(":")[1];
+      // Upis odabranog posla u bazu kandidata (možeš i u sesiju, ovde je jednostavno)
+      await supabase.from("candidates").update({ last_selected_job: selectedJobId }).eq("id", candidate.id);
+      // Odgovori korisniku i nastavi onboarding (pitanje za ime)
+      await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
+        callback_query_id: callback.id
+      });
+      await sendTelegramMessage(
+        chatId,
+        (candidate.language_choice === "hr" ? "Kako se zoveš? (ime i prezime)" : "What's your full name?")
+      );
+      return res.status(200).send("OK");
     }
     // Ako callback_query nije za jezik, ignoriraj
     return res.status(200).send("OK");
@@ -128,16 +165,32 @@ export default async function handler(req, res) {
   let jobId = null;
   let jobTitle = null;
   let companyName = null;
-  const startCommand = body.match(/^\/start[\s_]+(.+)$/i);
-  if (startCommand) {
-    jobId = startCommand[1];
+  // Poboljšan regex koji hvata i /start, /start 123, /start_123, /startjob_123
+  const startCommand = body.match(/^\/start(?:[\s_]*)([A-Za-z0-9\-_]*)?$/i);
+  if (startCommand && startCommand[1]) {
+    jobId = startCommand[1].trim();
+  }
+  console.log('[DEBUG] Parsed /start command:', { body, jobId });
+  if (jobId) {
     // Pokušaj dohvatiti podatke o poslu iz baze (job_listings + employers)
-    if (jobId) {
-      const { data: jobData, error: jobError } = await supabase
-        .from("job_listings")
-        .select("id,title,employer_id,employers (company_name)")
-        .eq("id", jobId)
+    const { data: jobData, error: jobError } = await supabase
+      .from("job_listings")
+      .select("id,title,employer_id,employers (company_name)")
+      .eq("id", jobId)
+      .limit(1);
+    if (!jobError && jobData && jobData.length > 0) {
+      jobTitle = jobData[0].title;
+      companyName = jobData[0].employers?.company_name || null;
+    }
+    // Ako nema relacije, fallback na dodatni upit
+    if (!companyName && jobData && jobData[0]?.employer_id) {
+      const { data: empData, error: empError } = await supabase
+        .from("employers")
+        .select("company_name")
+        .eq("id", jobData[0].employer_id)
         .limit(1);
+      if (!empError && empData && empData.length > 0) {
+        companyName = empData[0].company_name;
       if (!jobError && jobData && jobData.length > 0) {
         jobTitle = jobData[0].title;
         companyName = jobData[0].employers?.company_name || null;
@@ -204,10 +257,8 @@ export default async function handler(req, res) {
   }
 
   if (startCommand) {
-    // Extract job ID from deep link parameter
-    jobId = startCommand[1];
-    console.log(`Start command detected with job ID: ${jobId}`);
-    
+    // jobId je već izvučen gore, samo loguj za sigurnost
+    console.log(`[DEBUG] Start command detected with job ID: ${jobId}`);
     // Create candidate if doesn't exist
     if (!candidate) {
       console.log(`Creating new candidate for telegram ID: ${telegramId}`);
@@ -249,6 +300,7 @@ export default async function handler(req, res) {
 
   // 3. Handle "PRIJAVA" or "PRIJAVA:{job_id}" command
   let prijavaMatch = body.toUpperCase().match(/^PRIJAVA(?::([A-Z0-9-]+))?$/i);
+  let prijavaJobId = null;
   if (prijavaMatch) {
     prijavaJobId = prijavaMatch[1] ? prijavaMatch[1] : null;
     
@@ -610,3 +662,5 @@ async function sendTelegramMessage(chatId, text, replyMarkup = null) {
     throw error;
   }
 }
+
+} // <--- zatvaranje glavne handler funkcije ako je nedostajalo
