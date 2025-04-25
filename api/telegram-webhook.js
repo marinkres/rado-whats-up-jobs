@@ -60,6 +60,7 @@ export default async function handler(req, res) {
   const chatId = update.message.chat.id;
   const telegramId = chatId.toString();
   const body = update.message.text || "";
+  console.log('Telegram start body:', body);
   const firstName = update.message.from.first_name || "";
   const lastName = update.message.from.last_name || "";
   const username = update.message.from.username || "";
@@ -83,7 +84,7 @@ export default async function handler(req, res) {
 
   // 2. Check for deep link parameters when bot is started with /start command
   let jobId = null;
-  const startCommand = body.match(/^\/start\s+(.+)$/i);
+  const startCommand = body.match(/^\/start[\s_]+(.+)$/i);
   
   if (startCommand) {
     // Extract job ID from deep link parameter

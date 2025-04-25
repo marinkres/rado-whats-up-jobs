@@ -21,7 +21,7 @@ type FormData = {
   password: string;
   confirmPassword: string;
   companyName: string;
-  name: string;
+
 }
 
 const Signup = () => {
@@ -31,7 +31,7 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
     companyName: "",
-    name: ""
+
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -74,7 +74,7 @@ const Signup = () => {
           id: employerId,
           email: formData.email,
           company_name: formData.companyName,
-          contact_name: formData.name,
+
           created_at: new Date().toISOString()
         });
 
@@ -148,22 +148,6 @@ const Signup = () => {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-gray-200">Vaše ime i prezime</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="name"
-                      name="name"
-                      placeholder="Ivan Horvat"
-                      value={formData.name}
-                      onChange={handleChange}
-                      className="pl-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
-                      required
-                    />
-                  </div>
-                </div>
-                
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-gray-200">Email adresa</Label>
                   <div className="relative">
