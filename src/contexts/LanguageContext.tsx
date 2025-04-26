@@ -72,6 +72,14 @@ export interface TranslationContent {
   advanced: string;
   custom: string;
   frequently_asked_questions: string;
+  // ATS Integrations section
+  atsIntegrationsLabel: string;
+  atsIntegrationsTitle: string;
+  atsIntegrationsSubtitle: string;
+  atsIntegrationsDescription1: string;
+  atsIntegrationsDescription2: string;
+  atsIntegrationsDescription3: string;
+  atsIntegrationsButton: string;
 }
 
 export const translations: Record<Language, TranslationContent> = {
@@ -145,6 +153,14 @@ export const translations: Record<Language, TranslationContent> = {
     advanced: 'Napredna',
     custom: 'Prilagođena',
     frequently_asked_questions: 'Često postavljana pitanja',
+    // ATS Integrations section
+    atsIntegrationsLabel: 'Integracije',
+    atsIntegrationsTitle: 'Povežite Rado s vašim ATS-om',
+    atsIntegrationsSubtitle: 'Iskoristite puni potencijal vašeg ATS sustava',
+    atsIntegrationsDescription1: 'Ostvarite ',
+    atsIntegrationsDescription2: 'više vrijednosti',
+    atsIntegrationsDescription3: ' iz vašeg ATS-a integracijom s Radom. Brza integracija bez promjene vaših procesa – podržavamo najkorištenije ATS sustave u Hrvatskoj.',
+    atsIntegrationsButton: 'Saznaj više',
   },
   en: {
     // Navigation
@@ -216,6 +232,14 @@ export const translations: Record<Language, TranslationContent> = {
     advanced: 'Advanced',
     custom: 'Custom',
     frequently_asked_questions: 'Frequently Asked Questions',
+    // ATS Integrations section
+    atsIntegrationsLabel: 'Integrations',
+    atsIntegrationsTitle: 'Connect Rado with your ATS',
+    atsIntegrationsSubtitle: 'Unlock the full potential of your ATS',
+    atsIntegrationsDescription1: 'Get ',
+    atsIntegrationsDescription2: 'more value',
+    atsIntegrationsDescription3: ' from your ATS by integrating with Rado. Fast integration without changing your processes – we support the most popular ATS systems in Croatia.',
+    atsIntegrationsButton: 'Learn more',
   }
 };
 

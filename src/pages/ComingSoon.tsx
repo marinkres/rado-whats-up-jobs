@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion, useAnimation, useScroll } from "framer-motion";
 import { MoveRight } from "lucide-react";
+
 import { useInView } from "react-intersection-observer";
 import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 import NavBar from "@/components/marketing/NavBar";
@@ -75,10 +76,9 @@ const ComingSoonContent = () => {
       
       {/* Content */}
       <div className="container mx-auto px-4 py-12 relative z-10">
-        {/* Replace the header with NavBar component */}
         <NavBar activePage="home" />
         
-        {/* Hero Section - Completely redesigned */}
+        {/* Hero Section */}
         <div className="grid md:grid-cols-5 gap-12 md:gap-8 py-10">
           {/* Left column: Text content (3 columns wide) */}
           <motion.div 
@@ -160,8 +160,6 @@ const ComingSoonContent = () => {
             
             {/* Mockup container with frosted effect */}
             <div className="relative z-10 w-full max-w-lg">
-              
-              
               {/* Mockup image with elegant border */}
               <motion.div 
                 className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-gradient-to-b from-black/60 to-black/20 backdrop-blur-sm p-1"
@@ -272,7 +270,34 @@ const ComingSoonContent = () => {
             </div>
           </div>
         </motion.div>
-        
+        {/* ATS Integrations Section - Croatian ATS Carousel */}
+        <div className="my-20 md:my-28">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            {/* Left: Integration Text */}
+            <div className="px-2 md:px-8">
+              <p className="uppercase text-xs tracking-widest text-gray-400 font-semibold mb-2">{t('atsIntegrationsLabel')}</p>
+              <h2 className="text-3xl md:text-4xl font-bold  mb-3">{t('atsIntegrationsTitle')}</h2>
+              <h3 className="text-lg md:text-xl font-medium text-gray-100 mb-4">{t('atsIntegrationsSubtitle')}</h3>
+              <p className="text-gray-300 mb-6">
+                {t('atsIntegrationsDescription1')}
+                <span className="font-bold text-[#43AA8B]">3x </span>
+                {t('atsIntegrationsDescription2')}
+                {t('atsIntegrationsDescription3')}
+              </p>
+              <button
+                className="bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white px-6 py-2 rounded-full font-semibold shadow transition-colors"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              >
+                {t('atsIntegrationsButton')}
+              </button>
+            </div>
+            {/* Right: Animated ATS Logo Carousel */}
+            <div className="flex justify-center items-center">
+              {/* @ts-ignore */}
+              <ATSLogoCarousel className="w-full max-w-xl" />
+            </div>
+          </div>
+        </div>
         {/* Features Section - Updated with Timeline Style */}
         <div className="mt-20 md:mt-32 max-w-5xl mx-auto px-4 md:px-0">
           <motion.div 
@@ -338,30 +363,6 @@ const ComingSoonContent = () => {
           </div>
         </div>
         
-        {/* ATS Integrations Section - Croatian ATS Carousel */}
-        <div className="my-20 md:my-28">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-            {/* Left: Integration Text */}
-            <div className="px-2 md:px-8">
-              <p className="uppercase text-xs tracking-widest text-gray-400 font-semibold mb-2">Integracije</p>
-              <h2 className="text-3xl md:text-4xl font-bold  mb-3">Povežite Rado s vašim ATS-om</h2>
-              <h3 className="text-lg md:text-xl font-medium text-gray-100 mb-4">Iskoristite puni potencijal vašeg ATS sustava</h3>
-              <p className="text-gray-300 mb-6">Ostvarite <span className="font-bold text-[#43AA8B]">3x više vrijednosti</span> iz vašeg ATS-a integracijom s Radom. Brza integracija bez promjene vaših procesa – podržavamo najkorištenije ATS sustave u Hrvatskoj.</p>
-              <button
-                className="bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white px-6 py-2 rounded-full font-semibold shadow transition-colors"
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              >
-                Saznaj više
-              </button>
-            </div>
-            {/* Right: Animated ATS Logo Carousel */}
-            <div className="flex justify-center items-center">
-              {/* @ts-ignore */}
-              <ATSLogoCarousel className="w-full max-w-xl" />
-            </div>
-          </div>
-        </div>
-
         {/* Dashboard Preview Section - New addition */}
         <motion.div 
           className="mt-20 md:mt-32 py-16 px-4 md:px-8"

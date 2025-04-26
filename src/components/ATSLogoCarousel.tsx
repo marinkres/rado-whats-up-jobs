@@ -8,7 +8,7 @@ const atsCompanies = [
     logo: "https://media.licdn.com/dms/image/v2/C4E0BAQFgSenxQ6YR6A/company-logo_200_200/company-logo_200_200/0/1630598431463/erecruiter_a_logo?e=2147483647&v=beta&t=5e9_Jn7ir_0ZOC5NzF2mIXFfblGkUipaRKme-rWFOTk",
   },
   {
-    name: "MojPosao (TauOn)",
+    name: "MojPosao",
     logo: "https://storage.moj-posao.net/images/mojposao-fb-logo.png",
   },
   {
@@ -71,7 +71,7 @@ const ATSLogoCarousel: React.FC<ATSLogoCarouselProps> = ({ className }) => {
 
   return (
     <div
-      className={`relative w-full select-none overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm shadow-lg ${className || ''}`}
+      className={`relative w-full select-none overflow-hidden rounded-xl backdrop-blur-sm shadow-lg ${className || ''}`}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       style={{ height: 70 }}
@@ -105,8 +105,8 @@ const ATSLogoCarousel: React.FC<ATSLogoCarouselProps> = ({ className }) => {
         ))}
       </motion.div>
       {/* Gradient overlays for fade effect */}
-      <div className="absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-white/80 to-transparent pointer-events-none" />
-      <div className="absolute right-0 top-0 h-full w-16 bg-gradient-to-l from-white/80 to-transparent pointer-events-none" />
+      <div className="absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-black/80 to-transparent pointer-events-none" />
+      <div className="absolute right-0 top-0 h-full w-16 bg-gradient-to-l from-black/80 to-transparent pointer-events-none" />
     </div>
   );
 };
