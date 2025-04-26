@@ -7,6 +7,7 @@ import { useInView } from "react-intersection-observer";
 import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 import NavBar from "@/components/marketing/NavBar";
 import Footer from "@/components/marketing/Footer";
+import ATSLogoCarousel from "../components/ATSLogoCarousel";
 
 // Counter animation component for statistics
 const AnimatedCounter = ({ value, suffix = "", className = "", duration = 2 }) => {
@@ -337,6 +338,30 @@ const ComingSoonContent = () => {
           </div>
         </div>
         
+        {/* ATS Integrations Section - Croatian ATS Carousel */}
+        <div className="my-20 md:my-28">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            {/* Left: Integration Text */}
+            <div className="px-2 md:px-8">
+              <p className="uppercase text-xs tracking-widest text-gray-400 font-semibold mb-2">Integracije</p>
+              <h2 className="text-3xl md:text-4xl font-bold  mb-3">Povežite Rado s vašim ATS-om</h2>
+              <h3 className="text-lg md:text-xl font-medium text-gray-100 mb-4">Iskoristite puni potencijal vašeg ATS sustava</h3>
+              <p className="text-gray-300 mb-6">Ostvarite <span className="font-bold text-[#43AA8B]">3x više vrijednosti</span> iz vašeg ATS-a integracijom s Radom. Brza integracija bez promjene vaših procesa – podržavamo najkorištenije ATS sustave u Hrvatskoj.</p>
+              <button
+                className="bg-[#43AA8B] hover:bg-[#43AA8B]/90 text-white px-6 py-2 rounded-full font-semibold shadow transition-colors"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              >
+                Saznaj više
+              </button>
+            </div>
+            {/* Right: Animated ATS Logo Carousel */}
+            <div className="flex justify-center items-center">
+              {/* @ts-ignore */}
+              <ATSLogoCarousel className="w-full max-w-xl" />
+            </div>
+          </div>
+        </div>
+
         {/* Dashboard Preview Section - New addition */}
         <motion.div 
           className="mt-20 md:mt-32 py-16 px-4 md:px-8"
